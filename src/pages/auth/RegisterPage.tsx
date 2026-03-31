@@ -1,49 +1,45 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authService } from '../services/authService';
-import { 
-  ShoppingBag, 
-  Mail, 
-  Lock, 
-  User, 
-  ArrowRight, 
-  Github, 
+import { authService } from '../../services/authService';
+import {
+  ShoppingBag,
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Github,
   Chrome,
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { cn } from '../lib/utils';
+import { motion } from 'motion/react';
+import { cn } from '../../lib/utils';
 
-export const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+export const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
-    const email = (e.target as any).elements[isLogin ? 0 : 1].value;
-    const password = (e.target as any).elements[isLogin ? 1 : 2].value;
+
+    const elements = (e.target as any).elements;
+    const fullName = elements[0].value;
+    const email = elements[1].value;
+    const password = elements[2].value;
 
     try {
-      if (isLogin) {
-        await authService.login({ email, password });
-        navigate('/');
-      } else {
-        const nameInput = (e.target as any).elements[0].value;
-        await authService.register({ 
-          email, 
-          password, 
-          fullName: nameInput,
-          role: "BUYER"
-        });
-        setError("Đăng ký thành công! Vui lòng đăng nhập.");
-        setIsLogin(true);
-      }
+      await authService.register({
+        email,
+        password,
+        fullName,
+        role: "BUYER"
+      });
+      setSuccess(true);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
       setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.");
     } finally {
@@ -54,7 +50,7 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen bg-[#F3F2EF] flex items-center justify-center p-4">
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100">
-        
+
         {/* Left Side: Branding & Info */}
         <div className="hidden lg:flex flex-col justify-between p-12 bg-airbnb-dark text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
@@ -69,9 +65,9 @@ export const LoginPage = () => {
               </div>
               <span className="text-3xl font-black tracking-tighter">VibeCart</span>
             </Link>
-            
+
             <h1 className="text-5xl font-black leading-[1.1] tracking-tight mb-6">
-              Nâng tầm kiến thức <br /> 
+              Nâng tầm kiến thức <br />
               <span className="text-blue-400">Kết nối chuyên gia.</span>
             </h1>
             <p className="text-gray-400 text-lg font-medium max-w-md">
@@ -105,42 +101,33 @@ export const LoginPage = () => {
         <div className="p-8 lg:p-16 flex flex-col justify-center">
           <div className="mb-10">
             <h2 className="text-3xl font-black text-airbnb-dark tracking-tight mb-2">
-              {isLogin ? 'Chào mừng trở lại!' : 'Tạo tài khoản mới'}
+              Tạo tài khoản mới
             </h2>
             <p className="text-airbnb-gray font-medium">
-              {isLogin ? 'Vui lòng đăng nhập để tiếp tục.' : 'Tham gia cộng đồng VibeCart ngay hôm nay.'}
+              Tham gia cộng đồng VibeCart ngay hôm nay.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <AnimatePresence mode="wait">
-              {!isLogin && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-2"
-                >
-                  <label className="text-xs font-bold text-airbnb-gray uppercase tracking-widest ml-1">Họ và tên</label>
-                  <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <input 
-                      type="text" 
-                      placeholder="Nguyễn Văn A"
-                      required
-                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-airbnb-gray uppercase tracking-widest ml-1">Họ và tên</label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={20} />
+                <input
+                  type="text"
+                  placeholder="Nguyễn Văn A"
+                  required
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                />
+              </div>
+            </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-airbnb-gray uppercase tracking-widest ml-1">Email sinh viên</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={20} />
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   placeholder="name@university.edu.vn"
                   required
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
@@ -149,16 +136,11 @@ export const LoginPage = () => {
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-bold text-airbnb-gray uppercase tracking-widest">Mật khẩu</label>
-                {isLogin && (
-                  <button type="button" className="text-xs font-bold text-blue-600 hover:underline">Quên mật khẩu?</button>
-                )}
-              </div>
+              <label className="text-xs font-bold text-airbnb-gray uppercase tracking-widest ml-1">Mật khẩu</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={20} />
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   placeholder="••••••••"
                   required
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
@@ -172,16 +154,22 @@ export const LoginPage = () => {
               </div>
             )}
 
-            <button 
+            {success && (
+              <div className="p-4 bg-green-50 rounded-xl border border-green-100 flex items-center gap-3 text-green-600 text-sm font-bold">
+                <CheckCircle2 size={18} /> Đăng ký thành công! Đang chuyển hướng...
+              </div>
+            )}
+
+            <button
               type="submit"
-              disabled={loading}
+              disabled={loading || success}
               className="w-full py-4 bg-airbnb-dark text-white rounded-2xl font-bold text-lg hover:bg-black transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  {isLogin ? 'Đăng nhập' : 'Đăng ký ngay'}
+                  Đăng ký ngay
                   <ArrowRight size={20} />
                 </>
               )}
@@ -207,13 +195,13 @@ export const LoginPage = () => {
           </div>
 
           <p className="mt-10 text-center text-airbnb-gray font-medium">
-            {isLogin ? 'Chưa có tài khoản?' : 'Đã có tài khoản?'}
-            <button 
-              onClick={() => setIsLogin(!isLogin)}
+            Đã có tài khoản?
+            <Link
+              to="/login"
               className="ml-2 text-blue-600 font-black hover:underline"
             >
-              {isLogin ? 'Đăng ký miễn phí' : 'Đăng nhập ngay'}
-            </button>
+              Đăng nhập ngay
+            </Link>
           </p>
         </div>
       </div>

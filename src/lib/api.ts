@@ -2,6 +2,8 @@ export const getAuthToken = () => localStorage.getItem('token');
 export const setAuthToken = (token: string) => localStorage.setItem('token', token);
 export const removeAuthToken = () => localStorage.removeItem('token');
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9999';
+
 const request = async (url: string, options: RequestInit = {}) => {
   const token = getAuthToken();
   const headers = new Headers(options.headers || {});
@@ -14,13 +16,15 @@ const request = async (url: string, options: RequestInit = {}) => {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, { ...options, headers });
+  // Prepend base URL if url is relative (doesn't start with http/https)
+  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+  const response = await fetch(fullUrl, { ...options, headers });
   
   // Spring Boot backend returns ApiResponse: { code, message, data }
   const result = await response.json();
   
   if (!response.ok) {
-    throw new Error(result.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+    throw new Error(result.message || 'Có lỗi xác ra, vui lòng thử lại.');
   }
   
   // Return the actual data payload if it exists

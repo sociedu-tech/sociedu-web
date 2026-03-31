@@ -23,7 +23,8 @@ import { UserProfilePage } from './pages/UserProfilePage';
 import { PostProductPage } from './pages/PostProductPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { MentorMarketplace } from './pages/MentorMarketplace';
-import { LoginPage } from './pages/LoginPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
 import { Footer } from './components/Footer';
 import { AnimatePresence } from 'motion/react';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
@@ -88,7 +89,7 @@ function AppContent() {
     <Router>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        
+
         <main className="flex-1">
           <AnimatePresence mode="wait">
             <Routes>
@@ -104,6 +105,7 @@ function AppContent() {
               <Route path="/mentor-dashboard" element={<ProtectedRoute allowedRoles={['mentor']}><MentorDashboard /></ProtectedRoute>} />
               <Route path="/mentors" element={<MentorMarketplace />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <div className="max-w-7xl mx-auto px-4 py-20 text-center">
