@@ -25,7 +25,7 @@ import { ProfileProjects } from '../components/profile/ProfileProjects';
 import { ProfileStats } from '../components/profile/ProfileStats';
 import { ProfileContactModal } from '../components/profile/ProfileContactModal';
 
-export const UserProfilePage = ({ products }: { products: Product[] }) => {
+export const UserProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user: currentUser } = useAuth();
@@ -57,7 +57,8 @@ export const UserProfilePage = ({ products }: { products: Product[] }) => {
     </div>
   );
 
-  const userProducts = products.filter(p => p.sellerId === user.id);
+  const userProducts: any[] = []; // removed product integration
+
   const isOwnProfile = currentUser?.id?.toString() === id;
 
   const handleContactClick = () => {
