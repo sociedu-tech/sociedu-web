@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Camera, CheckCircle2, MapPin, Info, Calendar, Linkedin, Github, Globe } from 'lucide-react';
-import { User as UserType } from '../../types';
+import type { User as UserType } from '@/types';
 
 interface ProfileHeaderProps {
   user: UserType;
@@ -58,8 +58,8 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
             
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
               {isOwnProfile ? (
-                <Link 
-                  to="/edit-profile"
+                <Link
+                  href="/edit-profile"
                   className="w-full sm:w-auto px-8 py-2.5 bg-airbnb-dark text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-gray-200 text-center"
                 >
                   Chỉnh sửa hồ sơ

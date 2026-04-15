@@ -1,5 +1,5 @@
-import { api } from '../lib/api';
-import { DEFAULT_GUEST_USER } from '../mocks/defaultData';
+import { api } from '@/lib/api';
+import { DEFAULT_GUEST_USER } from '@/mocks/defaultData';
 
 const BASE_URL = '/api/v1/users/me';
 

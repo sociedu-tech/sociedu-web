@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { mentorService } from '../services/mentorService';
+import { mentorService } from '@/services/mentorService';
 
 export const useMentorData = (mentorId: string) => {
   const [loading, setLoading] = useState(true);

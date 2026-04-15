@@ -1,4 +1,4 @@
-import { User, Product } from '../types';
+import type { User, Product } from '@/types';
 
 export const EMPTY_MENTORS: User[] = [];
 

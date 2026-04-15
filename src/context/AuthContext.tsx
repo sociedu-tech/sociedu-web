@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../services/authService';
+'use client';
 
-interface User {
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '@/services/authService';
+import { getAuthToken, removeAuthToken } from '@/lib/api';
+
+export interface AuthUser {
   id: string | number;
   email: string;
   roles: string[];
@@ -9,55 +12,71 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   userRole: string; // primary role
   loading: boolean;
-  login: (credentials: any) => Promise<void>;
+  token: string | null;
+  login: (credentials: unknown) => Promise<void>;
   logout: () => void;
+  setUser: (user: AuthUser | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    if (savedUser && token) {
-      setUser(JSON.parse(savedUser));
+    const savedToken = getAuthToken();
+
+    if (savedUser && savedToken) {
+      try {
+        setUser(JSON.parse(savedUser) as AuthUser);
+        setToken(savedToken);
+      } catch {
+        localStorage.removeItem('user');
+        removeAuthToken();
+      }
     }
+
     setLoading(false);
   }, []);
 
-  const login = async (credentials: any) => {
+  const login = async (credentials: unknown) => {
     const data = await authService.login(credentials);
-    const userData = {
-      id: data.userId,
-      email: data.email,
-      roles: data.roles,
-      fullName: data.fullName
+    const userData: AuthUser = {
+      id: data.userId ?? '',
+      email: data.email || '',
+      roles: data.roles || [],
+      fullName: data.fullName || '',
     };
+
     setUser(userData);
+    setToken(getAuthToken());
   };
 
   const logout = () => {
-    authService.logout();
+    void authService.logout();
     setUser(null);
+    setToken(null);
   };
 
   const userRole = user?.roles?.[0]?.toLowerCase() || 'guest';
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated: !!user, 
-      userRole, 
-      loading, 
-      login, 
-      logout 
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: !!user && !!token,
+      userRole,
+      loading,
+      token,
+      login,
+      logout,
+      setUser,
     }}>
       {children}
     </AuthContext.Provider>

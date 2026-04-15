@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { User, Product } from '../types';
-import { adminService } from '../services/adminService';
+import type { User, Product } from '@/types';
+import { adminService } from '@/services/adminService';
 
 export const useAdminData = () => {
   const [loading, setLoading] = useState(true);
