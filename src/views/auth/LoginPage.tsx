@@ -216,36 +216,6 @@ export function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-gray font-medium tracking-[1.5px]">Hoặc tiếp tục với</span>
-            </div>
-          </div>
-
-          <div className="mt-8 grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              disabled
-              title="Đang phát triển"
-              aria-label="Đăng nhập Google — sắp ra mắt"
-              className="flex items-center justify-center gap-3 py-3 border-2 border-border rounded-[8px] font-medium text-dark opacity-50 cursor-not-allowed"
-            >
-              <Chrome size={20} className="text-red-500" aria-hidden /> Google
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Đang phát triển"
-              aria-label="Đăng nhập GitHub — sắp ra mắt"
-              className="flex items-center justify-center gap-3 py-3 border-2 border-border rounded-[8px] font-medium text-dark opacity-50 cursor-not-allowed"
-            >
-              <Github size={20} aria-hidden /> GitHub
-            </button>
-          </div>
-
           <p className="mt-10 text-center text-gray font-medium">
             Chưa có tài khoản?
             <Link

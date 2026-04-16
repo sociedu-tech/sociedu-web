@@ -46,7 +46,7 @@ export const LandingPage = () => {
               type="button"
               onClick={() => setActiveCategoryIdx(idx)}
               className={cn(
-                'text-[10px] uppercase tracking-[1px] font-medium transition-colors',
+                'text-[10px] tracking-[1px] font-medium transition-colors',
                 idx === activeCategoryIdx
                   ? 'text-primary border-b-2 border-primary pb-1'
                   : 'text-gray hover:text-dark'
