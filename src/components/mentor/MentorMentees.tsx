@@ -35,12 +35,12 @@ export const MentorMentees = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Học viên</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Học vấn</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Số buổi</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Hoạt động</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider">Học viên</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider">Học vấn</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider">Trạng thái</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider">Số buổi</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider">Hoạt động</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 tracking-wider"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

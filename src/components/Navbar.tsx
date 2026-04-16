@@ -50,10 +50,24 @@ export const Navbar = () => {
 
   const isRouteActive = (path: string) => pathname === path;
 
+  const avatarHref =
+    userRole === 'admin'
+      ? '/admin'
+      : userRole === 'mentor'
+        ? '/mentor'
+        : `/profile/${user?.id}`;
+
+  const avatarLabel =
+    userRole === 'admin'
+      ? 'Bảng điều khiển quản trị'
+      : userRole === 'mentor'
+        ? 'Bảng điều khiển Mentor'
+        : 'Trang cá nhân';
+
   return (
     <nav
       className={cn(
-        'sticky top-0 z-[100] w-full transition-all duration-300',
+        'sticky top-0 z-100 w-full transition-all duration-300',
         isScrolled ? 'bg-white py-2.5 border-b border-border shadow-glass' : 'bg-transparent py-4'
       )}
       aria-label="Điều hướng chính"
@@ -98,7 +112,7 @@ export const Navbar = () => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-[15px] uppercase tracking-[1.5px] font-medium text-dark hover:text-primary transition-colors px-2"
+                className="text-[15px] tracking-[1.5px] font-medium text-dark hover:text-primary transition-colors px-2"
               >
                 Đăng nhập
               </Link>
@@ -114,28 +128,24 @@ export const Navbar = () => {
               {userRole === 'mentor' && (
                 <Link
                   href="/mentor"
-                  className="text-[12.8px] uppercase tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
+                  className="text-[12.8px] tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
                 >
-                  Kênh Mentor
+                  Bảng điều khiển Mentor
                 </Link>
               )}
               {userRole === 'admin' && (
                 <Link
                   href="/admin"
-                  className="text-[12.8px] uppercase tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
+                  className="text-[12.8px] tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
                 >
-                  Trang Quản trị
+                  Bảng điều khiển quản trị
                 </Link>
               )}
               <Link
-                href={
-                  userRole === 'admin'
-                    ? '/admin'
-                    : userRole === 'mentor'
-                      ? '/mentor'
-                      : `/profile/${user?.id}`
-                }
+                href={avatarHref}
                 className="flex items-center gap-2 group p-1.5 pr-4 rounded-[8px] border border-border hover:border-border-hover transition-colors"
+                aria-label={avatarLabel}
+                title={avatarLabel}
               >
                 <div className="w-8 h-8 rounded-full bg-teal-light flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm overflow-hidden">
                   {user?.avatarUrl ? (
@@ -215,22 +225,12 @@ export const Navbar = () => {
                 {isAuthenticated ? (
                   <>
                     <Link
-                      href={
-                        userRole === 'admin'
-                          ? '/admin'
-                          : userRole === 'mentor'
-                            ? '/mentor'
-                            : `/profile/${user?.id}`
-                      }
+                      href={avatarHref}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center gap-3 text-base font-semibold text-dark p-2 hover:bg-surface-muted rounded-[8px]"
                     >
                       <User className="w-6 h-6 text-primary" aria-hidden />
-                      {userRole === 'mentor'
-                        ? 'Kênh Mentor'
-                        : userRole === 'admin'
-                          ? 'Trang Quản trị'
-                          : 'Hồ sơ cá nhân'}
+                      {avatarLabel}
                     </Link>
                     <button
                       type="button"

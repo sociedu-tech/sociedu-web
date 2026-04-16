@@ -66,7 +66,7 @@ export const MentorMarketplace = () => {
 
       <div className="space-y-8">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-widest text-airbnb-gray mb-4">Lĩnh vực</h3>
+          <h3 className="text-xs font-bold tracking-widest text-airbnb-gray mb-4">Lĩnh vực</h3>
           <div className="space-y-2">
             {['Tất cả', 'Công nghệ thông tin', 'Kinh tế', 'Toán học', 'Ngoại ngữ'].map(cat => (
               <label key={cat} className="flex items-center gap-3 cursor-pointer group">
@@ -78,7 +78,7 @@ export const MentorMarketplace = () => {
         </div>
 
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-widest text-airbnb-gray mb-4">Giá dịch vụ</h3>
+          <h3 className="text-xs font-bold tracking-widest text-airbnb-gray mb-4">Giá dịch vụ</h3>
           <input type="range" className="w-full accent-airbnb-red" />
           <div className="flex justify-between mt-2 text-xs font-bold text-airbnb-gray">
             <span>$0</span>
@@ -88,7 +88,7 @@ export const MentorMarketplace = () => {
 
         <button
           onClick={() => setShowMobileFilters(false)}
-          className="w-full py-3 bg-airbnb-dark text-white rounded-xl font-bold text-sm hover:bg-black transition-colors"
+          className="w-full py-2.5 bg-airbnb-dark text-white rounded-xl font-bold text-sm hover:bg-black transition-colors"
         >
           Áp dụng bộ lọc
         </button>
@@ -107,10 +107,10 @@ export const MentorMarketplace = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
               Kết nối với <span className="text-airbnb-red">Mentor</span> hàng đầu
             </h1>
-            <p className="text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed">
               Nhận tư vấn 1-1 từ các sinh viên xuất sắc và chuyên gia trong ngành để bứt phá trong học tập và sự nghiệp.
             </p>
 
@@ -119,7 +119,7 @@ export const MentorMarketplace = () => {
               <input
                 type="text"
                 placeholder="Tìm theo tên, chuyên môn hoặc kỹ năng..."
-                className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-airbnb-red transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-airbnb-red transition-all text-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -133,7 +133,7 @@ export const MentorMarketplace = () => {
         <div className="lg:hidden mb-6">
           <button
             onClick={() => setShowMobileFilters(true)}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-airbnb-dark shadow-xl"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-white border border-gray-100 rounded-2xl font-bold text-airbnb-dark shadow-xl"
           >
             <Filter className="w-5 h-5 text-airbnb-red" />
             Lọc Mentor
@@ -149,16 +149,16 @@ export const MentorMarketplace = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowMobileFilters(false)}
-                className="fixed inset-0 bg-black/50 z-[200] lg:hidden"
+                className="fixed inset-0 bg-black/50 z-200 lg:hidden"
               />
               <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
-                className="fixed right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white z-[201] p-6 lg:hidden overflow-y-auto"
+                className="fixed right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white z-201 p-6 lg:hidden overflow-y-auto"
               >
                 <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-xl font-black text-airbnb-dark">Bộ lọc</h2>
+                  <h2 className="text-lg font-black text-airbnb-dark">Bộ lọc</h2>
                   <button onClick={() => setShowMobileFilters(false)} className="p-2 hover:bg-gray-100 rounded-full">
                     <X className="w-6 h-6" />
                   </button>
@@ -172,7 +172,7 @@ export const MentorMarketplace = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar (Desktop) */}
           <aside className="hidden lg:block lg:col-span-1">
-            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl sticky top-24">
+            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-xl sticky top-24">
               <Filters />
             </div>
           </aside>
@@ -186,7 +186,7 @@ export const MentorMarketplace = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-2xl transition-all group"
+                  className="bg-white border border-gray-100 rounded-3xl p-5 hover:shadow-2xl transition-all group"
                 >
                   <div className="flex gap-4 mb-6">
                     <Image
@@ -212,7 +212,7 @@ export const MentorMarketplace = () => {
                           {mentor.mentorInfo?.rating}
                         </div>
                         <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                        <div className="text-[10px] font-bold text-airbnb-gray uppercase tracking-tighter">
+                        <div className="text-[10px] font-bold text-airbnb-gray tracking-tighter">
                           {mentor.mentorInfo?.sessionsCompleted} buổi học
                         </div>
                       </div>
@@ -229,12 +229,12 @@ export const MentorMarketplace = () => {
 
                   <div className="flex items-center justify-between pt-6 border-t border-gray-50">
                     <div>
-                      <p className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest">Giá từ</p>
-                      <p className="text-xl font-black text-airbnb-dark">${mentor.mentorInfo?.price}<span className="text-xs font-normal text-airbnb-gray">/giờ</span></p>
+                      <p className="text-[10px] font-bold text-airbnb-gray tracking-widest">Giá từ</p>
+                      <p className="text-lg font-black text-airbnb-dark">${mentor.mentorInfo?.price}<span className="text-xs font-normal text-airbnb-gray">/giờ</span></p>
                     </div>
                     <Link
                       href={`/profile/${mentor.id}`}
-                      className="flex items-center gap-2 px-6 py-3 bg-airbnb-red text-white rounded-xl font-bold text-sm hover:bg-airbnb-red/90 transition-all shadow-lg shadow-airbnb-red/20"
+                      className="flex items-center gap-2 px-5 py-2.5 bg-airbnb-red text-white rounded-xl font-bold text-sm hover:bg-airbnb-red/90 transition-all shadow-lg shadow-airbnb-red/20"
                     >
                       Xem hồ sơ <ArrowRight size={16} />
                     </Link>

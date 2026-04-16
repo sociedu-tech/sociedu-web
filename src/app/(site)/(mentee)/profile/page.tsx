@@ -12,7 +12,7 @@ function ProfileWelcome() {
       </h2>
       <p className='text-airbnb-gray mt-2'>
         Bạn đang đăng nhập với vai trò{' '}
-        <span className='font-bold text-airbnb-red uppercase'>{userRole}</span>.
+        <span className='font-bold text-airbnb-red'>{userRole}</span>.
       </p>
     </div>
   );

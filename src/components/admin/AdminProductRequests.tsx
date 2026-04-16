@@ -18,7 +18,7 @@ export const AdminProductRequests = ({ requests, onApprove }: AdminProductReques
       {/* Desktop Table */}
       <table className="w-full text-left hidden md:table">
         <thead>
-          <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-airbnb-gray font-bold">
+          <tr className="bg-gray-50 text-[10px] tracking-widest text-airbnb-gray font-bold">
             <th className="px-6 py-4">Tài liệu</th>
             <th className="px-6 py-4">Giá</th>
             <th className="px-6 py-4">Người bán</th>
@@ -70,11 +70,11 @@ export const AdminProductRequests = ({ requests, onApprove }: AdminProductReques
             </div>
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs font-bold text-airbnb-gray uppercase tracking-widest mb-1">Giá</p>
+                <p className="text-xs font-bold text-airbnb-gray tracking-widest mb-1">Giá</p>
                 <p className="text-sm font-bold text-airbnb-dark">{req.price.toLocaleString()}đ</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-airbnb-gray uppercase tracking-widest mb-1">Người bán</p>
+                <p className="text-xs font-bold text-airbnb-gray tracking-widest mb-1">Người bán</p>
                 <p className="text-sm text-airbnb-dark">ID: {req.sellerId}</p>
               </div>
             </div>

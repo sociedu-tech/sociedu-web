@@ -14,7 +14,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
     <div className="space-y-6">
       {/* Stats Card */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-        <h3 className="text-sm font-bold text-airbnb-gray uppercase tracking-widest mb-4">Thống kê</h3>
+        <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Thống kê</h3>
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-sm text-airbnb-gray">Đánh giá</span>
@@ -39,7 +39,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
       {/* Mentor Packages (If Mentor) */}
       {user.role === 'mentor' && user.mentorInfo?.packages && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-airbnb-gray uppercase tracking-widest mb-4">Gói dịch vụ</h3>
+          <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Gói dịch vụ</h3>
           <div className="space-y-4">
             {user.mentorInfo.packages.map(pkg => (
               <div key={pkg.id} className="p-3 border border-gray-100 rounded-xl hover:border-blue-200 transition-colors">
@@ -56,7 +56,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
 
       {/* Listings Preview */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-        <h3 className="text-sm font-bold text-airbnb-gray uppercase tracking-widest mb-4">Tài liệu mới nhất</h3>
+        <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Tài liệu mới nhất</h3>
         <div className="space-y-4">
           {userProducts.length > 0 ? (
             userProducts.slice(0, 3).map(p => (

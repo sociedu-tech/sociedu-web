@@ -3,12 +3,12 @@
 
 @layer base {
   body {
-    @apply bg-page text-dark font-sans antialiased text-base font-medium leading-[1.6] tracking-[-0.16px];
+    @apply bg-page text-dark font-sans antialiased text-[15px] font-medium leading-[1.55] tracking-[-0.12px];
   }
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center bg-primary text-white text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border border-primary transition-all duration-200 active:scale-95 shadow-button-primary;
+  @apply inline-flex items-center justify-center bg-primary text-white text-sm font-semibold leading-[1.4] tracking-[-0.12px] py-2.5 px-5 rounded-[4px] border border-primary transition-all duration-200 active:scale-95 shadow-button-primary;
 }
 
 .btn-primary:hover {
@@ -17,7 +17,7 @@
 }
 
 .btn-secondary {
-  @apply bg-white text-dark text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border transition-all duration-200 active:scale-95;
+  @apply bg-white text-dark text-sm font-semibold leading-[1.4] tracking-[-0.12px] py-2.5 px-5 rounded-[4px] border transition-all duration-200 active:scale-95;
   border-color: var(--color-border);
 }
 
@@ -27,7 +27,7 @@
 }
 
 .btn-outline {
-  @apply bg-transparent text-dark text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border border-dark transition-all duration-200 active:scale-95;
+  @apply bg-transparent text-dark text-sm font-semibold leading-[1.4] tracking-[-0.12px] py-2.5 px-5 rounded-[4px] border border-dark transition-all duration-200 active:scale-95;
 }
 
 .btn-outline:hover {
@@ -43,7 +43,7 @@
 }
 
 .badge-primary {
-  @apply inline-flex items-center justify-center rounded-[4px] bg-badge-primary-bg px-2 py-1 text-[12.8px] font-semibold uppercase leading-[1.2] text-primary;
+  @apply inline-flex items-center justify-center rounded-[4px] bg-badge-primary-bg px-2 py-1 text-[12.8px] font-semibold leading-[1.2] text-primary;
 }
 
 .glass-card {

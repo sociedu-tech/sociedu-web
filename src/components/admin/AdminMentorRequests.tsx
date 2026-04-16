@@ -18,7 +18,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
       {/* Desktop Table */}
       <table className="w-full text-left hidden md:table">
         <thead>
-          <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-airbnb-gray font-bold">
+          <tr className="bg-gray-50 text-[10px] tracking-widest text-airbnb-gray font-bold">
             <th className="px-6 py-4">Người dùng</th>
             <th className="px-6 py-4">Chuyên môn</th>
             <th className="px-6 py-4">Ngày yêu cầu</th>
@@ -72,7 +72,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold text-airbnb-gray uppercase tracking-widest mb-1">Chuyên môn</p>
+              <p className="text-xs font-bold text-airbnb-gray tracking-widest mb-1">Chuyên môn</p>
               <p className="text-sm text-airbnb-dark font-medium">{req.mentorInfo?.headline}</p>
               <p className="text-xs text-airbnb-gray mt-1">{req.mentorInfo?.expertise.join(', ')}</p>
             </div>

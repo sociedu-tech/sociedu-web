@@ -40,7 +40,7 @@ export function VerifyEmailPage() {
 
   return (
     <main className="min-h-screen bg-page flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border shadow-glass p-8">
+      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border shadow-glass p-6">
         {loading ? (
           <div className="text-center">
             <div className="mx-auto w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -49,7 +49,7 @@ export function VerifyEmailPage() {
         ) : error ? (
           <div className="text-center">
             <AlertCircle className="mx-auto text-secondary-red" size={28} aria-hidden />
-            <h1 className="mt-3 text-xl font-semibold text-dark">Xác minh không thành công</h1>
+            <h1 className="mt-3 text-lg font-semibold text-dark">Xác minh không thành công</h1>
             <p className="mt-2 text-secondary-red">{error}</p>
             <div className="mt-6 flex justify-center gap-3 flex-wrap">
               <Link
@@ -66,7 +66,7 @@ export function VerifyEmailPage() {
         ) : (
           <div className="text-center">
             <CheckCircle2 className="mx-auto text-secondary-green" size={28} aria-hidden />
-            <h1 className="mt-3 text-xl font-semibold text-dark">Xác minh thành công</h1>
+            <h1 className="mt-3 text-lg font-semibold text-dark">Xác minh thành công</h1>
             <p className="mt-2 text-gray">Đang chuyển vào hệ thống...</p>
           </div>
         )}

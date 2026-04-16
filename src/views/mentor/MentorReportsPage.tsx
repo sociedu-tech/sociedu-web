@@ -79,7 +79,7 @@ export const MentorReportsPage = () => {
         ) : (
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-500 uppercase tracking-wider">
+              <tr className="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-500 tracking-wider">
                 <th className="px-6 py-4">Mentee</th>
                 <th className="px-6 py-4">Tiêu đề báo cáo</th>
                 <th className="px-6 py-4">Trạng thái</th>
@@ -153,7 +153,7 @@ export const MentorReportsPage = () => {
 
                <div className="p-6 overflow-y-auto space-y-6">
                  <div>
-                   <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Mentee báo cáo</div>
+                   <div className="text-sm font-bold text-gray-400 tracking-wider mb-2">Mentee báo cáo</div>
                    <div className="p-4 bg-gray-50 rounded-xl text-gray-700 whitespace-pre-wrap border border-gray-100">
                      {selectedReport.content}
                    </div>
@@ -161,7 +161,7 @@ export const MentorReportsPage = () => {
 
                  {selectedReport.attachmentUrl && (
                     <div>
-                      <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">File đính kèm</div>
+                      <div className="text-sm font-bold text-gray-400 tracking-wider mb-2">File đính kèm</div>
                       <a href={selectedReport.attachmentUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline font-medium flex items-center gap-2">
                          🔗 {selectedReport.attachmentUrl}
                       </a>
@@ -171,7 +171,7 @@ export const MentorReportsPage = () => {
                  <hr className="border-gray-100" />
 
                  <div>
-                   <div className="text-sm font-bold text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
+                   <div className="text-sm font-bold text-primary tracking-wider mb-2 flex items-center gap-2">
                      <MessageSquare size={16} /> Lời nhận xét
                    </div>
                    {selectedReport.status !== 'PENDING' ? (

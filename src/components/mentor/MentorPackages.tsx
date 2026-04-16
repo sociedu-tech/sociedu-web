@@ -41,7 +41,7 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
               <Trash2 size={16} />
             </button>
             <div className="pt-2">
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Tên gói</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wider">Tên gói</label>
               <input 
                 type="text" 
                 value={pkg.title}
@@ -51,7 +51,7 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Mô tả</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wider">Mô tả</label>
               <textarea 
                 value={pkg.description}
                 onChange={(e) => onUpdate(pkg.id, 'description', e.target.value)}
@@ -61,7 +61,7 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Giá (VNĐ)</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wider">Giá (VNĐ)</label>
                 <input 
                   type="number" 
                   value={pkg.price}
@@ -70,7 +70,7 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Thời lượng</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wider">Thời lượng</label>
                 <input 
                   type="text" 
                   value={pkg.duration}
