@@ -96,7 +96,7 @@ export const MentorMarketplace = () => {
   );
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-20">
+    <div className="bg-surface-soft min-h-screen pb-20">
       {/* Hero Section */}
       <div className="bg-airbnb-dark text-white py-12 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-airbnb-red/10 blur-[120px] rounded-full" />

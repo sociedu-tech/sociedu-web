@@ -54,7 +54,7 @@ export const ProfileContactModal = ({ isOpen, onClose, user }: ProfileContactMod
               </div>
               {user.socialLinks?.linkedin && (
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-50 rounded-xl text-[#0A66C2]">
+                  <div className="p-3 bg-blue-50 rounded-xl text-linkedin">
                     <Linkedin size={24} />
                   </div>
                   <div>

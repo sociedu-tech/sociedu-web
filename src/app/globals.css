@@ -1,56 +1,58 @@
 @import "tailwindcss";
-
-@theme {
-  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --color-primary: #01b5b4;
-  --color-primary-hover: #009f9e;
-  --color-dark: #0d1c2e;
-  --color-gray: #6b7280;
-  --color-airbnb-dark: #222222;
-  --color-airbnb-gray: #717171;
-  --color-airbnb-red: #ff385c;
-
-  /* Feature pastels */
-  --color-teal-light: #e0f7fa;
-  --color-purple-light: #f3e8ff;
-  --color-blue-light: #e0f2fe;
-  --color-mint: #d1fae5;
-  --color-peach: #ffedd5;
-  --color-pink-light: #fce7f3;
-}
+@import "../styles/theme.css";
 
 @layer base {
   body {
-    @apply bg-white text-dark font-sans antialiased;
+    @apply bg-page text-dark font-sans antialiased text-base font-medium leading-[1.6] tracking-[-0.16px];
   }
 }
 
 .btn-primary {
-  @apply bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-hover transition-all active:scale-95 shadow-[0_4px_14px_0_rgba(1,181,180,0.39)];
+  @apply inline-flex items-center justify-center bg-primary text-white text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border border-primary transition-all duration-200 active:scale-95 shadow-button-primary;
+}
+
+.btn-primary:hover {
+  transform: translateX(6px);
+  background: var(--color-primary-hover);
 }
 
 .btn-secondary {
-  @apply bg-white text-dark font-bold py-3 px-8 rounded-full border border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-all active:scale-95 shadow-sm;
+  @apply bg-white text-dark text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border transition-all duration-200 active:scale-95;
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  transform: translateX(6px);
+  border-color: var(--color-border-hover);
 }
 
 .btn-outline {
-  @apply bg-transparent text-primary font-bold py-3 px-8 rounded-full border-2 border-primary hover:bg-primary hover:text-white transition-all active:scale-95;
+  @apply bg-transparent text-dark text-base font-medium leading-[1.6] tracking-[-0.16px] py-3 px-6 rounded-[4px] border border-dark transition-all duration-200 active:scale-95;
+}
+
+.btn-outline:hover {
+  transform: translateX(6px);
 }
 
 .category-pill {
-  @apply flex flex-col items-center gap-2 px-6 py-2 border border-gray-200 rounded-full hover:border-primary hover:text-primary cursor-pointer transition-all text-gray bg-white shadow-sm;
+  @apply flex flex-col items-center gap-1.5 px-4 py-1.5 text-sm border border-border rounded-[8px] hover:border-primary hover:text-primary cursor-pointer transition-all text-gray bg-white;
 }
 
 .category-pill.active {
-  @apply border-primary bg-teal-light text-primary font-bold shadow-md;
+  @apply border-primary bg-badge-primary-bg text-primary font-semibold;
+}
+
+.badge-primary {
+  @apply inline-flex items-center justify-center rounded-[4px] bg-badge-primary-bg px-2 py-1 text-[12.8px] font-semibold uppercase leading-[1.2] text-primary;
 }
 
 .glass-card {
-  @apply bg-white/80 backdrop-blur-lg border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl overflow-hidden transition-all duration-300;
+  @apply bg-white border shadow-glass rounded-[8px] overflow-hidden transition-all duration-300;
+  border-color: var(--color-border);
 }
 
 .search-bar-shadow {
-  @apply shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)];
+  @apply shadow-search-bar;
 }
 
 ::-webkit-scrollbar {
@@ -58,12 +60,12 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--color-scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-scrollbar-thumb);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-scrollbar-thumb-hover);
 }

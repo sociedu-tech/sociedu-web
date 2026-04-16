@@ -43,7 +43,7 @@ export function UserProfilePage() {
   }, [id]);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F3F2EF]">
+    <div className="min-h-screen flex items-center justify-center bg-page">
       <LoadingSpinner size={48} label="Đang tải hồ sơ..." />
     </div>
   );
@@ -73,7 +73,7 @@ export function UserProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F3F2EF] pb-12">
+    <div className="min-h-screen bg-page pb-12">
       <div className="max-w-7xl mx-auto px-0 sm:px-4 pt-0 sm:pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 

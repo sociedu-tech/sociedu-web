@@ -70,11 +70,11 @@ export const UserReportsPage = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#F3F2EF]"><LoadingSpinner size={48} /></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-page"><LoadingSpinner size={48} /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F2EF] py-12">
+    <div className="min-h-screen bg-page py-12">
       <div className="max-w-5xl mx-auto px-4">
         
         <div className="flex justify-between items-center mb-8">

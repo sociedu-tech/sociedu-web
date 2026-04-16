@@ -14,7 +14,13 @@ import {
   Cell 
 } from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const COLORS = [
+  'var(--color-chart-1)',
+  'var(--color-chart-2)',
+  'var(--color-chart-3)',
+  'var(--color-chart-4)',
+  'var(--color-chart-5)',
+];
 
 const mockStats = {
   revenue: [
@@ -72,17 +78,17 @@ export const AdminStats = () => {
               <AreaChart data={mockStats.revenue}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="var(--color-chart-area-stroke)" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="var(--color-chart-area-stroke)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-chart-grid)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'var(--color-chart-tick)'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'var(--color-chart-tick)'}} />
                 <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-tooltip)'}}
                 />
-                <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                <Area type="monotone" dataKey="value" stroke="var(--color-chart-area-stroke)" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -93,13 +99,13 @@ export const AdminStats = () => {
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockStats.userGrowth}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-chart-grid)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'var(--color-chart-tick)'}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'var(--color-chart-tick)'}} />
                 <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-tooltip)'}}
                 />
-                <Line type="monotone" dataKey="users" stroke="#10b981" strokeWidth={3} dot={{r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff'}} />
+                <Line type="monotone" dataKey="users" stroke="var(--color-chart-line)" strokeWidth={3} dot={{r: 4, fill: 'var(--color-chart-line)', strokeWidth: 2, stroke: 'white'}} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -124,7 +130,7 @@ export const AdminStats = () => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-tooltip)'}}
                 />
               </PieChart>
             </ResponsiveContainer>

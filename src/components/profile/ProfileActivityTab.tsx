@@ -17,15 +17,21 @@ export const ProfileActivityTab = () => {
       <div className="space-y-4">
         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
           <p className="text-sm text-airbnb-gray mb-2">Đã đăng một tài liệu mới • 2 ngày trước</p>
-          <h4 className="font-bold text-airbnb-dark">"Giáo trình Giải tích 1 - Bách Khoa (Cập nhật 2024)"</h4>
+          <h4 className="font-bold text-airbnb-dark">
+            {'\u201c'}Giáo trình Giải tích 1 - Bách Khoa (Cập nhật 2024){'\u201d'}
+          </h4>
         </div>
         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
           <p className="text-sm text-airbnb-gray mb-2">Đã hoàn thành buổi tư vấn • 5 ngày trước</p>
-          <h4 className="font-bold text-airbnb-dark">"Review Code chuyên sâu cho sinh viên năm 3"</h4>
+          <h4 className="font-bold text-airbnb-dark">
+            {'\u201c'}Review Code chuyên sâu cho sinh viên năm 3{'\u201d'}
+          </h4>
         </div>
         <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
           <p className="text-sm text-airbnb-gray mb-2">Đã trả lời một đánh giá • 1 tuần trước</p>
-          <p className="text-sm text-airbnb-dark italic">"Cảm ơn bạn đã ủng hộ tài liệu của mình!"</p>
+          <p className="text-sm text-airbnb-dark italic">
+            {'\u201c'}Cảm ơn bạn đã ủng hộ tài liệu của mình!{'\u201d'}
+          </p>
         </div>
       </div>
     </motion.div>

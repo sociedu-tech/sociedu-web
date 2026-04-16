@@ -1,12 +1,21 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inconsolata, Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import { AppShell } from '@/components/layout/AppShell';
 
+/** Body/UI: Inter approximates WF Visual Sans (500–600); code: Inconsolata per DESIGN.md */
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  variable: '--font-sans',
+  weight: ['400', '500', '600'],
+  variable: '--font-app',
+  display: 'swap',
+});
+
+const inconsolata = Inconsolata({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-code',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -20,11 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={inter.variable}>
+    <html lang="vi" className={`${inter.variable} ${inconsolata.variable}`}>
       <body className={`${inter.className} antialiased`}>
-        <Providers>
-          <AppShell>{children}</AppShell>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
