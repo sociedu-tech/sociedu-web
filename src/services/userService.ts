@@ -1,17 +1,18 @@
 import { api } from '@/lib/api';
+import type { User } from '@/types';
 
 const BASE_URL = '/api/v1/users/me';
 
 export const userService = {
   // Profile
-  getMe: async () => {
+  getMe: async (): Promise<User | null> => {
     const res = await api.get(`${BASE_URL}/profile`);
-    return res.data;
+    return res.data as User | null;
   },
-  getUserProfile: async (id: string) => {
+  getUserProfile: async (id: string): Promise<User | null> => {
     try {
       const res = await api.get(`/api/v1/users/${id}/profile`);
-      return res.data;
+      return res.data as User | null;
     } catch (error) {
       console.error(`Failed to fetch user profile ${id}, using null fallback:`, error);
       return null;

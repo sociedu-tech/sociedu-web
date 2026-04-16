@@ -1,22 +1,24 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { 
-  User as UserIcon, 
-  Mail, 
-  Camera, 
-  Briefcase, 
-  GraduationCap, 
-  Award, 
-  Plus, 
-  Trash2, 
+import {
+  User as UserIcon,
+  Mail,
+  Camera,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Plus,
+  Trash2,
   Save,
   ArrowLeft,
   Globe,
   Linkedin,
   Github,
-  CheckCircle2
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -50,7 +52,7 @@ export function EditProfilePage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    
+
     setSaving(true);
     setSaveSuccess(false);
     try {
@@ -98,7 +100,7 @@ export function EditProfilePage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
           <div className="space-y-1">
-            <button 
+            <button
               onClick={() => router.back()}
               className="flex items-center gap-2 text-airbnb-gray hover:text-airbnb-dark font-bold transition-colors mb-2"
             >
@@ -107,10 +109,10 @@ export function EditProfilePage() {
             <h1 className="text-3xl sm:text-4xl font-black text-airbnb-dark tracking-tighter">Thiết lập hồ sơ</h1>
             <p className="text-airbnb-gray font-medium text-sm sm:text-base">Cập nhật thông tin cá nhân và chuyên môn của bạn.</p>
           </div>
-          
+
           <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
             {saveSuccess && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-xl font-bold text-sm border border-green-100"
@@ -119,19 +121,19 @@ export function EditProfilePage() {
               </motion.div>
             )}
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 type="button"
                 onClick={() => router.back()}
                 className="flex-1 xs:flex-none px-6 py-3 bg-white border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
               >
                 Hủy bỏ
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 disabled={saving || saveSuccess}
                 className="flex-1 xs:flex-none px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {saving ? <LoadingSpinner size={20} color="white" /> : <Save size={20} />}
+                {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                 <span className="whitespace-nowrap">{saveSuccess ? 'Đang chuyển hướng...' : 'Lưu thay đổi'}</span>
               </button>
             </div>
@@ -145,7 +147,7 @@ export function EditProfilePage() {
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white shadow-xl">
-                    <img src={user.avatar} className="w-full h-full object-cover" alt={user.name} />
+                    <Image src={user.avatar} className="w-full h-full object-cover" alt={user.name} width={160} height={160} unoptimized />
                   </div>
                   <button className="absolute -bottom-2 -right-2 p-2.5 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 transition-all border-2 border-white">
                     <Camera size={18} />
@@ -188,12 +190,12 @@ export function EditProfilePage() {
                   </div>
                   <h2 className="text-xl font-black text-airbnb-dark tracking-tight">Thông tin cá nhân</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Họ và tên</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={user.name}
                       onChange={(e) => updateField('name', e.target.value)}
                       className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
@@ -201,8 +203,8 @@ export function EditProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Email</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       value={user.email}
                       disabled
                       className="w-full px-5 py-3.5 bg-gray-100 border-2 border-transparent rounded-2xl text-airbnb-gray cursor-not-allowed font-medium"
@@ -210,7 +212,7 @@ export function EditProfilePage() {
                   </div>
                   <div className="md:col-span-2 space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Giới thiệu ngắn</label>
-                    <textarea 
+                    <textarea
                       value={user.bio}
                       onChange={(e) => updateField('bio', e.target.value)}
                       rows={4}
@@ -229,12 +231,12 @@ export function EditProfilePage() {
                   </div>
                   <h2 className="text-xl font-black text-airbnb-dark tracking-tight">Học vấn</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Trường đại học</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={user.university}
                       onChange={(e) => updateField('university', e.target.value)}
                       className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
@@ -242,8 +244,8 @@ export function EditProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Chuyên ngành</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={user.major}
                       onChange={(e) => updateField('major', e.target.value)}
                       className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
@@ -251,7 +253,7 @@ export function EditProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Năm học</label>
-                    <select 
+                    <select
                       value={user.year}
                       onChange={(e) => updateField('year', parseInt(e.target.value))}
                       className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all appearance-none"
@@ -261,8 +263,8 @@ export function EditProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">GPA hiện tại</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       step="0.1"
                       value={user.gpa}
                       onChange={(e) => updateField('gpa', parseFloat(e.target.value))}
@@ -280,14 +282,14 @@ export function EditProfilePage() {
                   </div>
                   <h2 className="text-xl font-black text-airbnb-dark tracking-tight">Liên kết xã hội</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">LinkedIn</label>
                     <div className="relative group">
                       <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-linkedin transition-colors" size={18} />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={user.socialLinks?.linkedin || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, linkedin: e.target.value })}
                         placeholder="linkedin.com/in/username"
@@ -299,8 +301,8 @@ export function EditProfilePage() {
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">GitHub</label>
                     <div className="relative group">
                       <Github className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-black transition-colors" size={18} />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={user.socialLinks?.github || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, github: e.target.value })}
                         placeholder="github.com/username"
@@ -312,8 +314,8 @@ export function EditProfilePage() {
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Website cá nhân</label>
                     <div className="relative group">
                       <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={18} />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={user.socialLinks?.website || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, website: e.target.value })}
                         placeholder="yourwebsite.com"

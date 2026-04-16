@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Search, UserPlus, Mail, MessageSquare, MoreHorizontal, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -48,7 +49,7 @@ export const MentorMentees = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-                        <img src={`https://i.pravatar.cc/100?u=${mentee.id}`} alt={mentee.name} className="w-full h-full object-cover" />
+                        <Image src={`https://i.pravatar.cc/100?u=${mentee.id}`} alt={mentee.name} className="w-full h-full object-cover" width={40} height={40} unoptimized />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-dark">{mentee.name}</p>

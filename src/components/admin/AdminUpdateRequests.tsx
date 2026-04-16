@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Product } from '../../types';
 
@@ -28,7 +29,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
             <tr key={req.id} className="hover:bg-gray-50 transition-colors">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
-                  <img src={req.image} className="w-10 h-10 rounded-lg object-cover" alt={req.name} />
+                  <Image src={req.image} className="w-10 h-10 rounded-lg object-cover" alt={req.name} width={40} height={40} unoptimized />
                   <p className="text-sm font-bold text-airbnb-dark">{req.name}</p>
                 </div>
               </td>
@@ -44,7 +45,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
               </td>
               <td className="px-6 py-4 text-right">
                 <div className="flex justify-end gap-2">
-                  <button 
+                  <button
                     onClick={() => onApprove(req.id)}
                     className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                   >
@@ -65,7 +66,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
         {requests.map(req => (
           <div key={req.id} className="p-4 space-y-4">
             <div className="flex items-center gap-3">
-              <img src={req.image} className="w-12 h-12 rounded-xl object-cover" alt={req.name} />
+              <Image src={req.image} className="w-12 h-12 rounded-xl object-cover" alt={req.name} width={48} height={48} unoptimized />
               <p className="text-sm font-bold text-airbnb-dark">{req.name}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-xl space-y-2">
@@ -78,7 +79,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
               )}
             </div>
             <div className="flex justify-end gap-2">
-              <button 
+              <button
                 onClick={() => onApprove(req.id)}
                 className="px-4 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-bold flex items-center gap-2"
               >

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
 import type { User as UserType, Product } from '@/types';
@@ -60,7 +61,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
           {userProducts.length > 0 ? (
             userProducts.slice(0, 3).map(p => (
               <Link key={p.id} href={`/product/${p.id}`} className="flex gap-3 group">
-                <img src={p.image} className="w-12 h-12 rounded object-cover" alt={p.name} referrerPolicy="no-referrer" />
+                <Image src={p.image} className="w-12 h-12 rounded object-cover" alt={p.name} width={48} height={48} unoptimized />
                 <div className="flex-1 overflow-hidden">
                   <p className="text-xs font-bold text-airbnb-dark truncate group-hover:text-airbnb-red transition-colors">{p.name}</p>
                   <p className="text-[10px] text-airbnb-gray mt-1">{p.price.toLocaleString()}đ</p>

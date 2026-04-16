@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { ThumbsUp } from 'lucide-react';
 import { User as UserType } from '../../types';
 
@@ -22,7 +23,7 @@ export const ProfileRecommendations = ({ user, isOwnProfile }: ProfileRecommenda
         {user.recommendations && user.recommendations.length > 0 ? (
           user.recommendations.map((rec) => (
             <div key={rec.id} className="flex gap-4 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
-              <img src={rec.avatar} className="w-12 h-12 rounded-full object-cover flex-shrink-0" alt={rec.user} referrerPolicy="no-referrer" />
+              <Image src={rec.avatar} className="w-12 h-12 rounded-full object-cover flex-shrink-0" alt={rec.user} width={48} height={48} unoptimized />
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-airbnb-dark">{rec.user}</h4>
