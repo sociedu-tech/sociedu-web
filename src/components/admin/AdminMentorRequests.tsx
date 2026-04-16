@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { User } from '../../types';
 
@@ -29,7 +30,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
             <tr key={req.id} className="hover:bg-gray-50 transition-colors">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
-                  <img src={req.avatar} className="w-10 h-10 rounded-full object-cover" alt={req.name} />
+                  <Image src={req.avatar} className="w-10 h-10 rounded-full object-cover" alt={req.name} width={40} height={40} unoptimized />
                   <div>
                     <p className="text-sm font-bold text-airbnb-dark">{req.name}</p>
                     <p className="text-xs text-airbnb-gray">{req.email}</p>
@@ -64,7 +65,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
         {requests.map(req => (
           <div key={req.id} className="p-4 space-y-4">
             <div className="flex items-center gap-3">
-              <img src={req.avatar} className="w-12 h-12 rounded-full object-cover" alt={req.name} />
+              <Image src={req.avatar} className="w-12 h-12 rounded-full object-cover" alt={req.name} width={48} height={48} unoptimized />
               <div>
                 <p className="text-sm font-bold text-airbnb-dark">{req.name}</p>
                 <p className="text-xs text-airbnb-gray">{req.email}</p>

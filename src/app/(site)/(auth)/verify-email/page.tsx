@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import { VerifyEmailPage } from '@/views/auth/VerifyEmailPage';
 
 export default function VerifyEmailRoute() {
-  return <VerifyEmailPage />;
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailPage />
+    </Suspense>
+  );
 }

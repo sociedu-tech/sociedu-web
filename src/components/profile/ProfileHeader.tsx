@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Camera, CheckCircle2, MapPin, Info, Calendar, Linkedin, Github, Globe } from 'lucide-react';
 import type { User as UserType } from '@/types';
@@ -15,12 +16,14 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
       <div className="p-6 sm:p-10">
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center md:items-start text-center md:text-left">
           <div className="relative group">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
-              <img 
+              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
+              <Image 
                 src={user.avatar} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                 alt={user.name}
-                referrerPolicy="no-referrer"
+                width={160}
+                height={160}
+                unoptimized
               />
             </div>
             {isOwnProfile && (

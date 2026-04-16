@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { User, Menu, X, LogOut } from 'lucide-react';
@@ -138,7 +139,7 @@ export const Navbar = () => {
               >
                 <div className="w-8 h-8 rounded-full bg-teal-light flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm overflow-hidden">
                   {user?.avatarUrl ? (
-                    <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    <Image src={user.avatarUrl} alt={user.fullName || 'avatar'} className="w-full h-full object-cover" width={32} height={32} unoptimized />
                   ) : (
                     <User className="w-4 h-4" aria-hidden />
                   )}

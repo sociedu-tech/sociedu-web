@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -72,7 +73,7 @@ export const MentorSidebar = ({ activeTab, onTabChange, user }: MentorSidebarPro
         <div className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
           <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
              {user?.avatar ? (
-                <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                <Image src={user.avatar} alt="Avatar" className="w-full h-full object-cover" width={40} height={40} unoptimized />
              ) : (
                 <User size={20} className="text-gray-500" />
              )}

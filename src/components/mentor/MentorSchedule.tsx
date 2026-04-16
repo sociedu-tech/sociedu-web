@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Calendar as CalendarIcon, Clock, Video, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -30,9 +31,9 @@ export const MentorSchedule = () => {
         {/* Calendar Grid */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
           <div className="flex justify-between items-center mb-6">
-             <h3 className="text-base font-semibold text-dark flex items-center gap-2">
-                <CalendarIcon size={18} className="text-gray-400" /> Lịch tháng
-             </h3>
+            <h3 className="text-base font-semibold text-dark flex items-center gap-2">
+              <CalendarIcon size={18} className="text-gray-400" /> Lịch tháng
+            </h3>
           </div>
           <div className="grid grid-cols-7 gap-2">
             {days.map(day => (
@@ -44,7 +45,7 @@ export const MentorSchedule = () => {
               const day = i + 1;
               const isToday = day === 15; // Set 15 as an arbitrary today for view
               const hasSession = [1, 2, 15, 18, 25].includes(day);
-              
+
               return (
                 <div key={i} className={cn(
                   "aspect-square rounded-xl flex flex-col items-center justify-center relative border transition-all cursor-pointer m-1",
@@ -64,14 +65,14 @@ export const MentorSchedule = () => {
             <h3 className="font-semibold text-dark text-base">Buổi học sắp tới</h3>
             <span className="px-2.5 py-1 bg-orange-50 text-orange-600 rounded-md text-xs font-bold">3 buổi</span>
           </div>
-          
+
           <div className="space-y-3">
             {sessions.map(session => (
               <div key={session.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm hover:border-primary/30 transition-colors group">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gray-100 rounded-full border border-gray-200 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?u=${session.mentee}`} alt={session.mentee} className="w-full h-full object-cover" />
+                      <Image src={`https://i.pravatar.cc/100?u=${session.mentee}`} alt={session.mentee} className="w-full h-full object-cover" width={40} height={40} unoptimized />
                     </div>
                     <div>
                       <h4 className="font-medium text-dark text-sm">{session.mentee}</h4>
@@ -82,7 +83,7 @@ export const MentorSchedule = () => {
                     <Video size={16} />
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
                     <Clock size={14} className="text-gray-400" />

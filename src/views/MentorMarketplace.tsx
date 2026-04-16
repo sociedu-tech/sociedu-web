@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { 
-  Star, Search, Filter, CheckCircle2, MessageSquare, 
+import Image from 'next/image';
+import {
+  Star, Search, Filter, CheckCircle2, MessageSquare,
   Calendar, GraduationCap, Award, ArrowRight, User as UserIcon, X
 } from 'lucide-react';
 import type { User } from '@/types';
@@ -38,7 +39,7 @@ export const MentorMarketplace = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const filteredMentors = mentors.filter(m => 
+  const filteredMentors = mentors.filter(m =>
     m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.mentorInfo?.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.mentorInfo?.expertise.some(e => e.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -85,7 +86,7 @@ export const MentorMarketplace = () => {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={() => setShowMobileFilters(false)}
           className="w-full py-3 bg-airbnb-dark text-white rounded-xl font-bold text-sm hover:bg-black transition-colors"
         >
@@ -112,11 +113,11 @@ export const MentorMarketplace = () => {
             <p className="text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
               Nhận tư vấn 1-1 từ các sinh viên xuất sắc và chuyên gia trong ngành để bứt phá trong học tập và sự nghiệp.
             </p>
-            
+
             <div className="relative max-w-xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Tìm theo tên, chuyên môn hoặc kỹ năng..."
                 className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-airbnb-red transition-all"
                 value={searchTerm}
@@ -130,7 +131,7 @@ export const MentorMarketplace = () => {
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
         {/* Mobile Filter Button */}
         <div className="lg:hidden mb-6">
-          <button 
+          <button
             onClick={() => setShowMobileFilters(true)}
             className="w-full flex items-center justify-center gap-2 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-airbnb-dark shadow-xl"
           >
@@ -143,14 +144,14 @@ export const MentorMarketplace = () => {
         <AnimatePresence>
           {showMobileFilters && (
             <>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowMobileFilters(false)}
                 className="fixed inset-0 bg-black/50 z-[200] lg:hidden"
               />
-              <motion.div 
+              <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
@@ -188,10 +189,13 @@ export const MentorMarketplace = () => {
                   className="bg-white border border-gray-100 rounded-[2rem] p-6 hover:shadow-2xl transition-all group"
                 >
                   <div className="flex gap-4 mb-6">
-                    <img 
-                      src={mentor.avatar} 
-                      alt={mentor.name} 
+                    <Image
+                      src={mentor.avatar}
+                      alt={mentor.name}
                       className="w-20 h-20 rounded-2xl object-cover"
+                      width={80}
+                      height={80}
+                      unoptimized
                       referrerPolicy="no-referrer"
                     />
                     <div className="flex-1">
