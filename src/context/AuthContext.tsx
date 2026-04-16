@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '@/services/authService';
+import { authService, setRefreshToken, type AuthPayload } from '@/services/authService';
+import { userService } from '@/services/userService';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
 
 export interface AuthUser {
@@ -11,6 +12,12 @@ export interface AuthUser {
   fullName: string;
 }
 
+type ProfilePayload = {
+  userId?: string | number;
+  firstName?: string;
+  lastName?: string;
+};
+
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
@@ -18,51 +25,120 @@ interface AuthContextType {
   loading: boolean;
   token: string | null;
   login: (credentials: unknown) => Promise<void>;
+  applyAuthPayload: (payload: AuthPayload | undefined) => Promise<void>;
+  reloadSession: () => Promise<void>;
   logout: () => void;
   setUser: (user: AuthUser | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const AUTH_META_KEY = 'authMeta';
+
+type AuthMeta = {
+  userId?: string | number;
+  email?: string;
+  roles?: string[];
+};
+
+const saveAuthMeta = (payload: AuthPayload) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(
+    AUTH_META_KEY,
+    JSON.stringify({
+      userId: payload.userId,
+      email: payload.email,
+      roles: payload.roles ?? [],
+    } satisfies AuthMeta),
+  );
+};
+
+const getAuthMeta = (): AuthMeta => {
+  if (typeof window === 'undefined') return {};
+  const raw = localStorage.getItem(AUTH_META_KEY);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw) as AuthMeta;
+  } catch {
+    return {};
+  }
+};
+
+const clearAuthStorage = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(AUTH_META_KEY);
+    localStorage.removeItem('user');
+  }
+  removeAuthToken();
+  setRefreshToken(null);
+};
+
+const normalizeFullName = (profile?: ProfilePayload): string => {
+  const firstName = profile?.firstName?.trim() ?? '';
+  const lastName = profile?.lastName?.trim() ?? '';
+  return [lastName, firstName].filter(Boolean).join(' ').trim();
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
+  const hydrateCurrentUser = async () => {
     const savedToken = getAuthToken();
-
-    if (savedUser && savedToken) {
-      try {
-        setUser(JSON.parse(savedUser) as AuthUser);
-        setToken(savedToken);
-      } catch {
-        localStorage.removeItem('user');
-        removeAuthToken();
-      }
+    if (!savedToken) {
+      setUser(null);
+      setToken(null);
+      return;
     }
 
-    setLoading(false);
+    const profile = (await userService.getMe()) as ProfilePayload;
+    const meta = getAuthMeta();
+    const resolvedId = profile.userId ?? meta.userId ?? '';
+    setUser({
+      id: resolvedId,
+      email: meta.email ?? '',
+      roles: meta.roles ?? [],
+      fullName: normalizeFullName(profile),
+    });
+    setToken(savedToken);
+  };
+
+  const reloadSession = async () => {
+    setLoading(true);
+    try {
+      await hydrateCurrentUser();
+    } catch {
+      clearAuthStorage();
+      setUser(null);
+      setToken(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void reloadSession();
   }, []);
 
   const login = async (credentials: unknown) => {
     const data = await authService.login(credentials);
-    const userData: AuthUser = {
-      id: data.userId ?? '',
-      email: data.email || '',
-      roles: data.roles || [],
-      fullName: data.fullName || '',
-    };
+    await applyAuthPayload(data);
+  };
 
-    setUser(userData);
-    setToken(getAuthToken());
+  const applyAuthPayload = async (payload: AuthPayload | undefined) => {
+    if (!payload) {
+      return;
+    }
+    saveAuthMeta(payload);
+    await reloadSession();
   };
 
   const logout = () => {
     void authService.logout();
     setUser(null);
     setToken(null);
+    clearAuthStorage();
   };
 
   const userRole = user?.roles?.[0]?.toLowerCase() || 'guest';
@@ -75,6 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       token,
       login,
+      applyAuthPayload,
+      reloadSession,
       logout,
       setUser,
     }}>

@@ -22,10 +22,61 @@ export const API_BASE_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_BASE_URL) ||
   'http://localhost:9999';
 
-type ApiEnvelope<T = unknown> = {
+export type ApiEnvelope<T = unknown> = {
   code?: number;
+  isSuccess?: boolean;
   message?: string;
   data?: T;
+  errors?: {
+    type?: string;
+    fields?: Record<string, string>;
+    details?: string;
+  };
+};
+
+export class ApiClientError extends Error {
+  status: number;
+  code?: number;
+  errorType?: string;
+  fieldErrors?: Record<string, string>;
+  details?: string;
+
+  constructor(
+    message: string,
+    options: {
+      status: number;
+      code?: number;
+      errorType?: string;
+      fieldErrors?: Record<string, string>;
+      details?: string;
+    },
+  ) {
+    super(message);
+    this.name = 'ApiClientError';
+    this.status = options.status;
+    this.code = options.code;
+    this.errorType = options.errorType;
+    this.fieldErrors = options.fieldErrors;
+    this.details = options.details;
+  }
+}
+
+export const isApiClientError = (error: unknown): error is ApiClientError =>
+  error instanceof ApiClientError;
+
+const DEFAULT_ERROR_MESSAGE = 'Có lỗi xảy ra, vui lòng thử lại.';
+
+const parseApiEnvelope = async (response: Response): Promise<ApiEnvelope> => {
+  const rawText = await response.text();
+  if (!rawText) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawText) as ApiEnvelope;
+  } catch {
+    return { message: rawText };
+  }
 };
 
 const request = async (url: string, options: RequestInit = {}) => {
@@ -42,11 +93,16 @@ const request = async (url: string, options: RequestInit = {}) => {
 
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
   const response = await fetch(fullUrl, { ...options, headers });
-
-  const result: ApiEnvelope = await response.json();
+  const result = await parseApiEnvelope(response);
 
   if (!response.ok) {
-    throw new Error(result.message || 'Có lỗi xác ra, vui lòng thử lại.');
+    throw new ApiClientError(result.message || DEFAULT_ERROR_MESSAGE, {
+      status: response.status,
+      code: result.code,
+      errorType: result.errors?.type,
+      fieldErrors: result.errors?.fields,
+      details: result.errors?.details,
+    });
   }
 
   return result;
@@ -72,9 +128,15 @@ export async function postMultipart(url: string, formData: FormData) {
   }
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
   const response = await fetch(fullUrl, { method: 'POST', body: formData, headers });
-  const result: ApiEnvelope = await response.json();
+  const result = await parseApiEnvelope(response);
   if (!response.ok) {
-    throw new Error(result.message || 'Upload thất bại.');
+    throw new ApiClientError(result.message || 'Upload thất bại.', {
+      status: response.status,
+      code: result.code,
+      errorType: result.errors?.type,
+      fieldErrors: result.errors?.fields,
+      details: result.errors?.details,
+    });
   }
   return result;
 }

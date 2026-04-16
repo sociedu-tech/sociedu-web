@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
+import { isApiClientError } from '@/lib/api';
 import {
   ShoppingBag,
   Mail,
@@ -19,6 +20,9 @@ import { useAuth } from '@/context/AuthContext';
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
   const router = useRouter();
   const { login, isAuthenticated } = useAuth();
 
@@ -40,6 +44,8 @@ export function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setUnverifiedEmail(null);
+    setResendMessage(null);
 
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const email = formData.get('email') as string;
@@ -50,10 +56,28 @@ export function LoginPage() {
       const params = new URLSearchParams(window.location.search);
       const from = params.get('from') || '/';
       router.push(from);
-    } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.");
+    } catch (err: unknown) {
+      if (isApiClientError(err) && err.errorType === 'EMAIL_NOT_VERIFIED') {
+        setUnverifiedEmail(email);
+      }
+      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail) return;
+    setResendLoading(true);
+    setError(null);
+    setResendMessage(null);
+    try {
+      const message = await authService.resendVerification(unverifiedEmail);
+      setResendMessage(message || 'Đã gửi lại email xác minh. Vui lòng kiểm tra hộp thư.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Không thể gửi lại email xác minh.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -151,8 +175,21 @@ export function LoginPage() {
             </div>
 
             {error && (
-              <div className="p-4 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 text-red-600 text-sm font-bold">
-                <AlertCircle size={18} /> {error}
+              <div className="p-4 bg-red-50 rounded-xl border border-red-100 text-red-600 text-sm">
+                <div className="flex items-center gap-3 font-bold">
+                  <AlertCircle size={18} /> {error}
+                </div>
+                {unverifiedEmail && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    className="mt-3 px-3 py-2 rounded-lg border border-red-200 text-red-700 font-semibold hover:bg-red-100 disabled:opacity-60"
+                  >
+                    {resendLoading ? 'Đang gửi lại email xác minh...' : 'Gửi lại email xác minh'}
+                  </button>
+                )}
+                {resendMessage && <p className="mt-2 font-medium text-green-700">{resendMessage}</p>}
               </div>
             )}
 

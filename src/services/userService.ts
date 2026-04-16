@@ -1,18 +1,12 @@
 import { api } from '@/lib/api';
-import { DEFAULT_GUEST_USER } from '@/mocks/defaultData';
 
 const BASE_URL = '/api/v1/users/me';
 
 export const userService = {
   // Profile
   getMe: async () => {
-    try {
-      const res = await api.get(`${BASE_URL}/profile`);
-      return res.data;
-    } catch (error) {
-      console.error('Failed to fetch my profile, using guest default:', error);
-      return DEFAULT_GUEST_USER;
-    }
+    const res = await api.get(`${BASE_URL}/profile`);
+    return res.data;
   },
   getUserProfile: async (id: string) => {
     try {

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/authService';
+import { isApiClientError } from '@/lib/api';
 import {
   ShoppingBag,
   Mail,
@@ -21,6 +22,10 @@ export function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
@@ -42,25 +47,49 @@ export function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setFieldErrors({});
+    setResendMessage(null);
 
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const fullName = formData.get('fullName') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const trimmedName = fullName.trim();
+    const nameParts = trimmedName.split(/\s+/);
+    const firstName = nameParts.pop() ?? '';
+    const lastName = nameParts.join(' ') || firstName;
 
     try {
       await authService.register({
         email,
         password,
-        fullName,
-        role: "BUYER"
+        firstName,
+        lastName,
       });
       setSuccess(true);
-      setTimeout(() => router.push('/login'), 2000);
-    } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.");
+      setRegisteredEmail(email);
+    } catch (err: unknown) {
+      if (isApiClientError(err) && err.errorType === 'VALIDATION_ERROR' && err.fieldErrors) {
+        setFieldErrors(err.fieldErrors);
+      }
+      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!registeredEmail) return;
+    setResendLoading(true);
+    setResendMessage(null);
+    setError(null);
+    try {
+      const message = await authService.resendVerification(registeredEmail);
+      setResendMessage(message || 'Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Không thể gửi lại email xác minh.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -138,6 +167,12 @@ export function RegisterPage() {
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
                 />
               </div>
+              {fieldErrors.firstName && (
+                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.firstName}</p>
+              )}
+              {fieldErrors.lastName && (
+                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.lastName}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -152,6 +187,9 @@ export function RegisterPage() {
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -166,6 +204,9 @@ export function RegisterPage() {
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
                 />
               </div>
+              {fieldErrors.password && (
+                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.password}</p>
+              )}
             </div>
 
             {error && (
@@ -175,8 +216,28 @@ export function RegisterPage() {
             )}
 
             {success && (
-              <div className="p-4 bg-green-50 rounded-xl border border-green-100 flex items-center gap-3 text-green-600 text-sm font-bold">
-                <CheckCircle2 size={18} /> Đăng ký thành công! Đang chuyển hướng...
+              <div className="p-4 bg-green-50 rounded-xl border border-green-100 text-green-700 text-sm">
+                <div className="flex items-center gap-3 font-bold">
+                  <CheckCircle2 size={18} /> Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản.
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={resendLoading}
+                    onClick={handleResendVerification}
+                    className="px-4 py-2 rounded-lg border border-green-300 text-green-700 font-semibold hover:bg-green-100 disabled:opacity-60"
+                  >
+                    {resendLoading ? 'Đang gửi...' : 'Gửi lại email xác minh'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/login')}
+                    className="px-4 py-2 rounded-lg border border-green-300 text-green-700 font-semibold hover:bg-green-100"
+                  >
+                    Đi tới đăng nhập
+                  </button>
+                </div>
+                {resendMessage && <p className="mt-2 text-green-700 font-medium">{resendMessage}</p>}
               </div>
             )}
 
