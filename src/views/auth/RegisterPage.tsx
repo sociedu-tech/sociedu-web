@@ -94,13 +94,13 @@ export function RegisterPage() {
   };
 
   const inputFocusClass =
-    'w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium transition-all';
+    'w-full pl-12 pr-4 py-3 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium text-sm transition-all';
 
   return (
     <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[8px] shadow-glass overflow-hidden border border-border">
 
-        <div className="hidden lg:flex flex-col justify-between p-12 bg-dark text-white relative overflow-hidden">
+        <div className="hidden lg:flex flex-col justify-between p-10 bg-dark text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-20">
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary rounded-full blur-[120px]" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-teal-400/40 rounded-full blur-[120px]" />
@@ -118,7 +118,7 @@ export function RegisterPage() {
               Bắt đầu hành trình <br />
               <span className="text-primary">cùng mentor.</span>
             </h1>
-            <p className="text-gray-300 text-lg font-medium max-w-md">
+            <p className="text-gray-300 text-base font-medium max-w-md">
               Tạo tài khoản để tìm mentor, đặt lịch và theo dõi tiến độ học tập — an toàn và minh bạch.
             </p>
           </div>
@@ -145,9 +145,9 @@ export function RegisterPage() {
           </div>
         </div>
 
-        <div className="p-8 lg:p-16 flex flex-col justify-center">
-          <div className="mb-10">
-            <h2 className="text-4xl md:text-[56px] font-semibold leading-[1.04] text-dark tracking-tight mb-2">
+        <div className="p-6 lg:p-10 flex flex-col justify-center">
+          <div className="mb-7">
+            <h2 className="text-3xl md:text-4xl font-semibold leading-[1.1] text-dark tracking-tight mb-2">
               Tạo tài khoản mới
             </h2>
             <p className="text-gray font-medium">
@@ -155,13 +155,13 @@ export function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="register-fullName" className="text-[12.8px] font-semibold text-gray uppercase tracking-[1px] ml-1">
+              <label htmlFor="register-fullName" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
                 Họ và tên
               </label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={20} aria-hidden />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
                 <input
                   id="register-fullName"
                   type="text"
@@ -181,11 +181,11 @@ export function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="register-email" className="text-[12.8px] font-semibold text-gray uppercase tracking-[1px] ml-1">
+              <label htmlFor="register-email" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
                 Email
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={20} aria-hidden />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
                 <input
                   id="register-email"
                   type="email"
@@ -202,11 +202,11 @@ export function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="register-password" className="text-[12.8px] font-semibold text-gray uppercase tracking-[1px] ml-1">
+              <label htmlFor="register-password" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
                 Mật khẩu
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={20} aria-hidden />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
                 <input
                   id="register-password"
                   type="password"
@@ -266,7 +266,7 @@ export function RegisterPage() {
             </button>
           </form>
 
-          <p className="mt-10 text-center text-gray font-medium">
+          <p className="mt-7 text-center text-gray font-medium">
             Đã có tài khoản?
             <Link
               href="/login"

@@ -94,7 +94,7 @@ export function UserProfilePage() {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={cn(
-                      "px-6 py-4 text-sm font-bold transition-all border-b-2",
+                      "px-5 py-3 text-sm font-bold transition-all border-b-2",
                       activeTab === tab ? "border-blue-600 text-blue-600" : "border-transparent text-airbnb-gray hover:text-airbnb-dark"
                     )}
                   >
@@ -103,7 +103,7 @@ export function UserProfilePage() {
                 ))}
               </div>
 
-              <div className="p-6">
+              <div className="p-5">
                 <AnimatePresence mode="wait">
                   {activeTab === 'about' && <ProfileAboutTab user={user} />}
                   {activeTab === 'experience' && <ProfileExperienceTab user={user} />}
@@ -124,12 +124,12 @@ export function UserProfilePage() {
 
               {/* Actions */}
               <div className="space-y-2">
-                <button className="w-full py-3 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-dark transition-colors bg-white border border-gray-200 rounded-xl shadow-sm">
+                <button className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-dark transition-colors bg-white border border-gray-200 rounded-xl shadow-sm">
                   <Share2 size={16} /> Chia sẻ hồ sơ
                 </button>
                 <button
                   onClick={() => setIsReportModalOpen(true)}
-                  className="w-full py-3 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-red transition-colors bg-white border border-gray-200 rounded-xl shadow-sm"
+                  className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-red transition-colors bg-white border border-gray-200 rounded-xl shadow-sm"
                 >
                   <AlertTriangle size={16} /> Báo cáo vi phạm
                 </button>

@@ -138,7 +138,7 @@ export const UserReportsPage = () => {
                     {report.status !== 'PENDING' && report.mentorFeedback && (
                       <div className="md:w-1/3 bg-blue-50/50 border border-blue-100 rounded-xl p-4 mt-4 md:mt-0 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
-                        <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <div className="text-xs font-bold text-blue-600 tracking-wider mb-2 flex items-center gap-1.5">
                           <MessageSquare size={14} /> Feedback
                         </div>
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{report.mentorFeedback}</p>
@@ -182,7 +182,7 @@ export const UserReportsPage = () => {
                <form onSubmit={handleSubmit} className="p-6 space-y-4">
                  
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500 uppercase">ID Mentor (*)</label>
+                   <label className="text-xs font-bold text-gray-500">ID Mentor (*)</label>
                    <input 
                      type="number" 
                      value={mentorId}
@@ -193,7 +193,7 @@ export const UserReportsPage = () => {
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500 uppercase">Tiêu đề báo cáo (*)</label>
+                   <label className="text-xs font-bold text-gray-500">Tiêu đề báo cáo (*)</label>
                    <input 
                      type="text" 
                      value={title}
@@ -204,7 +204,7 @@ export const UserReportsPage = () => {
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500 uppercase">Nội dung / Tiến độ (*)</label>
+                   <label className="text-xs font-bold text-gray-500">Nội dung / Tiến độ (*)</label>
                    <textarea 
                      value={content}
                      onChange={(e) => setContent(e.target.value)}
@@ -215,7 +215,7 @@ export const UserReportsPage = () => {
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500 uppercase">Link đính kèm (Tùy chọn)</label>
+                   <label className="text-xs font-bold text-gray-500">Link đính kèm (Tùy chọn)</label>
                    <input 
                      type="text" 
                      value={attachmentUrl}

@@ -36,7 +36,7 @@ export const MentorRevenue = () => {
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
               <Wallet size={20} />
             </div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary-50 opacity-90 mb-1">Số dư hiện tại</p>
+            <p className="text-xs font-semibold tracking-wider text-primary-50 opacity-90 mb-1">Số dư hiện tại</p>
             <h3 className="text-2xl font-bold">2.450.000đ</h3>
             <button className="mt-5 w-full py-2 bg-white text-primary rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors shadow-sm">
               Rút tiền ngay
@@ -49,7 +49,7 @@ export const MentorRevenue = () => {
             <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mb-4">
               <TrendingUp size={20} />
             </div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Tổng thu nhập</p>
+            <p className="text-xs font-semibold tracking-wider text-gray-500 mb-1">Tổng thu nhập</p>
             <h3 className="text-2xl font-bold text-dark">15.800.000đ</h3>
           </div>
           <p className="text-xs font-medium text-green-600 mt-4 flex items-center gap-1">
@@ -62,7 +62,7 @@ export const MentorRevenue = () => {
             <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
                <CreditCard size={20} />
             </div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Tháng này</p>
+            <p className="text-xs font-semibold tracking-wider text-gray-500 mb-1">Tháng này</p>
             <h3 className="text-2xl font-bold text-dark">4.200.000đ</h3>
           </div>
           <p className="text-xs font-medium text-blue-600 mt-4 flex items-center gap-1">
@@ -75,7 +75,7 @@ export const MentorRevenue = () => {
             <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-4">
                <History size={20} />
             </div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Chờ xử lý</p>
+            <p className="text-xs font-semibold tracking-wider text-gray-500 mb-1">Chờ xử lý</p>
             <h3 className="text-2xl font-bold text-dark">850.000đ</h3>
           </div>
           <p className="text-xs font-medium text-gray-500 mt-4">

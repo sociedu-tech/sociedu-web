@@ -56,7 +56,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                 </p>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-airbnb-gray mb-2">Lý do báo cáo</label>
+                  <label className="block text-xs font-bold tracking-widest text-airbnb-gray mb-2">Lý do báo cáo</label>
                   <select 
                     required
                     className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-airbnb-red/20 outline-none transition-all"
@@ -73,7 +73,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-airbnb-gray mb-2">Mô tả chi tiết</label>
+                  <label className="block text-xs font-bold tracking-widest text-airbnb-gray mb-2">Mô tả chi tiết</label>
                   <textarea 
                     required
                     rows={4}

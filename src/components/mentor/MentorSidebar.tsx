@@ -46,7 +46,7 @@ export const MentorSidebar = ({ activeTab, onTabChange, user }: MentorSidebarPro
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto no-scrollbar">
-        <div className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+        <div className="px-3 text-[10px] font-semibold text-gray-400 tracking-wider mb-1.5">
           Quản lý
         </div>
         {menuItems.map((item) => (

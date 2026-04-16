@@ -20,7 +20,7 @@ export const ProfileProjects = ({ user }: ProfileProjectsProps) => {
                 <h3 className="font-bold text-airbnb-dark">{project.title}</h3>
                 <span className="text-xs font-bold text-airbnb-red">{project.year}</span>
               </div>
-              <p className="text-xs font-bold text-airbnb-gray uppercase tracking-tighter mb-2">{project.role}</p>
+              <p className="text-xs font-bold text-airbnb-gray tracking-tighter mb-2">{project.role}</p>
               <p className="text-sm text-airbnb-gray leading-relaxed">{project.description}</p>
             </div>
           ))

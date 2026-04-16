@@ -18,7 +18,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
       {/* Desktop Table */}
       <table className="w-full text-left hidden md:table">
         <thead>
-          <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-airbnb-gray font-bold">
+          <tr className="bg-gray-50 text-[10px] tracking-widest text-airbnb-gray font-bold">
             <th className="px-6 py-4">Tài liệu</th>
             <th className="px-6 py-4">Thay đổi</th>
             <th className="px-6 py-4 text-right">Thao tác</th>
@@ -70,7 +70,7 @@ export const AdminUpdateRequests = ({ requests, onApprove }: AdminUpdateRequests
               <p className="text-sm font-bold text-airbnb-dark">{req.name}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-xl space-y-2">
-              <p className="text-xs font-bold text-airbnb-gray uppercase tracking-widest">Thay đổi</p>
+              <p className="text-xs font-bold text-airbnb-gray tracking-widest">Thay đổi</p>
               {req.updateRequest?.price && (
                 <p className="text-xs text-airbnb-gray">Giá: <span className="line-through">{req.price}</span> → <span className="text-green-600 font-bold">{req.updateRequest.price}</span></p>
               )}

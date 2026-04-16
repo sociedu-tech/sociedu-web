@@ -82,13 +82,13 @@ export function LoginPage() {
   };
 
   const inputFocusClass =
-    'w-full pl-12 pr-4 py-4 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium transition-all';
+    'w-full pl-12 pr-4 py-3 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium text-sm transition-all';
 
   return (
     <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[8px] shadow-glass overflow-hidden border border-border">
 
-        <div className="hidden lg:flex flex-col justify-between p-12 bg-dark text-white relative overflow-hidden">
+        <div className="hidden lg:flex flex-col justify-between p-10 bg-dark text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-20">
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary rounded-full blur-[120px]" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-teal-400/40 rounded-full blur-[120px]" />
@@ -106,7 +106,7 @@ export function LoginPage() {
               Đồng hành cùng <br />
               <span className="text-primary">chuyên gia của bạn.</span>
             </h1>
-            <p className="text-gray-300 text-lg font-medium max-w-md">
+            <p className="text-gray-300 text-base font-medium max-w-md">
               Kết nối với mentor đã trải nghiệm thực tế, đặt lịch tư vấn và xây lộ trình phù hợp mục tiêu nghề nghiệp của bạn.
             </p>
           </div>
@@ -133,9 +133,9 @@ export function LoginPage() {
           </div>
         </div>
 
-        <div className="p-8 lg:p-16 flex flex-col justify-center">
-          <div className="mb-10">
-            <h2 className="text-4xl md:text-[56px] font-semibold leading-[1.04] text-dark tracking-tight mb-2">
+        <div className="p-6 lg:p-10 flex flex-col justify-center">
+          <div className="mb-7">
+            <h2 className="text-3xl md:text-4xl font-semibold leading-[1.1] text-dark tracking-tight mb-2">
               Chào mừng trở lại!
             </h2>
             <p className="text-gray font-medium">
@@ -143,13 +143,13 @@ export function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="login-email" className="text-[12.8px] font-semibold text-gray uppercase tracking-[1px] ml-1">
+              <label htmlFor="login-email" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
                 Email
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-primary transition-colors" size={20} aria-hidden />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
                 <input
                   id="login-email"
                   type="email"
@@ -164,7 +164,7 @@ export function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <label htmlFor="login-password" className="text-[12.8px] font-semibold text-gray uppercase tracking-[1px]">
+                <label htmlFor="login-password" className="text-[12.8px] font-semibold text-gray tracking-[1px]">
                   Mật khẩu
                 </label>
                 <button type="button" className="text-xs font-bold text-primary hover:underline">
@@ -172,7 +172,7 @@ export function LoginPage() {
                 </button>
               </div>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={20} aria-hidden />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
                 <input
                   id="login-password"
                   type="password"
@@ -216,7 +216,7 @@ export function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-10 text-center text-gray font-medium">
+          <p className="mt-7 text-center text-gray font-medium">
             Chưa có tài khoản?
             <Link
               href="/register"

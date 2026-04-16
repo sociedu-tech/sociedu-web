@@ -106,7 +106,7 @@ export function EditProfilePage() {
             >
               <ArrowLeft size={18} /> Quay lại
             </button>
-            <h1 className="text-3xl sm:text-4xl font-black text-airbnb-dark tracking-tighter">Thiết lập hồ sơ</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-airbnb-dark tracking-tighter">Thiết lập hồ sơ</h1>
             <p className="text-airbnb-gray font-medium text-sm sm:text-base">Cập nhật thông tin cá nhân và chuyên môn của bạn.</p>
           </div>
 
@@ -124,14 +124,14 @@ export function EditProfilePage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 xs:flex-none px-6 py-3 bg-white border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                className="flex-1 xs:flex-none px-5 py-2.5 bg-white border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
               >
                 Hủy bỏ
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving || saveSuccess}
-                className="flex-1 xs:flex-none px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-1 xs:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                 <span className="whitespace-nowrap">{saveSuccess ? 'Đang chuyển hướng...' : 'Lưu thay đổi'}</span>
@@ -143,10 +143,10 @@ export function EditProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Navigation/Status */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm">
+            <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative group">
-                  <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white shadow-xl">
+                  <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white shadow-xl">
                     <Image src={user.avatar} className="w-full h-full object-cover" alt={user.name} width={160} height={160} unoptimized />
                   </div>
                   <button className="absolute -bottom-2 -right-2 p-2.5 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 transition-all border-2 border-white">
@@ -161,7 +161,7 @@ export function EditProfilePage() {
 
               <div className="mt-8 pt-8 border-t border-gray-50 space-y-2">
                 <div className="flex items-center justify-between text-sm font-bold">
-                  <span className="text-airbnb-gray uppercase tracking-widest text-[10px]">Độ hoàn thiện hồ sơ</span>
+                  <span className="text-airbnb-gray tracking-widest text-[10px]">Độ hoàn thiện hồ sơ</span>
                   <span className="text-blue-600">85%</span>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -170,7 +170,7 @@ export function EditProfilePage() {
               </div>
             </div>
 
-            <div className="bg-airbnb-dark rounded-[32px] p-8 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-airbnb-dark rounded-[24px] p-6 text-white shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
               <h4 className="text-lg font-black tracking-tight mb-2 relative z-10">Mẹo nhỏ</h4>
               <p className="text-gray-400 text-sm font-medium leading-relaxed relative z-10">
@@ -183,7 +183,7 @@ export function EditProfilePage() {
           <div className="lg:col-span-8 space-y-8">
             <form onSubmit={handleSave} className="space-y-8">
               {/* Basic Info */}
-              <div className="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm space-y-8">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <UserIcon size={20} />
@@ -193,30 +193,30 @@ export function EditProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Họ và tên</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Họ và tên</label>
                     <input
                       type="text"
                       value={user.name}
                       onChange={(e) => updateField('name', e.target.value)}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Email</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Email</label>
                     <input
                       type="email"
                       value={user.email}
                       disabled
-                      className="w-full px-5 py-3.5 bg-gray-100 border-2 border-transparent rounded-2xl text-airbnb-gray cursor-not-allowed font-medium"
+                      className="w-full px-4 py-3 bg-gray-100 border-2 border-transparent rounded-2xl text-airbnb-gray cursor-not-allowed font-medium text-sm"
                     />
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Giới thiệu ngắn</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Giới thiệu ngắn</label>
                     <textarea
                       value={user.bio}
                       onChange={(e) => updateField('bio', e.target.value)}
                       rows={4}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all resize-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all resize-none"
                       placeholder="Chia sẻ một chút về bản thân bạn..."
                     />
                   </div>
@@ -224,7 +224,7 @@ export function EditProfilePage() {
               </div>
 
               {/* Education */}
-              <div className="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm space-y-8">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <GraduationCap size={20} />
@@ -234,48 +234,48 @@ export function EditProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Trường đại học</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Trường đại học</label>
                     <input
                       type="text"
                       value={user.university}
                       onChange={(e) => updateField('university', e.target.value)}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Chuyên ngành</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Chuyên ngành</label>
                     <input
                       type="text"
                       value={user.major}
                       onChange={(e) => updateField('major', e.target.value)}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Năm học</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Năm học</label>
                     <select
                       value={user.year}
                       onChange={(e) => updateField('year', parseInt(e.target.value))}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all appearance-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all appearance-none"
                     >
                       {[1, 2, 3, 4, 5].map(y => <option key={y} value={y}>Năm {y}</option>)}
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">GPA hiện tại</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">GPA hiện tại</label>
                     <input
                       type="number"
                       step="0.1"
                       value={user.gpa}
                       onChange={(e) => updateField('gpa', parseFloat(e.target.value))}
-                      className="w-full px-5 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Social Links */}
-              <div className="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm space-y-8">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <Globe size={20} />
@@ -285,7 +285,7 @@ export function EditProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">LinkedIn</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">LinkedIn</label>
                     <div className="relative group">
                       <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-linkedin transition-colors" size={18} />
                       <input
@@ -293,12 +293,12 @@ export function EditProfilePage() {
                         value={user.socialLinks?.linkedin || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, linkedin: e.target.value })}
                         placeholder="linkedin.com/in/username"
-                        className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">GitHub</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">GitHub</label>
                     <div className="relative group">
                       <Github className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-black transition-colors" size={18} />
                       <input
@@ -306,12 +306,12 @@ export function EditProfilePage() {
                         value={user.socialLinks?.github || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, github: e.target.value })}
                         placeholder="github.com/username"
-                        className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                       />
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-2">
-                    <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">Website cá nhân</label>
+                    <label className="text-[10px] font-bold text-airbnb-gray tracking-widest ml-1">Website cá nhân</label>
                     <div className="relative group">
                       <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-blue-600 transition-colors" size={18} />
                       <input
@@ -319,7 +319,7 @@ export function EditProfilePage() {
                         value={user.socialLinks?.website || ''}
                         onChange={(e) => updateField('socialLinks', { ...user.socialLinks, website: e.target.value })}
                         placeholder="yourwebsite.com"
-                        className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium transition-all"
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white outline-none font-medium text-sm transition-all"
                       />
                     </div>
                   </div>

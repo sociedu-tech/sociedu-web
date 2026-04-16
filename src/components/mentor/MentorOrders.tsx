@@ -50,9 +50,9 @@ export const MentorOrders = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{order.id}</span>
+                    <span className="text-xs font-semibold text-gray-500 tracking-wider">{order.id}</span>
                     {order.urgency === 'Cao' && (
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-red-600 uppercase bg-red-50 px-2 py-0.5 rounded-md">
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">
                         <AlertCircle size={10} /> Khẩn cấp
                       </span>
                     )}
