@@ -44,7 +44,12 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
                 )}
               </div>
               <p className="text-base sm:text-lg font-medium text-airbnb-dark/80 leading-tight">
-                {user.role === 'mentor' ? user.mentorInfo?.headline : (user.major ? `${user.major} @ ${user.university}` : 'Thành viên Mentoree')}
+                {user.mentorInfo?.headline?.trim() ||
+                  (user.major && user.university
+                    ? `${user.major} @ ${user.university}`
+                    : user.role === 'mentor'
+                      ? 'Mentor'
+                      : 'Thành viên Mentoree')}
               </p>
             </div>
 
