@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, setRefreshToken, type AuthPayload } from '@/services/authService';
 import { userService } from '@/services/userService';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
+import type { User } from '@/types';
 
 export interface AuthUser {
   id: string | number;
@@ -13,12 +14,6 @@ export interface AuthUser {
   /** Optional; set when profile API returns an avatar URL */
   avatarUrl?: string;
 }
-
-type ProfilePayload = {
-  userId?: string | number;
-  firstName?: string;
-  lastName?: string;
-};
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -75,12 +70,6 @@ const clearAuthStorage = () => {
   setRefreshToken(null);
 };
 
-const normalizeFullName = (profile?: ProfilePayload): string => {
-  const firstName = profile?.firstName?.trim() ?? '';
-  const lastName = profile?.lastName?.trim() ?? '';
-  return [lastName, firstName].filter(Boolean).join(' ').trim();
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,14 +83,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    const profile = (await userService.getMe()) as ProfilePayload;
+    const me = (await userService.getMe()) as User | null;
     const meta = getAuthMeta();
-    const resolvedId = profile.userId ?? meta.userId ?? '';
+    const resolvedId = me?.id ?? meta.userId ?? '';
     setUser({
       id: resolvedId,
       email: meta.email ?? '',
       roles: meta.roles ?? [],
-      fullName: normalizeFullName(profile),
+      fullName: me?.name?.trim() ?? '',
+      avatarUrl: me?.avatar,
     });
     setToken(savedToken);
   };
