@@ -28,10 +28,10 @@ export const useAdminData = () => {
       ]);
 
       setData({
-        users: [], // We'll skip full user list for now
-        mentorRequests,
-        productRequests,
-        updateRequests
+        users: [],
+        mentorRequests: mentorRequests as User[],
+        productRequests: productRequests as Product[],
+        updateRequests: updateRequests as Product[],
       });
     } catch (err: any) {
       setError(err.message || 'Không thể tải dữ liệu quản trị');

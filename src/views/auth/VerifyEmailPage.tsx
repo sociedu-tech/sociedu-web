@@ -39,32 +39,35 @@ export function VerifyEmailPage() {
   }, [applyAuthPayload, router, token]);
 
   return (
-    <main className="min-h-screen bg-[#F3F2EF] flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8">
+    <main className="min-h-screen bg-page flex items-center justify-center p-4">
+      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border shadow-glass p-8">
         {loading ? (
           <div className="text-center">
             <div className="mx-auto w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-airbnb-gray font-medium">Dang xac minh email...</p>
+            <p className="mt-4 text-gray font-medium">Đang xác minh email...</p>
           </div>
         ) : error ? (
           <div className="text-center">
-            <AlertCircle className="mx-auto text-red-500" size={28} />
-            <h1 className="mt-3 text-xl font-bold text-airbnb-dark">Xac minh khong thanh cong</h1>
-            <p className="mt-2 text-red-600">{error}</p>
-            <div className="mt-6 flex justify-center gap-3">
-              <Link href="/register" className="px-4 py-2 rounded-lg border border-gray-300 font-semibold">
-                Dang ky lai
+            <AlertCircle className="mx-auto text-secondary-red" size={28} aria-hidden />
+            <h1 className="mt-3 text-xl font-semibold text-dark">Xác minh không thành công</h1>
+            <p className="mt-2 text-secondary-red">{error}</p>
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
+              <Link
+                href="/register"
+                className="px-4 py-2 rounded-[4px] border border-border font-medium hover:bg-surface-muted transition-colors"
+              >
+                Đăng ký lại
               </Link>
-              <Link href="/login" className="px-4 py-2 rounded-lg bg-airbnb-dark text-white font-semibold">
-                Di toi dang nhap
+              <Link href="/login" className="px-4 py-2 rounded-[4px] bg-primary text-white font-medium hover:bg-primary-hover transition-colors">
+                Đi tới đăng nhập
               </Link>
             </div>
           </div>
         ) : (
           <div className="text-center">
-            <CheckCircle2 className="mx-auto text-green-600" size={28} />
-            <h1 className="mt-3 text-xl font-bold text-airbnb-dark">Xac minh thanh cong</h1>
-            <p className="mt-2 text-airbnb-gray">Dang chuyen vao he thong...</p>
+            <CheckCircle2 className="mx-auto text-secondary-green" size={28} aria-hidden />
+            <h1 className="mt-3 text-xl font-semibold text-dark">Xác minh thành công</h1>
+            <p className="mt-2 text-gray">Đang chuyển vào hệ thống...</p>
           </div>
         )}
       </div>

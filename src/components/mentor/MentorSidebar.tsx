@@ -7,7 +7,6 @@ import {
   Users, 
   Wallet, 
   ShoppingBag, 
-  Settings, 
   LogOut,
   User,
   Zap,
@@ -33,20 +32,20 @@ export const MentorSidebar = ({ activeTab, onTabChange, user }: MentorSidebarPro
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 flex flex-col z-50 transition-all">
+    <aside className="w-[15.5rem] bg-white border-r border-gray-200 h-screen fixed left-0 top-0 flex flex-col z-50 transition-all">
       {/* Logo Area */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-100">
+      <div className="h-14 flex items-center px-4 border-b border-gray-100">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
-            <Zap size={18} />
+          <div className="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center font-bold">
+            <Zap size={16} />
           </div>
-          <span className="font-bold text-lg text-dark tracking-tight">Mentoree</span>
+          <span className="font-semibold text-base text-dark tracking-tight">Mentoree</span>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto no-scrollbar">
-        <div className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+      <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto no-scrollbar">
+        <div className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
           Quản lý
         </div>
         {menuItems.map((item) => (
@@ -54,28 +53,18 @@ export const MentorSidebar = ({ activeTab, onTabChange, user }: MentorSidebarPro
             key={item.id}
             onClick={() => onTabChange(item.id)}
             className={cn(
-              "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group",
+              "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-colors group text-sm",
               activeTab === item.id 
                 ? "bg-primary/10 text-primary font-semibold" 
                 : "text-gray-600 hover:bg-gray-50 hover:text-dark font-medium"
             )}
           >
-            <item.icon size={18} className={cn(
+            <item.icon size={17} className={cn(
               activeTab === item.id ? "text-primary" : "text-gray-400 group-hover:text-gray-600"
             )} />
             <span className="text-sm">{item.label}</span>
           </button>
         ))}
-        
-        <div className="pt-6">
-          <div className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Hệ thống
-          </div>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:text-dark hover:bg-gray-50 transition-colors font-medium">
-            <Settings size={18} className="text-gray-400" />
-            <span className="text-sm">Cài đặt</span>
-          </button>
-        </div>
       </nav>
 
       {/* User Footer */}

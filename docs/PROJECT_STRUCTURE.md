@@ -1,58 +1,60 @@
-# Cấu trúc Thư mục (Project Structure)
+# Cấu trúc thư mục (Project Structure)
 
-Tài liệu này giải thích ý nghĩa của các thư mục trong dự án **UniShare Web**, giúp các thành viên biết nơi đặt file mới một cách đồng nhất.
+Tài liệu mô tả cách tổ chức **UniShare Web / Mentoree** — ứng dụng **Next.js** (App Router) + TypeScript.
 
 ## 1. Tổng quan
-Dự án được xây dựng với Vite + React + TypeScript. Các file mã nguồn chính nằm trong thư mục `src/`.
 
-## 2. Chi tiết Thư mục (src/)
+- **Framework**: Next.js, thư mục ứng dụng: [`src/app/`](../src/app/).
+- **UI theo route**: Mỗi URL được định nghĩa bởi `page.tsx`; layout dùng chung hoặc lồng nhau qua `layout.tsx`.
+- **View lớn**: Nội dung màn hình thường nằm trong [`src/views/`](../src/views/) và được import từ `page.tsx` (route file giữ mỏng).
 
-### 2.1 components/
-Chứa các React Components có thể tái sử dụng.
-- **ui/**: Các thành phần UI cơ bản, nguyên tử (như Button, Input, Modal, v.v.).
-- **admin/**: Các component dành riêng cho giao diện quản trị.
-- **mentor/**: Các component cho Mentor.
-- **profile/**: Các component cho trang thông tin cá nhân.
-- Các file chung như `Navbar.tsx`, `Footer.tsx` đặt trực tiếp tại `components/`.
+## 2. `src/app/` — Routing (App Router)
 
-### 2.2 pages/
-Chứa các trang (routes) chính của ứng dụng. Mỗi file tương ứng với một đường dẫn (URL).
-- **auth/**: Các trang liên quan đến đăng nhập, đăng ký, quên mật khẩu.
-- Ví dụ: `HomePage.tsx`, `AdminDashboard.tsx`, `MentorMarketplace.tsx`.
+| Đường dẫn | Ý nghĩa |
+|-----------|---------|
+| `layout.tsx` | Layout gốc: font, `Providers`, `AppShell`. |
+| `globals.css` | Token Tailwind v4 (`@theme`), utility `.btn-primary`, v.v. |
+| `page.tsx` | Trang chủ `/`. |
+| `(auth)/` | **Route group** (không thêm segment vào URL): đăng nhập, đăng ký, xác minh email. |
+| `(mentee)/` | Trang dành học viên: mentor, hồ sơ, tài liệu, báo cáo, … |
+| `(mentor)/mentor/` | Kênh mentor: `/mentor`, `/mentor/packages`, … |
+| `(admin)/admin/` | `/admin`. |
+| `mentor/layout.tsx` | Layout riêng nhánh `/mentor/*` (sidebar `MentorDashboard`). |
 
-### 2.3 context/
-Chứa các React Context để quản lý Global State (như `AuthContext.tsx` để quản lý thông tin người dùng đang đăng nhập).
+**Ghi chú**: Tên thư mục trong ngoặc `(tên)` là *route group* — chỉ để nhóm file, **không** xuất hiện trong URL.
 
-### 2.4 hooks/
-Chứa các Custom Hooks (logic dùng chung giữa các component).
-- Ví dụ: `useAuth.ts`, `useFetch.ts`, `useWindowSize.ts`.
+## 3. `src/views/`
 
-### 2.5 services/
-Chứa các file xử lý dữ liệu từ bên ngoài (API calls, Firebase, LocalStorage).
-- Ví dụ: `apiService.ts`, `firebaseConfig.ts`.
+- Trang full-screen hoặc màn phức tạp: `HomePage`, `LandingPage`, `LoginPage`, `MentorDashboard`, …
+- Có thể tách phụ (`views/landing/landingContent.ts`) để giảm kích thước file.
 
-### 2.6 lib/
-Chứa các thư viện bên thứ ba hoặc các helper function dùng chung cho toàn dự án.
-- Ví dụ: `utils.ts` (chứa hàm xử lý chuỗi, định dạng ngày tháng, v.v.).
+## 4. `src/components/`
 
-### 2.7 mocks/
-Chứa dữ liệu giả (mock data) phục vụ cho quá trình phát triển khi chưa có API thật.
+- **`components/ui/`**: Thành phần nhỏ tái sử dụng (loading, lỗi, …).
+- **`components/layout/`**: `AppShell` (Navbar + Footer + skip link), v.v.
+- **`components/admin/`**, **`mentor/`**, **`profile/`**: Theo từng khu vực nghiệp vụ.
+- **`Navbar.tsx`**, **`Footer.tsx`**: Chrome chung trang công khai.
 
-### 2.8 các file khác trong src/
-- **App.tsx**: File gốc chứa cấu trúc routing và các provider bao bọc.
-- **main.tsx**: Điểm bắt đầu (entry point) của ứng dụng React.
-- **index.css**: Các cấu cấu hình CSS toàn cục (Tailwind layers).
-- **types.ts**: Nơi tập trung định nghĩa các interface/type dùng chung toàn dự án.
+## 5. `src/context/`, `src/hooks/`, `src/services/`, `src/lib/`, `src/types/`
 
-## 3. Các File Cấu hình Gốc (Root)
-- **public/**: Chứa các asset tĩnh (hình ảnh, logo, favicon) không qua quá trình build của Vite.
-- **package.json**: Quản lý các dependencies và scripts của dự án.
-- **vite.config.ts**: Cấu hình của Vite (plugins, aliases, dev server).
-- **tsconfig.json**: Cấu hình của TypeScript.
-- **server.ts**: File chạy server (Development/Production).
-- **.env / .env.example**: Quản lý các biến môi trường (API Key, URL Backend).
+- **context**: Auth, User, Cart, WebSocket (tuỳ dự án).
+- **hooks**: Logic tái sử dụng (`useAuth`, `useMentorData`, …).
+- **services**: Gọi API, tách khỏi component.
+- **lib**: `api.ts`, `utils.ts`, helper chung.
+- **types**: Kiểu TypeScript dùng chung.
 
-## 4. Quy tắc bổ sung
-- Luôn giữ cấu trúc thư mục sạch sẽ.
-- Xóa các file không còn sử dụng.
-- Đừng tạo ra các file quá lớn (trên 300 dòng), hãy cố gắng chia nhỏ thành các component con.
+## 6. Quy tắc đặt file mới
+
+1. **Route mới** → thêm `src/app/.../page.tsx` (đặt trong group `(mentee)` / `(auth)` / … cho đúng vai trò).
+2. **UI phức tạp** → tạo component trong `views/` hoặc `components/` và import vào `page.tsx`.
+3. **Gọi API** → thêm hàm trong `services/`, không gọi trực tiếp `fetch` rải rác trong nhiều component nếu có thể tái sử dụng.
+4. Giữ file không quá dài; tách section (như `landing/*`) khi cần.
+
+## 7. Cấu hình & môi trường
+
+- [`next.config.ts`](../next.config.ts): `images.remotePatterns` cho `next/image` (Unsplash, pravatar, …).
+- [`.env.example`](../.env.example): Biến môi trường (URL API, v.v.).
+
+## 8. Không còn dùng (lịch sử)
+
+Dự án **không** dùng Vite + `App.tsx` + `main.tsx` như bản mô tả cũ. Nếu thấy tài liệu ngoài repo nói về `pages/` (Pages Router) thuần — codebase hiện tại dùng **`src/app`** (App Router).

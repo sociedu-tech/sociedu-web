@@ -41,7 +41,7 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
                 )}
               </div>
               <p className="text-lg sm:text-xl font-medium text-airbnb-dark/80 leading-tight">
-                {user.role === 'mentor' ? user.mentorInfo?.headline : (user.major ? `${user.major} @ ${user.university}` : 'Thành viên VibeCart')}
+                {user.role === 'mentor' ? user.mentorInfo?.headline : (user.major ? `${user.major} @ ${user.university}` : 'Thành viên Mentoree')}
               </p>
             </div>
 
@@ -79,7 +79,7 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
               
               <div className="flex items-center justify-center gap-3 w-full sm:w-auto">
                 {user.socialLinks?.linkedin && (
-                  <a href={user.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-airbnb-gray hover:text-[#0A66C2] hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100">
+                  <a href={user.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-airbnb-gray hover:text-linkedin hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100">
                     <Linkedin size={20} />
                   </a>
                 )}

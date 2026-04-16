@@ -94,7 +94,7 @@ export function EditProfilePage() {
   if (!user) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message="Không tìm thấy người dùng" /></div>;
 
   return (
-    <div className="min-h-screen bg-[#F3F2EF] pb-20">
+    <div className="min-h-screen bg-page pb-20">
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
           <div className="space-y-1">
@@ -285,7 +285,7 @@ export function EditProfilePage() {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-airbnb-gray uppercase tracking-widest ml-1">LinkedIn</label>
                     <div className="relative group">
-                      <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-[#0A66C2] transition-colors" size={18} />
+                      <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-airbnb-gray group-focus-within:text-linkedin transition-colors" size={18} />
                       <input 
                         type="text" 
                         value={user.socialLinks?.linkedin || ''}

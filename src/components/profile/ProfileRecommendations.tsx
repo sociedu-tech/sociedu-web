@@ -29,7 +29,11 @@ export const ProfileRecommendations = ({ user, isOwnProfile }: ProfileRecommenda
                   <span className="text-[10px] text-airbnb-gray">• {rec.date}</span>
                 </div>
                 <p className="text-xs text-airbnb-gray mb-2">{rec.role}</p>
-                <p className="text-sm text-airbnb-dark leading-relaxed italic">"{rec.text}"</p>
+                <p className="text-sm text-airbnb-dark leading-relaxed italic">
+                  {'\u201c'}
+                  {rec.text}
+                  {'\u201d'}
+                </p>
               </div>
             </div>
           ))

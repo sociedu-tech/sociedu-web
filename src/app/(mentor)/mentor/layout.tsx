@@ -1,6 +1,6 @@
 import { MentorDashboard } from '@/views/mentor/MentorDashboard';
 
-export default function MentorLayout({
+export default function MentorDashboardLayout({
   children,
 }: {
   children: React.ReactNode;

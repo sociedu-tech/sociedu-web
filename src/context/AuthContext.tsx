@@ -10,6 +10,8 @@ export interface AuthUser {
   email: string;
   roles: string[];
   fullName: string;
+  /** Optional; set when profile API returns an avatar URL */
+  avatarUrl?: string;
 }
 
 type ProfilePayload = {
