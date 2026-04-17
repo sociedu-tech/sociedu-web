@@ -3,84 +3,80 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ChevronDown, Heart, ArrowRight, Plus, Minus, Star, Calendar } from 'lucide-react';
+import {
+  Search,
+  ChevronDown,
+  ArrowRight,
+  Plus,
+  Minus,
+  Star,
+  Users,
+  Globe,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { categories, testimonials, faqs, mentorCategories } from '@/views/landing/landingContent';
 
 function Container({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn('mx-auto w-full max-w-7xl px-4', className)}>{children}</div>;
+  return <div className={cn('mx-auto w-full max-w-7xl px-4 sm:px-6', className)}>{children}</div>;
 }
 
-function SectionHeader({
-  kicker,
-  title,
-  description,
-  align = 'center',
-  icon,
-}: {
-  kicker?: string;
-  title: React.ReactNode;
-  description?: React.ReactNode;
-  align?: 'left' | 'center';
-  icon?: React.ReactNode;
-}) {
-  const isCenter = align === 'center';
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn('mb-10 md:mb-12', isCenter ? 'text-center' : 'text-left')}>
-      {icon ? (
-        <div className={cn('mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-[6px] bg-badge-primary-bg text-primary', !isCenter && 'mx-0')}>
-          {icon}
-        </div>
-      ) : null}
-      {kicker ? (
-        <div className={cn('mb-2 text-xs font-semibold tracking-[0.6px] text-gray', isCenter ? 'justify-center' : 'justify-start')}>
-          {kicker}
-        </div>
-      ) : null}
-      <h2 className="text-[28px] font-semibold leading-[1.12] text-dark md:text-4xl">{title}</h2>
-      {description ? (
-        <p className={cn('mt-3 text-base font-medium leading-normal text-gray md:text-lg', isCenter ? 'mx-auto max-w-2xl' : 'max-w-2xl')}>
-          {description}
-        </p>
-      ) : null}
+    <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-badge-primary-bg px-3.5 py-1 text-[11px] font-bold tracking-[0.8px] text-primary uppercase mb-5">
+      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+      {children}
     </div>
   );
 }
 
-const FLOATING_AVATARS = [
-  { className: 'absolute top-10 left-10 md:left-20 w-12 h-12 hidden md:block z-0', src: 'https://i.pravatar.cc/100?img=1', size: 48 as const },
+const STATS = [
+  { value: '4,000+', label: 'Mentor chuyên gia', icon: <Users className="w-4 h-4" /> },
+  { value: '60+', label: 'Quốc gia', icon: <Globe className="w-4 h-4" /> },
+  { value: '50K+', label: 'Mentee hài lòng', icon: <Star className="w-4 h-4 fill-current" /> },
+  { value: '98%', label: 'Đánh giá tích cực', icon: <ShieldCheck className="w-4 h-4" /> },
+];
+
+const HOW_IT_WORKS = [
   {
-    className: 'absolute top-40 left-4 md:left-40 w-16 h-16 hidden md:block z-0 animate-bounce',
-    src: 'https://i.pravatar.cc/100?img=2',
-    size: 64 as const,
-    style: { animationDuration: '4s' } as React.CSSProperties,
+    step: '01',
+    title: 'Tìm kiếm Mentor phù hợp',
+    desc: 'Duyệt qua hàng nghìn chuyên gia, lọc theo lĩnh vực, kỹ năng và mức giá. Đọc đánh giá thực từ mentee đã trải nghiệm.',
+    color: 'from-blue-50 to-indigo-50',
+    accent: 'bg-primary',
+    icon: <Search className="w-5 h-5 text-white" />,
   },
-  { className: 'absolute top-60 left-20 w-10 h-10 hidden sm:block z-0', src: 'https://i.pravatar.cc/100?img=3', size: 40 as const },
   {
-    className: 'absolute top-20 right-10 md:right-32 w-14 h-14 hidden md:block z-0 animate-bounce',
-    src: 'https://i.pravatar.cc/100?img=4',
-    size: 56 as const,
-    style: { animationDuration: '5s' } as React.CSSProperties,
+    step: '02',
+    title: 'Đặt lịch tư vấn',
+    desc: 'Kiểm tra lịch rảnh theo thời gian thực, đặt lịch và thanh toán an toàn chỉ trong vài bước đơn giản.',
+    color: 'from-violet-50 to-purple-50',
+    accent: 'bg-secondary-purple',
+    icon: <Zap className="w-5 h-5 text-white" />,
   },
-  { className: 'absolute top-48 right-4 md:right-40 w-12 h-12 hidden md:block z-0', src: 'https://i.pravatar.cc/100?img=5', size: 48 as const },
   {
-    className: 'absolute bottom-10 right-20 w-20 h-20 hidden md:block z-0 border-accent-yellow',
-    src: 'https://i.pravatar.cc/100?img=6',
-    size: 80 as const,
+    step: '03',
+    title: 'Kết nối & Phát triển',
+    desc: 'Tham gia video call, nhận lộ trình cá nhân hóa và theo dõi tiến độ phát triển của bạn theo từng buổi.',
+    color: 'from-emerald-50 to-teal-50',
+    accent: 'bg-secondary-green',
+    icon: <CheckCircle2 className="w-5 h-5 text-white" />,
   },
 ];
 
 export const LandingPage = () => {
-  const [activeFaq, setActiveFaq] = useState<number | null>(1);
+  const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const [faqCategory, setFaqCategory] = useState('Chung');
   const [activeCategoryIdx, setActiveCategoryIdx] = useState(0);
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Top category rail (mobile-friendly) */}
-      <div className="border-b border-border bg-white/90 backdrop-blur supports-backdrop-filter:bg-white/70 sticky top-[56px] md:top-[60px] z-40">
-        <Container className="py-3">
+      {/* Sticky category rail */}
+      <div className="border-b border-border bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80 sticky top-[56px] md:top-[60px] z-40">
+        <Container className="py-2.5">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {categories.map((cat, idx) => (
               <button
@@ -88,9 +84,9 @@ export const LandingPage = () => {
                 type="button"
                 onClick={() => setActiveCategoryIdx(idx)}
                 className={cn(
-                  'shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
+                  'shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200',
                   idx === activeCategoryIdx
-                    ? 'border-primary bg-badge-primary-bg text-primary'
+                    ? 'border-primary bg-primary text-white shadow-sm'
                     : 'border-border bg-white text-gray hover:border-border-hover hover:text-dark'
                 )}
               >
@@ -101,311 +97,412 @@ export const LandingPage = () => {
         </Container>
       </div>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-surface-muted">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 left-1/2 h-64 w-[720px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-28 left-1/4 h-64 w-64 rounded-full bg-secondary-pink/10 blur-3xl" />
-          <div className="absolute -bottom-28 right-1/4 h-64 w-64 rounded-full bg-secondary-yellow/15 blur-3xl" />
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden bg-white pt-16 pb-20 md:pt-24 md:pb-28">
+        {/* Background mesh gradient */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+          <div className="absolute -top-32 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/6 blur-3xl" />
+          <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-secondary-purple/8 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-secondary-yellow/10 blur-3xl" />
+          {/* Grid pattern overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage:
+                'linear-gradient(#146ef5 1px, transparent 1px), linear-gradient(90deg, #146ef5 1px, transparent 1px)',
+              backgroundSize: '72px 72px',
+            }}
+          />
         </div>
 
-        {FLOATING_AVATARS.map((item, i) => (
-          <div
-            key={item.src + i}
-            className={cn('pointer-events-none rounded-full overflow-hidden border-2 border-white shadow-xl', item.className)}
-            style={item.style}
-            aria-hidden
-          >
-            <Image src={item.src} alt="" width={item.size} height={item.size} className="object-cover" sizes={`${item.size}px`} />
-          </div>
-        ))}
-
-        <Container className="relative z-10 pt-12 pb-14 md:pt-16 md:pb-18">
+        <Container className="relative z-10">
           <div className="mx-auto max-w-4xl text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl font-semibold leading-[1.06] tracking-[-0.6px] text-dark md:text-6xl"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-badge-primary-bg px-4 py-1.5 text-xs font-semibold text-primary mb-6"
             >
-              Ai cũng cần một{' '}
-              <span className="text-primary relative inline-block">
-                Mentor
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-secondary-yellow" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden>
-                  <path d="M0 5 Q 50 15 100 5" fill="none" stroke="currentColor" strokeWidth="3" />
-                </svg>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              .
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
+              Hơn 200 mentor mới tham gia tuần này
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="mt-5 text-base font-medium leading-normal text-gray-700 md:text-lg"
+              transition={{ delay: 0.06 }}
+              className="text-5xl font-bold leading-[1.04] tracking-[-1.5px] text-dark md:text-7xl"
             >
-              Kết nối với chuyên gia đã trải nghiệm thực tế, nhận lộ trình cá nhân hóa và bứt phá mục tiêu học tập — sự nghiệp.
+              Ai cũng xứng đáng có
+              <br />
+              <span
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #146ef5 0%, #7a3dff 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                một người thầy
+              </span>
+              &nbsp;tốt.
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+              className="mt-6 text-lg font-medium leading-relaxed text-gray max-w-2xl mx-auto md:text-xl"
+            >
+              Kết nối với chuyên gia đã trải nghiệm thực tế, nhận lộ trình cá nhân hóa và bứt phá
+              mục tiêu học tập — sự nghiệp của bạn.
             </motion.p>
 
+            {/* Search bar */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.16 }}
-              className="mx-auto mt-8 max-w-3xl rounded-[10px] border border-border bg-white p-2 shadow-search-accent"
+              transition={{ delay: 0.18 }}
+              className="mx-auto mt-10 max-w-3xl"
             >
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-[220px_1fr_auto] md:items-center">
+              <div className="rounded-2xl border border-border bg-white p-2 shadow-[0_8px_40px_-8px_rgba(20,110,245,0.18)] flex flex-col gap-2 md:flex-row md:items-center">
                 <button
                   type="button"
-                  className="flex items-center justify-between gap-2 rounded-[8px] border border-border bg-white px-4 py-2.5 text-sm font-semibold text-dark hover:border-border-hover transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border bg-gray-50 px-4 py-3 text-sm font-semibold text-dark hover:border-border-hover transition-colors md:w-52 shrink-0"
                 >
-                  <span className="truncate">Danh mục: {categories[activeCategoryIdx] ?? 'Tất cả'}</span>
-                  <ChevronDown className="h-4 w-4 text-gray" aria-hidden />
+                  <span className="truncate">{categories[activeCategoryIdx] ?? 'Tất cả'}</span>
+                  <ChevronDown className="h-4 w-4 text-gray shrink-0" aria-hidden />
                 </button>
 
-                <div className="flex items-center rounded-[8px] border border-border bg-white px-4 py-2.5">
+                <div className="flex items-center flex-1 rounded-xl border border-border bg-gray-50 px-4 py-3">
                   <Search className="h-4 w-4 shrink-0 text-gray" aria-hidden />
                   <input
                     type="search"
                     name="mentor-search"
-                    placeholder="Tìm theo tên, công ty hoặc vị trí…"
+                    placeholder="Tên mentor, công ty, kỹ năng…"
                     className="ml-3 w-full bg-transparent outline-none text-dark placeholder:text-gray-300 text-sm font-medium"
                     autoComplete="off"
                   />
                 </div>
 
-                <Link href="/mentors" className="btn-primary w-full md:w-auto text-center justify-center">
-                  Tìm mentor
+                <Link
+                  href="/mentors"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover transition-colors shrink-0 shadow-button-primary"
+                >
+                  Tìm Mentor <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
-            </motion.div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs font-medium text-gray">
-              <span className="inline-flex items-center gap-2">
-                Đối tác đáng tin cậy <ArrowRight className="h-4 w-4" aria-hidden />
-              </span>
-              <span className="hidden sm:inline text-gray-300">•</span>
-              <span>Mentor được duyệt</span>
-              <span className="hidden sm:inline text-gray-300">•</span>
-              <span>Hỗ trợ xác minh email</span>
-              <span className="hidden sm:inline text-gray-300">•</span>
-              <span>Thanh toán trên một nền tảng</span>
-            </div>
+              {/* Trust chips */}
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-gray">
+                {['Mentor được xét duyệt', 'Thanh toán bảo mật', 'Đặt lịch dễ dàng', 'Hỗ trợ 24/7'].map(
+                  (item) => (
+                    <span key={item} className="inline-flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
+            </motion.div>
           </div>
+
+          {/* Stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.28 }}
+            className="mx-auto mt-16 max-w-3xl grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            {STATS.map((s) => (
+              <div
+                key={s.label}
+                className="text-center rounded-2xl border border-border bg-white/80 backdrop-blur px-4 py-5 shadow-sm"
+              >
+                <div className="flex items-center justify-center gap-1.5 text-primary mb-1.5">
+                  {s.icon}
+                </div>
+                <div className="text-2xl font-bold text-dark tracking-tight">{s.value}</div>
+                <div className="text-xs text-gray mt-0.5 font-medium">{s.label}</div>
+              </div>
+            ))}
+          </motion.div>
         </Container>
       </section>
 
-      {/* Social proof */}
-      <section className="py-14 md:py-18 bg-white">
+      {/* ── SOCIAL PROOF / TESTIMONIALS ── */}
+      <section className="py-20 md:py-28 bg-surface-muted">
         <Container>
-          <SectionHeader
-            icon={<Heart className="h-4 w-4 fill-current" aria-hidden />}
-            title="Đừng chỉ nghe lời chúng tôi nói"
-            description="Hàng nghìn người học đã đạt được mục tiêu nhờ mentor phù hợp và một lộ trình rõ ràng."
-          />
+          <div className="text-center mb-14">
+            <SectionLabel>Câu chuyện thật</SectionLabel>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-dark leading-[1.1]">
+              Hàng nghìn người đã thay đổi
+              <br />
+              <span className="text-primary">sự nghiệp</span> nhờ Mentoree
+            </h2>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 px-2 md:px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {testimonials.map((test, index) => (
               <motion.div
                 key={test.author}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.08 }}
                 className={cn(
-                  'p-6 rounded-[10px] border border-border shadow-glass flex flex-col justify-between min-h-68 md:h-72 bg-white',
-                  test.bgColor,
-                  test.floatClassName
+                  'relative p-6 rounded-2xl flex flex-col justify-between min-h-64 border',
+                  test.bgColor === 'bg-primary text-white'
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-dark border-border shadow-sm',
+                  index % 2 === 1 ? 'md:mt-8' : ''
                 )}
               >
-                <p className="text-sm md:text-base font-semibold leading-relaxed opacity-90">&ldquo;{test.text}&rdquo;</p>
-                <div className="flex items-center gap-3 mt-6">
+                {/* Stars */}
+                <div className="flex gap-0.5 mb-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={cn(
+                        'w-3.5 h-3.5 fill-current',
+                        test.bgColor === 'bg-primary text-white' ? 'text-yellow-300' : 'text-yellow-400'
+                      )}
+                    />
+                  ))}
+                </div>
+
+                <p
+                  className={cn(
+                    'text-sm leading-relaxed flex-1',
+                    test.bgColor === 'bg-primary text-white' ? 'text-white/90' : 'text-gray-700'
+                  )}
+                >
+                  &ldquo;{test.text}&rdquo;
+                </p>
+
+                <div className="flex items-center gap-3 mt-6 pt-5 border-t border-white/20">
                   <Image
                     src={`https://i.pravatar.cc/100?img=${index + 10}`}
                     alt=""
-                    width={40}
-                    height={40}
-                    className="rounded-full border-2 border-white/50 object-cover"
-                    sizes="40px"
+                    width={36}
+                    height={36}
+                    className="rounded-full object-cover ring-2 ring-white/30"
+                    sizes="36px"
                   />
                   <div>
-                    <h3 className="font-semibold text-xs">{test.author}</h3>
-                    <p className="text-[11px] opacity-75">{test.title}</p>
+                    <p className="font-bold text-xs leading-tight">{test.author}</p>
+                    <p
+                      className={cn(
+                        'text-[11px] mt-0.5',
+                        test.bgColor === 'bg-primary text-white' ? 'text-white/60' : 'text-gray'
+                      )}
+                    >
+                      {test.title}
+                    </p>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
-
-          <div className="flex justify-center gap-2 mt-8" aria-hidden>
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="w-2 h-2 rounded-full bg-gray-300" />
-            <span className="w-2 h-2 rounded-full bg-gray-300" />
-          </div>
         </Container>
       </section>
 
-      {/* How it works */}
-      <section className="py-14 md:py-18 bg-surface-muted" id="how-it-works">
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-20 md:py-28 bg-white" id="how-it-works">
         <Container>
-          <SectionHeader
-            title="Hoạt động như thế nào?"
-            description="Ba bước đơn giản để bạn bắt đầu: tìm đúng người, đặt lịch an toàn và theo dõi tiến độ."
-          />
+          <div className="text-center mb-14">
+            <SectionLabel>Cách hoạt động</SectionLabel>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-dark leading-[1.1]">
+              Bắt đầu chỉ trong{' '}
+              <span className="text-primary">3 bước</span>
+            </h2>
+            <p className="mt-4 text-lg text-gray max-w-xl mx-auto font-medium">
+              Từ tìm kiếm đến buổi học đầu tiên — đơn giản, nhanh chóng và an toàn.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="text-center group">
-              <div className="bg-feature-navy rounded-[10px] p-5 mb-6 h-56 md:h-60 relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300 shadow-glass">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
-                <div className="bg-white/10 w-16 h-2 rounded-full mx-auto mb-6" />
-                <div className="bg-white rounded-[8px] p-4 text-left shadow-lg scale-90 mx-auto max-w-[240px] transform translate-y-4 group-hover:translate-y-2 transition-transform">
-                  <div className="flex items-center gap-3 mb-4 border-b border-border pb-4">
-                    <div className="relative w-12 h-12 bg-gray-100 rounded-full overflow-hidden shrink-0">
-                      <Image src="https://i.pravatar.cc/100?img=33" alt="" fill className="object-cover" sizes="48px" />
-                    </div>
-                    <div>
-                      <div className="h-3 w-20 bg-gray-200 rounded-full mb-2" />
-                      <div className="h-2 w-16 bg-gray-100 rounded-full" />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="bg-badge-primary-bg px-3 py-1 rounded-[4px] text-[10px] tracking-[1px] text-primary font-bold">Phù hợp</div>
-                    <div className="bg-blue-light px-3 py-1 rounded-[4px] text-[10px] tracking-[1px] text-primary font-bold">Mentor hàng đầu</div>
-                  </div>
-                </div>
-              </div>
-              <h3 className="text-xl font-medium text-dark mb-1.5">1. Tìm kiếm sự phù hợp</h3>
-              <p className="text-gray text-base leading-normal">
-                Duyệt qua hàng nghìn chuyên gia hàng đầu và chọn ra người phù hợp nhất với mục tiêu của bạn.
-              </p>
-            </div>
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            {/* Connector line */}
+            <div
+              className="hidden md:block absolute top-8 left-[calc(16.66%+24px)] right-[calc(16.66%+24px)] h-px bg-gradient-to-r from-transparent via-border to-transparent"
+              aria-hidden
+            />
 
-            <div className="text-center group">
-              <div className="bg-feature-blue rounded-[10px] p-5 mb-6 h-56 md:h-60 relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300 shadow-glass">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-                <div className="bg-white/20 w-16 h-2 rounded-full mx-auto mb-6" />
-                <div className="bg-white rounded-[8px] p-4 text-left shadow-lg scale-90 mx-auto max-w-[240px] transform translate-y-4 group-hover:translate-y-2 transition-transform">
-                  <div className="flex justify-between items-center mb-4">
-                    <Calendar className="w-6 h-6 text-feature-blue" aria-hidden />
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" aria-hidden />
+            {HOW_IT_WORKS.map((step, idx) => (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.12 }}
+                className="group"
+              >
+                {/* Step number badge */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div
+                    className={cn(
+                      'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-300',
+                      step.accent
+                    )}
+                  >
+                    {step.icon}
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-feature-blue" />
-                      <div className="h-2 w-full bg-gray-100 rounded-full" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-gray-200" />
-                      <div className="h-2 w-5/6 bg-gray-100 rounded-full" />
-                    </div>
-                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
-                      <div className="bg-feature-blue text-white text-[10px] font-bold px-3 py-1 rounded-[4px] w-full text-center">
-                        Xác nhận đặt lịch
-                      </div>
-                    </div>
-                  </div>
+                  <span className="text-5xl font-black text-gray-100 leading-none select-none group-hover:text-gray-200 transition-colors">
+                    {step.step}
+                  </span>
                 </div>
-              </div>
-              <h3 className="text-xl font-medium text-dark mb-1.5">2. Đặt lịch tư vấn</h3>
-              <p className="text-gray text-base leading-normal">
-                Kiểm tra lịch rảnh của mentor và đặt lịch một cách an toàn, phù hợp với thời gian của bạn.
-              </p>
-            </div>
 
-            <div className="text-center group">
-              <div className="bg-primary rounded-[10px] p-5 mb-6 h-56 md:h-60 relative overflow-hidden group-hover:-translate-y-1 transition-transform duration-300 shadow-glass">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-                <div className="bg-white/20 w-16 h-2 rounded-full mx-auto mb-6" />
-                <div className="bg-white rounded-[8px] p-4 text-left shadow-lg scale-90 mx-auto max-w-[240px] transform translate-y-4 group-hover:translate-y-2 transition-transform relative">
-                  <div className="bg-gray-100 rounded-[8px] h-24 mb-4 overflow-hidden relative">
-                    <Image
-                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400"
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="240px"
-                    />
-                    <div className="absolute bottom-2 right-2 flex gap-1">
-                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center border-2 border-white" />
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white" />
-                    </div>
-                  </div>
-                  <div className="h-2 w-1/2 bg-gray-200 rounded-full mb-2 mx-auto" />
-                  <div className="h-2 w-1/3 bg-gray-100 rounded-full mx-auto" />
-                </div>
-              </div>
-              <h3 className="text-xl font-medium text-dark mb-1.5">3. Kết nối & Phát triển</h3>
-              <p className="text-gray text-base leading-normal">
-                Gặp gỡ mentor qua video call, đặt câu hỏi và bắt đầu xây dựng lộ trình phát triển của bạn.
-              </p>
-            </div>
+                <h3 className="text-xl font-bold text-dark mb-3 group-hover:text-primary transition-colors">
+                  {step.title}
+                </h3>
+                <p className="text-gray text-base leading-relaxed">{step.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </Container>
       </section>
 
-      {/* Quick CTAs */}
-      <section className="py-10 md:py-12 bg-white">
-        <Container className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-          <Link
-            href="/mentors"
-            className="relative group rounded-[10px] overflow-hidden aspect-4/3 md:aspect-video block border border-border shadow-glass"
-          >
-            <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200"
-              alt="Nhóm làm việc — tìm mentor phù hợp"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-8">
-              <div className="flex justify-between items-end gap-3">
-                <h3 className="text-2xl md:text-[32px] font-semibold text-white leading-[1.2]">Tìm kiếm Mentor</h3>
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shrink-0 text-dark group-hover:bg-primary group-hover:text-white transition-colors">
-                  <ArrowRight className="w-5 h-5" aria-hidden />
+      {/* ── QUICK CTAs ── */}
+      <section className="py-12 md:py-16 bg-surface-muted">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <Link
+              href="/mentors"
+              className="relative group rounded-2xl overflow-hidden block aspect-video border border-border"
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200"
+                alt="Tìm mentor"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">
+                <div className="inline-flex items-center gap-1.5 text-white/70 text-xs font-semibold uppercase tracking-widest mb-3">
+                  Dành cho Mentee
+                </div>
+                <div className="flex justify-between items-end gap-3">
+                  <h3 className="text-2xl md:text-[30px] font-bold text-white leading-tight">
+                    Tìm kiếm Mentor
+                    <br />
+                    <span className="text-white/70 font-medium text-lg">phù hợp với bạn</span>
+                  </h3>
+                  <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-lg">
+                    <ArrowRight className="w-5 h-5 text-dark group-hover:text-white transition-colors" aria-hidden />
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          <Link
-            href="/register"
-            className="relative group rounded-[10px] overflow-hidden aspect-4/3 md:aspect-video block border border-border shadow-glass"
-          >
-            <Image
-              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200"
-              alt="Làm việc cùng mentor — trở thành mentor"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-8">
-              <div className="flex justify-between items-end gap-3">
-                <h3 className="text-2xl md:text-[32px] font-semibold text-white leading-[1.2]">Trở thành Mentor</h3>
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shrink-0 text-dark group-hover:bg-primary group-hover:text-white transition-colors">
-                  <ArrowRight className="w-5 h-5" aria-hidden />
+            <Link
+              href="/register"
+              className="relative group rounded-2xl overflow-hidden block aspect-video border border-border"
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200"
+                alt="Trở thành Mentor"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-9">
+                <div className="inline-flex items-center gap-1.5 text-white/70 text-xs font-semibold uppercase tracking-widest mb-3">
+                  Dành cho Mentor
+                </div>
+                <div className="flex justify-between items-end gap-3">
+                  <h3 className="text-2xl md:text-[30px] font-bold text-white leading-tight">
+                    Trở thành Mentor
+                    <br />
+                    <span className="text-white/70 font-medium text-lg">chia sẻ kinh nghiệm</span>
+                  </h3>
+                  <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-lg">
+                    <ArrowRight className="w-5 h-5 text-dark group-hover:text-white transition-colors" aria-hidden />
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         </Container>
       </section>
 
-      {/* FAQ */}
-      <section className="py-14 md:py-18 bg-surface-muted" id="faq">
-        <Container className="max-w-5xl">
-          <SectionHeader
-            title="Câu hỏi thường gặp"
-            description="Một vài câu hỏi phổ biến trước khi bạn bắt đầu. Nếu cần hỗ trợ thêm, bạn có thể liên hệ đội ngũ Mentoree."
-          />
+      {/* ── MENTOR CATEGORIES ── */}
+      <section className="py-20 md:py-28 bg-white">
+        <Container>
+          <div className="text-center mb-14">
+            <SectionLabel>Lĩnh vực</SectionLabel>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-dark leading-[1.1]">
+              Khám phá mentor theo{' '}
+              <span className="text-primary">chuyên ngành</span>
+            </h2>
+          </div>
 
-          <div className="flex justify-center gap-2 md:gap-3 mb-8 flex-wrap">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {mentorCategories.map((category, idx) => (
+              <motion.div
+                key={category.name}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Link href="/mentors" className="group block">
+                  <div className="rounded-2xl overflow-hidden aspect-[4/3] mb-4 relative border border-border">
+                    <Image
+                      src={category.img}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="flex justify-between items-center gap-2">
+                    <div>
+                      <h3 className="text-lg font-bold text-dark group-hover:text-primary transition-colors">
+                        {category.name}
+                      </h3>
+                      <p className="text-sm text-gray mt-0.5">{category.count}</p>
+                    </div>
+                    <div className="w-9 h-9 rounded-full bg-surface-muted border border-border flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all shrink-0">
+                      <ArrowRight className="w-4 h-4" aria-hidden />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-20 md:py-28 bg-surface-muted" id="faq">
+        <Container className="max-w-4xl">
+          <div className="text-center mb-12">
+            <SectionLabel>FAQ</SectionLabel>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-dark leading-[1.1]">
+              Câu hỏi thường gặp
+            </h2>
+            <p className="mt-4 text-lg text-gray max-w-lg mx-auto font-medium">
+              Chưa chắc? Những câu hỏi phổ biến dưới đây sẽ giúp bạn hiểu rõ hơn.
+            </p>
+          </div>
+
+          <div className="flex justify-center gap-2 flex-wrap mb-8">
             {['Chung', 'Cho Mentor', 'Cho Mentee'].map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setFaqCategory(cat)}
                 className={cn(
-                  'px-4 py-1.5 rounded-full font-semibold text-xs md:text-sm transition-all border',
+                  'px-5 py-2 rounded-full font-semibold text-sm transition-all border',
                   faqCategory === cat
-                    ? 'bg-primary text-white border-primary'
+                    ? 'bg-primary text-white border-primary shadow-sm'
                     : 'bg-white text-gray border-border hover:border-primary hover:text-primary'
                 )}
               >
@@ -414,26 +511,41 @@ export const LandingPage = () => {
             ))}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((faq, idx) => (
               <div
                 key={faq.question}
-                className="border border-border rounded-[10px] bg-white overflow-hidden transition-all duration-300 shadow-glass"
+                className={cn(
+                  'border rounded-2xl bg-white overflow-hidden transition-all duration-300',
+                  activeFaq === idx ? 'border-primary/30 shadow-sm' : 'border-border'
+                )}
               >
                 <button
                   type="button"
-                  className="w-full flex justify-between items-center p-4 md:p-5 text-left"
+                  className="w-full flex justify-between items-center p-5 md:p-6 text-left gap-4"
                   onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
                   aria-expanded={activeFaq === idx}
                 >
-                  <span className={cn('font-semibold text-sm md:text-base pr-3', activeFaq === idx ? 'text-primary' : 'text-dark')}>
+                  <span
+                    className={cn(
+                      'font-semibold text-sm md:text-base',
+                      activeFaq === idx ? 'text-primary' : 'text-dark'
+                    )}
+                  >
                     {faq.question}
                   </span>
-                  {activeFaq === idx ? (
-                    <Minus className="w-4 h-4 text-gray shrink-0" aria-hidden />
-                  ) : (
-                    <Plus className="w-4 h-4 text-gray shrink-0" aria-hidden />
-                  )}
+                  <div
+                    className={cn(
+                      'w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors',
+                      activeFaq === idx ? 'bg-primary text-white' : 'bg-surface-muted text-gray'
+                    )}
+                  >
+                    {activeFaq === idx ? (
+                      <Minus className="w-3.5 h-3.5" aria-hidden />
+                    ) : (
+                      <Plus className="w-3.5 h-3.5" aria-hidden />
+                    )}
+                  </div>
                 </button>
 
                 <AnimatePresence>
@@ -442,9 +554,10 @@ export const LandingPage = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-4 md:p-5 pt-0 text-base text-gray leading-normal border-t border-border mt-1">
+                      <div className="px-5 pb-5 md:px-6 md:pb-6 text-base text-gray leading-relaxed border-t border-border/60 pt-4">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -456,83 +569,85 @@ export const LandingPage = () => {
         </Container>
       </section>
 
-      {/* Mentor categories */}
-      <section className="py-14 md:py-18 bg-white">
+      {/* ── FINAL CTA ── */}
+      <section className="py-20 md:py-28 bg-white overflow-hidden">
         <Container>
-          <SectionHeader title="Chọn lĩnh vực Mentor" description="Khám phá mentor theo ngành học, kỹ năng và mục tiêu bạn đang hướng tới." />
+          <div className="relative rounded-3xl overflow-hidden bg-dark text-white p-10 md:p-16 text-center">
+            {/* Background decoration */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+              <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-primary/20 blur-3xl" />
+              <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-secondary-purple/20 blur-3xl" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] rounded-full bg-primary/10 blur-3xl" />
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {mentorCategories.map((category) => (
-              <Link href="/mentors" key={category.name} className="group cursor-pointer">
-                <div className="rounded-[10px] overflow-hidden aspect-4/3 mb-4 relative border border-border shadow-glass">
-                  <Image
-                    src={category.img}
-                    alt={category.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
-                <div className="flex justify-between items-start gap-2">
-                  <div>
-                    <h3 className="text-xl font-medium text-dark group-hover:text-primary transition-colors">{category.name}</h3>
-                    <p className="text-gray text-sm mt-0.5">{category.count}</p>
-                  </div>
-                  <div className="w-9 h-9 rounded-full bg-white border border-border flex items-center justify-center text-dark group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all shadow-glass shrink-0">
-                    <ArrowRight className="w-4 h-4" aria-hidden />
-                  </div>
-                </div>
-              </Link>
+            {/* Floating avatars */}
+            {[
+              { src: 32, pos: 'top-6 left-6 sm:top-10 sm:left-10', size: 48 },
+              { src: 12, pos: 'bottom-6 left-16 sm:bottom-10 sm:left-24', size: 56 },
+              { src: 42, pos: 'top-10 right-20 sm:top-14 sm:right-28', size: 52 },
+              { src: 52, pos: 'bottom-6 right-6 sm:bottom-10 sm:right-10', size: 48 },
+            ].map(({ src, pos, size }) => (
+              <div
+                key={src}
+                className={cn('absolute rounded-full overflow-hidden border-2 border-white/30 hidden sm:block', pos)}
+                style={{ width: size, height: size }}
+                aria-hidden
+              >
+                <Image
+                  src={`https://i.pravatar.cc/100?img=${src}`}
+                  alt=""
+                  width={size}
+                  height={size}
+                  className="object-cover"
+                  sizes={`${size}px`}
+                />
+              </div>
             ))}
-          </div>
 
-          <div className="flex justify-center gap-2 mt-8" aria-hidden>
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="w-2 h-2 rounded-full bg-gray-300" />
-            <span className="w-2 h-2 rounded-full bg-gray-300" />
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white/80 mb-6 uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-secondary-green" />
+                Đang có mentor trực tuyến
+              </div>
+
+              <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-[1.06] mb-5">
+                Bắt đầu hành trình
+                <br />
+                của bạn{' '}
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #146ef5 0%, #7a3dff 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  ngay hôm nay
+                </span>
+                .
+              </h2>
+
+              <p className="text-white/60 text-lg font-medium max-w-lg mx-auto mb-10 leading-relaxed">
+                Hơn 4,000 mentor từ 60+ quốc gia đang chờ hướng dẫn bạn. Đặt lịch buổi đầu tiên miễn phí.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link
+                  href="/mentors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white hover:bg-primary-hover transition-colors shadow-button-primary"
+                >
+                  Tìm Mentor ngay <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-8 py-3.5 text-sm font-bold text-white hover:bg-white/20 transition-colors"
+                >
+                  Đăng ký miễn phí
+                </Link>
+              </div>
+            </div>
           </div>
         </Container>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-14 md:py-18 px-4 overflow-hidden bg-surface-muted">
-        <div className="max-w-6xl mx-auto bg-blue-light rounded-[10px] p-6 md:p-10 text-center relative shadow-glass border border-border">
-          <div className="absolute top-10 left-10 w-12 h-12 rounded-full overflow-hidden border-2 border-white hidden sm:block">
-            <Image src="https://i.pravatar.cc/100?img=32" alt="" width={48} height={48} className="object-cover" sizes="48px" />
-          </div>
-          <div className="absolute bottom-20 left-20 w-16 h-16 rounded-full overflow-hidden border-2 border-white hidden md:block">
-            <Image src="https://i.pravatar.cc/100?img=12" alt="" width={64} height={64} className="object-cover" sizes="64px" />
-          </div>
-          <div className="absolute top-20 right-20 w-14 h-14 rounded-full overflow-hidden border-2 border-white hidden md:block">
-            <Image src="https://i.pravatar.cc/100?img=42" alt="" width={56} height={56} className="object-cover" sizes="56px" />
-          </div>
-          <div className="absolute bottom-10 right-10 w-12 h-12 rounded-full overflow-hidden border-2 border-white hidden sm:block">
-            <Image src="https://i.pravatar.cc/100?img=52" alt="" width={48} height={48} className="object-cover" sizes="48px" />
-          </div>
-
-          <div className="absolute top-1/4 left-1/3 w-2 h-2 rounded-full bg-blue-300" aria-hidden />
-          <div className="absolute bottom-1/4 right-1/3 w-3 h-3 rounded-full bg-secondary-yellow" aria-hidden />
-          <div className="absolute top-1/2 right-1/4 w-2 h-2 rounded-full bg-secondary-pink/60" aria-hidden />
-
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-[28px] md:text-4xl font-semibold text-dark mb-4 tracking-tight leading-[1.1]">
-              Khám phá hơn 4000+ mentor từ 60+ quốc gia
-            </h2>
-            <p className="text-gray text-base md:text-lg mb-8 font-medium leading-normal max-w-xl mx-auto">
-              Mentor phù hợp nhất đang chờ đợi bạn. Nhận hướng dẫn cá nhân từ những người đã từng trải qua hoàn cảnh như bạn.
-            </p>
-            <Link href="/mentors" className="btn-primary inline-flex gap-2 items-center justify-center text-sm py-2.5 px-8">
-              Tìm kiếm mentor ngay <ArrowRight className="w-4 h-4" aria-hidden />
-            </Link>
-          </div>
-
-          <div
-            className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[10vw] md:text-[9vw] font-semibold tracking-tighter text-primary/10 pointer-events-none whitespace-nowrap z-0 select-none"
-            aria-hidden
-          >
-            mentoree
-          </div>
-        </div>
       </section>
     </div>
   );
