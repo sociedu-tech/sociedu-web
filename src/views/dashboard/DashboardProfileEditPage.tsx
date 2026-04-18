@@ -12,7 +12,7 @@ import {
   Linkedin,
   Plus,
   Trash2,
-  User,
+  User as UserIcon,
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 import type { User } from '@/types';
@@ -223,7 +223,7 @@ export function DashboardProfileEditPage() {
       <form onSubmit={onSubmit} className="space-y-6">
         <section className="rounded-lg border border-gray-200 bg-white p-6">
           <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <User className="size-4" strokeWidth={2} />
+            <UserIcon className="size-4" strokeWidth={2} />
             Thông tin cơ bản
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
