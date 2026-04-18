@@ -29,7 +29,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
       <motion.div 
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl"
+        className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden"
       >
         <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-xl font-bold text-airbnb-dark flex items-center gap-2">
@@ -86,7 +86,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
 
                 <button 
                   type="submit"
-                  className="w-full py-4 bg-airbnb-red text-white rounded-2xl font-bold hover:bg-airbnb-red/90 transition-all shadow-lg shadow-airbnb-red/20 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-airbnb-red text-white rounded-2xl font-bold hover:bg-airbnb-red/90 transition-all flex items-center justify-center gap-2"
                 >
                   <Send size={18} /> Gửi báo cáo
                 </button>

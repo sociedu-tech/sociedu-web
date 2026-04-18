@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MentorOrders } from '../../components/mentor/MentorOrders';
+import { MentorOrders } from '@/components/dashboard/mentor/MentorOrders';
 
 export const MentorOrdersPage = () => {
   return (

@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { MentorPackages } from '../../components/mentor/MentorPackages';
-import { MentorStats } from '../../components/mentor/MentorStats';
-import { useMentorData } from '../../hooks/useMentorData';
-import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
-import { ErrorMessage } from '../../components/ui/ErrorMessage';
+import { MentorPackages } from '@/components/dashboard/mentor/MentorPackages';
+import { MentorStats } from '@/components/dashboard/mentor/MentorStats';
+import { useMentorData } from '@/hooks/useMentorData';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
 
 export const MentorPackagesPage = () => {
   const { 

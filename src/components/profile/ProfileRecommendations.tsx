@@ -10,7 +10,7 @@ interface ProfileRecommendationsProps {
 
 export const ProfileRecommendations = ({ user, isOwnProfile }: ProfileRecommendationsProps) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-airbnb-dark flex items-center gap-2">
           <ThumbsUp size={24} className="text-blue-600" /> Lời khen ngợi

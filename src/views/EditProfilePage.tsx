@@ -124,14 +124,14 @@ export function EditProfilePage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 xs:flex-none px-5 py-2.5 bg-white border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                className="flex-1 xs:flex-none px-5 py-2.5 bg-white border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all"
               >
                 Hủy bỏ
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving || saveSuccess}
-                className="flex-1 xs:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-1 xs:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                 <span className="whitespace-nowrap">{saveSuccess ? 'Đang chuyển hướng...' : 'Lưu thay đổi'}</span>
@@ -143,13 +143,13 @@ export function EditProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Navigation/Status */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm">
+            <div className="bg-white rounded-[24px] border border-gray-100 p-6">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative group">
-                  <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white shadow-xl">
+                  <div className="w-28 h-28 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white">
                     <Image src={user.avatar} className="w-full h-full object-cover" alt={user.name} width={160} height={160} unoptimized />
                   </div>
-                  <button className="absolute -bottom-2 -right-2 p-2.5 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 transition-all border-2 border-white">
+                  <button className="absolute -bottom-2 -right-2 p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all border-2 border-white">
                     <Camera size={18} />
                   </button>
                 </div>
@@ -170,7 +170,7 @@ export function EditProfilePage() {
               </div>
             </div>
 
-            <div className="bg-airbnb-dark rounded-[24px] p-6 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-airbnb-dark rounded-[24px] p-6 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
               <h4 className="text-lg font-black tracking-tight mb-2 relative z-10">Mẹo nhỏ</h4>
               <p className="text-gray-400 text-sm font-medium leading-relaxed relative z-10">
@@ -183,7 +183,7 @@ export function EditProfilePage() {
           <div className="lg:col-span-8 space-y-8">
             <form onSubmit={handleSave} className="space-y-8">
               {/* Basic Info */}
-              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <UserIcon size={20} />
@@ -224,7 +224,7 @@ export function EditProfilePage() {
               </div>
 
               {/* Education */}
-              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <GraduationCap size={20} />
@@ -275,7 +275,7 @@ export function EditProfilePage() {
               </div>
 
               {/* Social Links */}
-              <div className="bg-white rounded-[24px] border border-gray-100 p-6 shadow-sm space-y-7">
+              <div className="bg-white rounded-[24px] border border-gray-100 p-6 space-y-7">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                     <Globe size={20} />

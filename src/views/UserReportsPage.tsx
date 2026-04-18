@@ -84,13 +84,13 @@ export const UserReportsPage = () => {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all hover:-translate-y-0.5"
           >
             <Plus size={20} /> Nộp báo cáo mới
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           {reports.length === 0 ? (
              <div className="p-16 text-center text-gray-500">
                <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
@@ -168,7 +168,7 @@ export const UserReportsPage = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-xl bg-white rounded-2xl overflow-hidden flex flex-col"
             >
                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                   <h2 className="text-xl font-bold text-dark flex items-center gap-2">

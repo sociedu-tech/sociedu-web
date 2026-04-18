@@ -27,7 +27,7 @@ export function VerifyEmailPage() {
       try {
         const payload = await authService.verifyEmail(token);
         await applyAuthPayload(payload);
-        router.replace('/');
+        router.replace('/dashboard');
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Không thể xác minh email.');
       } finally {
@@ -40,7 +40,7 @@ export function VerifyEmailPage() {
 
   return (
     <main className="min-h-screen bg-page flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border shadow-glass p-6">
+      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border p-6">
         {loading ? (
           <div className="text-center">
             <div className="mx-auto w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />

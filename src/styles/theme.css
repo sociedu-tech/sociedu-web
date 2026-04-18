@@ -60,11 +60,36 @@
   --color-scrollbar-thumb: #cbd5e1;
   --color-scrollbar-thumb-hover: #94a3b8;
 
-  --shadow-button-primary: 0 84px 24px rgb(0 0 0 / 0), 0 54px 22px rgb(0 0 0 / 0.01),
-    0 30px 18px rgb(0 0 0 / 0.04), 0 13px 13px rgb(0 0 0 / 0.08), 0 3px 7px rgb(0 0 0 / 0.09);
-  --shadow-glass: 0 84px 24px rgb(0 0 0 / 0), 0 54px 22px rgb(0 0 0 / 0.01),
-    0 30px 18px rgb(0 0 0 / 0.04), 0 13px 13px rgb(0 0 0 / 0.08), 0 3px 7px rgb(0 0 0 / 0.09);
-  --shadow-search-bar: 0 10px 40px -10px rgb(0 0 0 / 0.08);
-  --shadow-search-accent: 0 10px 40px -10px rgba(20, 110, 245, 0.18);
-  --shadow-tooltip: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  /* Flat UI — không dùng box-shadow / drop-shadow / text-shadow */
+  --shadow-button-primary: 0 0 #0000;
+  --shadow-glass: 0 0 #0000;
+  --shadow-search-bar: 0 0 #0000;
+  --shadow-search-accent: 0 0 #0000;
+  --shadow-tooltip: 0 0 #0000;
+
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+  --shadow-inner: inset 0 0 #0000;
+
+  --inset-shadow-2xs: 0 0 #0000;
+  --inset-shadow-xs: 0 0 #0000;
+  --inset-shadow-sm: 0 0 #0000;
+
+  --drop-shadow-xs: 0 0 #0000;
+  --drop-shadow-sm: 0 0 #0000;
+  --drop-shadow-md: 0 0 #0000;
+  --drop-shadow-lg: 0 0 #0000;
+  --drop-shadow-xl: 0 0 #0000;
+  --drop-shadow-2xl: 0 0 #0000;
+
+  --text-shadow-2xs: 0 0 #0000;
+  --text-shadow-xs: 0 0 #0000;
+  --text-shadow-sm: 0 0 #0000;
+  --text-shadow-md: 0 0 #0000;
+  --text-shadow-lg: 0 0 #0000;
 }

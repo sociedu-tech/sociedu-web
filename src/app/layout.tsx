@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { Be_Vietnam_Pro, Inconsolata } from 'next/font/google';
+import { Inter, Inconsolata } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-/** Body/UI: Be Vietnam Pro renders Vietnamese cleanly; code: Inconsolata per DESIGN.md */
-const beVietnamPro = Be_Vietnam_Pro({
+/** UI: Inter — đọc tốt cho dashboard/SaaS, hỗ trợ Latin + tiếng Việt; code: Inconsolata */
+const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-app',
   display: 'swap',
 });
@@ -19,8 +18,41 @@ const inconsolata = Inconsolata({
 });
 
 export const metadata: Metadata = {
-  title: 'Mentoree',
-  description: 'Kết nối mentor và học viên',
+  title: {
+    default: 'Mentoree · Mentor kèm đồ án, BTL, NCKH cho sinh viên Việt Nam',
+    template: '%s | Mentoree',
+  },
+  description:
+    'Mentoree kết nối sinh viên Việt Nam với mentor là anh chị đi trước: kèm 1-1 đồ án môn học, bài tập lớn (BTL), đồ án tốt nghiệp (ĐATN), nghiên cứu khoa học (NCKH), khóa luận và luyện phỏng vấn thực tập.',
+  keywords: [
+    'mentor sinh viên',
+    'kèm đồ án',
+    'kèm BTL',
+    'đồ án tốt nghiệp',
+    'nghiên cứu khoa học sinh viên',
+    'NCKH',
+    'khóa luận',
+    'luyện phỏng vấn thực tập',
+    'Mentoree',
+    'UniShare',
+  ],
+  applicationName: 'Mentoree',
+  authors: [{ name: 'Mentoree' }],
+  openGraph: {
+    type: 'website',
+    siteName: 'Mentoree',
+    locale: 'vi_VN',
+    title: 'Mentoree · Mentor kèm đồ án, BTL, NCKH cho sinh viên Việt Nam',
+    description:
+      'Kết nối với anh chị đi trước và chuyên gia để được kèm 1-1 đồ án, BTL, NCKH, khóa luận và luyện phỏng vấn thực tập.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mentoree · Mentor kèm đồ án, BTL, NCKH cho sinh viên Việt Nam',
+    description:
+      'Kết nối với anh chị đi trước và chuyên gia để được kèm 1-1 đồ án, BTL, NCKH, khóa luận và luyện phỏng vấn thực tập.',
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -29,8 +61,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${beVietnamPro.variable} ${inconsolata.variable}`}>
-      <body className={`${beVietnamPro.className} antialiased`}>
+    <html lang="vi" className={`${inter.variable} ${inconsolata.variable}`}>
+      <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

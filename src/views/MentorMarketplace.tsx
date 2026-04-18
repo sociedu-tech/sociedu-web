@@ -1,24 +1,73 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Star, Search, Filter, CheckCircle2, MessageSquare,
-  Calendar, GraduationCap, Award, ArrowRight, User as UserIcon, X
+  Star,
+  Search,
+  Filter,
+  CheckCircle2,
+  ArrowRight,
+  User as UserIcon,
+  X,
+  SlidersHorizontal,
+  BadgeCheck,
 } from 'lucide-react';
 import type { User } from '@/types';
-import { motion, AnimatePresence } from 'motion/react';
 import { mentorService } from '@/services/mentorService';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { cn } from '@/lib/utils';
 
+type SortKey = 'popular' | 'price-asc' | 'price-desc' | 'rating';
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'popular', label: 'Phổ biến' },
+  { value: 'rating', label: 'Đánh giá cao nhất' },
+  { value: 'price-asc', label: 'Giá: thấp → cao' },
+  { value: 'price-desc', label: 'Giá: cao → thấp' },
+];
+
+function formatPrice(value?: number) {
+  if (value === undefined || value === null) return 'Liên hệ';
+  return `$${value}`;
+}
+
+function MentorCardSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border bg-white p-5">
+      <div className="flex gap-4">
+        <div className="h-16 w-16 shrink-0 animate-pulse rounded-xl bg-surface-muted" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-2/3 animate-pulse rounded bg-surface-muted" />
+          <div className="h-3 w-1/2 animate-pulse rounded bg-surface-muted" />
+          <div className="h-3 w-1/3 animate-pulse rounded bg-surface-muted" />
+        </div>
+      </div>
+      <div className="mt-5 flex gap-2">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-6 w-16 animate-pulse rounded-full bg-surface-muted" />
+        ))}
+      </div>
+      <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+        <div className="h-5 w-20 animate-pulse rounded bg-surface-muted" />
+        <div className="h-9 w-28 animate-pulse rounded-lg bg-surface-muted" />
+      </div>
+    </div>
+  );
+}
+
 export const MentorMarketplace = () => {
   const [mentors, setMentors] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [maxPrice, setMaxPrice] = useState<number>(1000);
+  const [sortBy, setSortBy] = useState<SortKey>('popular');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const fetchMentors = async () => {
@@ -27,8 +76,8 @@ export const MentorMarketplace = () => {
     try {
       const data = await mentorService.getAll();
       setMentors(data);
-    } catch (err: any) {
-      setError("Không thể tải danh sách Mentor. Vui lòng thử lại.");
+    } catch {
+      setError('Không thể tải danh sách mentor. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -36,225 +85,480 @@ export const MentorMarketplace = () => {
 
   useEffect(() => {
     fetchMentors();
-    window.scrollTo(0, 0);
   }, []);
 
-  const filteredMentors = mentors.filter(m =>
-    m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.mentorInfo?.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.mentorInfo?.expertise.some(e => e.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const allCategories = useMemo(() => {
+    const set = new Set<string>();
+    mentors.forEach((m) => m.mentorInfo?.expertise?.forEach((e) => set.add(e)));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'vi'));
+  }, [mentors]);
 
-  if (loading) return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <LoadingSpinner size={48} label="Đang tìm kiếm các chuyên gia..." />
-    </div>
-  );
+  const priceBounds = useMemo(() => {
+    const prices = mentors.map((m) => m.mentorInfo?.price ?? 0).filter((p) => p > 0);
+    if (prices.length === 0) return { min: 0, max: 1000 };
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+  }, [mentors]);
 
-  if (error) return (
-    <div className="max-w-xl mx-auto py-20 px-4">
-      <ErrorMessage message={error} onRetry={fetchMentors} />
-    </div>
-  );
+  useEffect(() => {
+    // Reset maxPrice sau khi dữ liệu mentor được tải
+    setMaxPrice(priceBounds.max || 1000);
+  }, [priceBounds.max]);
 
-  const Filters = () => (
-    <div className="space-y-8">
-      <div className="flex items-center gap-2 mb-6">
-        <Filter className="w-5 h-5 text-airbnb-red" />
-        <h2 className="text-lg font-bold text-airbnb-dark">Bộ lọc Mentor</h2>
+  const filtered = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    const list = mentors.filter((m) => {
+      const info = m.mentorInfo;
+      if (!info) return false;
+      if (verifiedOnly && info.verificationStatus !== 'verified') return false;
+      if (selectedCategories.length > 0) {
+        const hit = info.expertise?.some((e) => selectedCategories.includes(e));
+        if (!hit) return false;
+      }
+      if (typeof info.price === 'number' && info.price > maxPrice) return false;
+      if (term) {
+        const blob =
+          `${m.name} ${info.headline ?? ''} ${(info.expertise ?? []).join(' ')}`.toLowerCase();
+        if (!blob.includes(term)) return false;
+      }
+      return true;
+    });
+
+    list.sort((a, b) => {
+      const ai = a.mentorInfo!;
+      const bi = b.mentorInfo!;
+      switch (sortBy) {
+        case 'price-asc':
+          return (ai.price ?? 0) - (bi.price ?? 0);
+        case 'price-desc':
+          return (bi.price ?? 0) - (ai.price ?? 0);
+        case 'rating':
+          return (bi.rating ?? 0) - (ai.rating ?? 0);
+        case 'popular':
+        default:
+          return (bi.sessionsCompleted ?? 0) - (ai.sessionsCompleted ?? 0);
+      }
+    });
+    return list;
+  }, [mentors, searchTerm, selectedCategories, verifiedOnly, maxPrice, sortBy]);
+
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setVerifiedOnly(false);
+    setMaxPrice(priceBounds.max || 1000);
+    setSearchTerm('');
+  };
+
+  const activeFilterCount =
+    selectedCategories.length + (verifiedOnly ? 1 : 0) + (maxPrice < (priceBounds.max || 1000) ? 1 : 0);
+
+  const Filters = ({ variant = 'desktop' }: { variant?: 'desktop' | 'mobile' }) => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-primary" aria-hidden />
+          <h2 className="text-sm font-bold uppercase tracking-wider text-dark">Bộ lọc</h2>
+        </div>
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-xs font-semibold text-primary hover:underline"
+          >
+            Xóa ({activeFilterCount})
+          </button>
+        )}
       </div>
 
-      <div className="space-y-8">
+      <div>
+        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-gray">
+          Đã xác thực
+        </h3>
+        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-white px-3 py-2.5 transition hover:border-border-hover">
+          <input
+            type="checkbox"
+            checked={verifiedOnly}
+            onChange={(e) => setVerifiedOnly(e.target.checked)}
+            className="h-4 w-4 rounded border-border text-primary focus:ring-primary/40"
+          />
+          <span className="flex items-center gap-1.5 text-sm text-dark">
+            <BadgeCheck className="h-4 w-4 text-primary" aria-hidden />
+            Chỉ mentor đã xác thực
+          </span>
+        </label>
+      </div>
+
+      {allCategories.length > 0 && (
         <div>
-          <h3 className="text-xs font-bold tracking-widest text-airbnb-gray mb-4">Lĩnh vực</h3>
-          <div className="space-y-2">
-            {['Tất cả', 'Công nghệ thông tin', 'Kinh tế', 'Toán học', 'Ngoại ngữ'].map(cat => (
-              <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" className="w-5 h-5 rounded-lg border-gray-300 text-airbnb-red focus:ring-airbnb-red" />
-                <span className="text-sm text-airbnb-gray group-hover:text-airbnb-dark transition-colors">{cat}</span>
-              </label>
-            ))}
+          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-gray">
+            Lĩnh vực
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {allCategories.map((cat) => {
+              const active = selectedCategories.includes(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => toggleCategory(cat)}
+                  aria-pressed={active}
+                  className={cn(
+                    'rounded-full border px-3 py-1.5 text-xs font-semibold transition',
+                    active
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-border bg-white text-gray hover:border-border-hover hover:text-dark'
+                  )}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
+      )}
 
-        <div>
-          <h3 className="text-xs font-bold tracking-widest text-airbnb-gray mb-4">Giá dịch vụ</h3>
-          <input type="range" className="w-full accent-airbnb-red" />
-          <div className="flex justify-between mt-2 text-xs font-bold text-airbnb-gray">
-            <span>$0</span>
-            <span>$1000+</span>
-          </div>
+      <div>
+        <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-gray">
+          Giá tối đa
+        </h3>
+        <input
+          type="range"
+          min={priceBounds.min}
+          max={priceBounds.max || 1000}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(Number(e.target.value))}
+          aria-label="Giá tối đa"
+          className="w-full accent-primary"
+        />
+        <div className="mt-1 flex justify-between text-xs font-semibold text-gray">
+          <span>${priceBounds.min}</span>
+          <span className="text-dark">≤ ${maxPrice}/giờ</span>
         </div>
+      </div>
 
+      {variant === 'mobile' && (
         <button
+          type="button"
           onClick={() => setShowMobileFilters(false)}
-          className="w-full py-2.5 bg-airbnb-dark text-white rounded-xl font-bold text-sm hover:bg-black transition-colors"
+          className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm"
         >
           Áp dụng bộ lọc
         </button>
-      </div>
+      )}
     </div>
   );
 
   return (
-    <div className="bg-surface-soft min-h-screen pb-20">
-      {/* Hero Section */}
-      <div className="bg-airbnb-dark text-white py-12 md:py-20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-airbnb-red/10 blur-[120px] rounded-full" />
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl"
-          >
-            <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-              Kết nối với <span className="text-airbnb-red">Mentor</span> hàng đầu
-            </h1>
-            <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed">
-              Nhận tư vấn 1-1 từ các sinh viên xuất sắc và chuyên gia trong ngành để bứt phá trong học tập và sự nghiệp.
-            </p>
+    <div className="min-h-screen bg-white pb-20">
+      {/* Hero — tông sáng, đơn giản, đồng bộ landing */}
+      <section className="relative overflow-hidden border-b border-border bg-surface-muted">
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="absolute -top-24 left-1/2 h-[280px] w-[720px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-primary">
+            Danh bạ mentor sinh viên · Mentoree
+          </p>
+          <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-tight text-dark md:text-5xl">
+            Mentor kèm <span className="text-primary">đồ án, BTL, NCKH</span> cho sinh viên
+          </h1>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-gray md:text-base">
+            Tìm anh chị đi trước và chuyên gia đang làm việc trong ngành để được kèm 1-1: đồ án môn học,
+            bài tập lớn, đồ án tốt nghiệp, nghiên cứu khoa học, khóa luận và luyện phỏng vấn thực tập.
+          </p>
 
-            <div className="relative max-w-xl">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <form
+            className="mt-8 flex max-w-2xl items-center gap-2 rounded-2xl border border-border bg-white p-2"
+            onSubmit={(e) => e.preventDefault()}
+            role="search"
+          >
+            <div className="flex flex-1 items-center gap-2 px-3">
+              <Search className="h-4 w-4 text-gray" aria-hidden />
               <input
-                type="text"
-                placeholder="Tìm theo tên, chuyên môn hoặc kỹ năng..."
-                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-airbnb-red transition-all text-sm"
+                type="search"
+                placeholder="Tên mentor, môn học, đề tài (VD: đồ án web, NCKH Kinh tế…)"
+                className="w-full bg-transparent py-2.5 text-sm font-medium outline-hidden placeholder:text-gray-300"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Tìm mentor"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="rounded-full p-1 text-gray hover:bg-surface-muted"
+                  aria-label="Xoá từ khoá"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
-          </motion.div>
+            <button
+              type="submit"
+              className="btn-primary inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm"
+            >
+              Tìm <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+          </form>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
-        {/* Mobile Filter Button */}
-        <div className="lg:hidden mb-6">
-          <button
-            onClick={() => setShowMobileFilters(true)}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-white border border-gray-100 rounded-2xl font-bold text-airbnb-dark shadow-xl"
-          >
-            <Filter className="w-5 h-5 text-airbnb-red" />
-            Lọc Mentor
-          </button>
-        </div>
-
-        {/* Mobile Filters Modal */}
-        <AnimatePresence>
-          {showMobileFilters && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowMobileFilters(false)}
-                className="fixed inset-0 bg-black/50 z-200 lg:hidden"
-              />
-              <motion.div
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                className="fixed right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white z-201 p-6 lg:hidden overflow-y-auto"
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        {/* Thanh công cụ: số kết quả + sắp xếp + mở filter mobile */}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-gray" aria-live="polite">
+            {loading ? (
+              'Đang tải mentor…'
+            ) : (
+              <>
+                <span className="font-semibold text-dark">{filtered.length}</span> mentor phù hợp
+                {activeFilterCount > 0 ? ` · ${activeFilterCount} bộ lọc` : ''}
+              </>
+            )}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowMobileFilters(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-2 text-sm font-semibold text-dark hover:border-border-hover lg:hidden"
+              aria-label="Mở bộ lọc"
+            >
+              <SlidersHorizontal className="h-4 w-4" aria-hidden />
+              Lọc
+              {activeFilterCount > 0 && (
+                <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold text-white">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            <label className="flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-sm">
+              <span className="hidden text-xs font-semibold uppercase tracking-wide text-gray sm:inline">
+                Sắp xếp
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
+                className="bg-transparent text-sm font-semibold text-dark outline-hidden"
+                aria-label="Sắp xếp danh sách mentor"
               >
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-lg font-black text-airbnb-dark">Bộ lọc</h2>
-                  <button onClick={() => setShowMobileFilters(false)} className="p-2 hover:bg-gray-100 rounded-full">
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-                <Filters />
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar (Desktop) */}
-          <aside className="hidden lg:block lg:col-span-1">
-            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-xl sticky top-24">
+        {/* Bộ lọc di động */}
+        {showMobileFilters && (
+          <>
+            <button
+              type="button"
+              aria-label="Đóng bộ lọc"
+              onClick={() => setShowMobileFilters(false)}
+              className="fixed inset-0 z-150 bg-black/40 lg:hidden"
+            />
+            <aside
+              className="fixed right-0 top-0 bottom-0 z-160 w-[88%] max-w-sm overflow-y-auto bg-white p-6 lg:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Bộ lọc mentor"
+            >
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-base font-bold text-dark">Bộ lọc</h2>
+                <button
+                  type="button"
+                  onClick={() => setShowMobileFilters(false)}
+                  className="rounded-full p-1.5 text-gray hover:bg-surface-muted"
+                  aria-label="Đóng"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <Filters variant="mobile" />
+            </aside>
+          </>
+        )}
+
+        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-4">
+          <aside className="hidden lg:col-span-1 lg:block">
+            <div className="sticky top-24 rounded-2xl border border-border bg-white p-5">
               <Filters />
             </div>
           </aside>
 
-          {/* Mentors Grid */}
-          <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredMentors.map((mentor, idx) => (
-                <motion.div
-                  key={mentor.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="bg-white border border-gray-100 rounded-3xl p-5 hover:shadow-2xl transition-all group"
-                >
-                  <div className="flex gap-4 mb-6">
-                    <Image
-                      src={mentor.avatar}
-                      alt={mentor.name}
-                      className="w-20 h-20 rounded-2xl object-cover"
-                      width={80}
-                      height={80}
-                      unoptimized
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-bold text-airbnb-dark group-hover:text-airbnb-red transition-colors">{mentor.name}</h3>
-                        {mentor.mentorInfo?.verificationStatus === 'verified' && (
-                          <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                        )}
-                      </div>
-                      <p className="text-xs text-airbnb-gray font-medium line-clamp-1 mb-2">{mentor.mentorInfo?.headline}</p>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1 text-xs font-bold text-airbnb-dark">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          {mentor.mentorInfo?.rating}
-                        </div>
-                        <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                        <div className="text-[10px] font-bold text-airbnb-gray tracking-tighter">
-                          {mentor.mentorInfo?.sessionsCompleted} buổi học
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {mentor.mentorInfo?.expertise.slice(0, 3).map(exp => (
-                      <span key={exp} className="px-3 py-1 bg-gray-50 text-airbnb-gray rounded-lg text-[10px] font-bold border border-gray-100">
-                        {exp}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                    <div>
-                      <p className="text-[10px] font-bold text-airbnb-gray tracking-widest">Giá từ</p>
-                      <p className="text-lg font-black text-airbnb-dark">${mentor.mentorInfo?.price}<span className="text-xs font-normal text-airbnb-gray">/giờ</span></p>
-                    </div>
-                    <Link
-                      href={`/profile/${mentor.id}`}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-airbnb-red text-white rounded-xl font-bold text-sm hover:bg-airbnb-red/90 transition-all shadow-lg shadow-airbnb-red/20"
-                    >
-                      Xem hồ sơ <ArrowRight size={16} />
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {filteredMentors.length === 0 && (
-              <div className="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
-                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <UserIcon className="w-10 h-10 text-gray-200" />
-                </div>
-                <h3 className="text-xl font-bold text-airbnb-dark mb-2">Không tìm thấy Mentor</h3>
-                <p className="text-airbnb-gray">Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc.</p>
+          <section className="lg:col-span-3" aria-label="Danh sách mentor">
+            {error ? (
+              <ErrorMessage message={error} onRetry={fetchMentors} />
+            ) : loading ? (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <MentorCardSkeleton key={i} />
+                ))}
               </div>
+            ) : filtered.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border bg-white py-20 text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-surface-muted">
+                  <UserIcon className="h-7 w-7 text-gray-300" aria-hidden />
+                </div>
+                <h2 className="text-lg font-bold text-dark">Không tìm thấy mentor phù hợp</h2>
+                <p className="mt-1 text-sm text-gray">
+                  Thử xóa bớt bộ lọc hoặc tìm theo từ khoá khác.
+                </p>
+                {activeFilterCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
+                  >
+                    Xóa bộ lọc
+                  </button>
+                )}
+              </div>
+            ) : (
+              <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {filtered.map((mentor) => {
+                  const info = mentor.mentorInfo!;
+                  const verified = info.verificationStatus === 'verified';
+                  return (
+                    <li key={mentor.id}>
+                      <article className="group h-full rounded-2xl border border-border bg-white p-5 transition hover:border-primary/40">
+                        <div className="flex gap-4">
+                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
+                            {mentor.avatar ? (
+                              <Image
+                                src={mentor.avatar}
+                                alt={`Ảnh đại diện của ${mentor.name}`}
+                                className="object-cover"
+                                fill
+                                sizes="64px"
+                                unoptimized
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-gray-300">
+                                <UserIcon className="h-6 w-6" aria-hidden />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <h3 className="truncate text-base font-bold text-dark transition-colors group-hover:text-primary">
+                                {mentor.name}
+                              </h3>
+                              {verified && (
+                                <CheckCircle2
+                                  className="h-4 w-4 shrink-0 text-primary"
+                                  aria-label="Đã xác thực"
+                                />
+                              )}
+                            </div>
+                            <p className="mt-0.5 line-clamp-1 text-xs font-medium text-gray">
+                              {info.headline || 'Mentor Mentoree'}
+                            </p>
+                            <div className="mt-2 flex items-center gap-3 text-xs">
+                              <span className="inline-flex items-center gap-1 font-bold text-dark">
+                                <Star
+                                  className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400"
+                                  aria-hidden
+                                />
+                                {info.rating?.toFixed(1) ?? '—'}
+                              </span>
+                              <span className="h-1 w-1 rounded-full bg-gray-300" aria-hidden />
+                              <span className="font-semibold text-gray">
+                                {info.sessionsCompleted ?? 0} buổi
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {info.expertise && info.expertise.length > 0 && (
+                          <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Chuyên môn">
+                            {info.expertise.slice(0, 4).map((exp) => (
+                              <li
+                                key={exp}
+                                className="rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[11px] font-semibold text-gray-700"
+                              >
+                                {exp}
+                              </li>
+                            ))}
+                            {info.expertise.length > 4 && (
+                              <li className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-gray">
+                                +{info.expertise.length - 4}
+                              </li>
+                            )}
+                          </ul>
+                        )}
+
+                        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray">
+                              Từ
+                            </p>
+                            <p className="text-lg font-black tracking-tight text-dark">
+                              {formatPrice(info.price)}
+                              <span className="ml-0.5 text-xs font-medium text-gray">/giờ</span>
+                            </p>
+                          </div>
+                          <Link
+                            href={`/profile/${mentor.id}`}
+                            className="btn-primary inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm"
+                            aria-label={`Xem hồ sơ mentor ${mentor.name}`}
+                          >
+                            Xem hồ sơ
+                            <ArrowRight className="h-4 w-4" aria-hidden />
+                          </Link>
+                        </div>
+                      </article>
+                    </li>
+                  );
+                })}
+              </ul>
             )}
-          </div>
+          </section>
         </div>
+
+        {/* Nội dung SEO phụ — đoạn mô tả cho bot & người đọc */}
+        <section className="mt-16 grid gap-6 rounded-2xl border border-border bg-surface-muted p-6 md:grid-cols-3 md:p-10">
+          <div className="md:col-span-2">
+            <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
+              Mentor Mentoree hỗ trợ sinh viên việc gì?
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-gray md:text-base">
+              Mentor đồng hành với bài tập lớn, đồ án môn học, đồ án tốt nghiệp (ĐATN), nghiên cứu khoa học
+              (NCKH), khóa luận, tiểu luận và luyện phỏng vấn thực tập/fresher ở nhiều ngành: CNTT, Kinh tế,
+              Điện - Điện tử, Cơ khí, Xây dựng, Ngoại ngữ, Thiết kế, Dữ liệu. Bạn xem được chuyên môn, đánh
+              giá và mức giá trước khi đặt buổi.
+            </p>
+          </div>
+          <ul className="space-y-3 text-sm text-gray">
+            {[
+              'Mentor là anh chị đi trước, hồ sơ đã xác thực',
+              'Gói lẻ gỡ khó hoặc gói đi cùng đến khi bảo vệ',
+              'Giá sinh viên · thanh toán an toàn · hoàn tiền minh bạch',
+              'Chỉ hướng dẫn & review — không làm hộ, tránh vi phạm học thuật',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
+
+      {loading && (
+        <span className="sr-only" role="status">
+          <LoadingSpinner size={16} label="Đang tải mentor" />
+        </span>
+      )}
     </div>
   );
 };
