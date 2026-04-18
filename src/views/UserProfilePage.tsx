@@ -87,7 +87,7 @@ export function UserProfilePage() {
             />
 
             {/* Tabs Navigation */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="flex border-b border-gray-100">
                 {(['about', 'experience', 'activity'] as const).map((tab) => (
                   <button
@@ -124,12 +124,12 @@ export function UserProfilePage() {
 
               {/* Actions */}
               <div className="space-y-2">
-                <button className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-dark transition-colors bg-white border border-gray-200 rounded-xl shadow-sm">
+                <button className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-dark transition-colors bg-white border border-gray-200 rounded-xl">
                   <Share2 size={16} /> Chia sẻ hồ sơ
                 </button>
                 <button
                   onClick={() => setIsReportModalOpen(true)}
-                  className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-red transition-colors bg-white border border-gray-200 rounded-xl shadow-sm"
+                  className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-red transition-colors bg-white border border-gray-200 rounded-xl"
                 >
                   <AlertTriangle size={16} /> Báo cáo vi phạm
                 </button>

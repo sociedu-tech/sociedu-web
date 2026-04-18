@@ -5,6 +5,7 @@ import { authService, setRefreshToken, type AuthPayload } from '@/services/authS
 import { userService } from '@/services/userService';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
 import type { User } from '@/types';
+import { ROLES, normalizeRole } from '@/constants/roles';
 
 export interface AuthUser {
   id: string | number;
@@ -133,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearAuthStorage();
   };
 
-  const userRole = user?.roles?.[0]?.toLowerCase() || 'guest';
+  const userRole = user?.roles?.[0] ? normalizeRole(user.roles[0]) : ROLES.GUEST;
 
   return (
     <AuthContext.Provider value={{

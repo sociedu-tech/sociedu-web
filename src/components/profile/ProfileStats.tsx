@@ -13,7 +13,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
   return (
     <div className="space-y-6">
       {/* Stats Card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Thống kê</h3>
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -38,7 +38,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
 
       {/* Mentor Packages (If Mentor) */}
       {user.role === 'mentor' && user.mentorInfo?.packages && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Gói dịch vụ</h3>
           <div className="space-y-4">
             {user.mentorInfo.packages.map(pkg => (
@@ -55,7 +55,7 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
       )}
 
       {/* Listings Preview */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Tài liệu mới nhất</h3>
         <div className="space-y-4">
           {userProducts.length > 0 ? (

@@ -19,7 +19,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     if (!isAuthenticated) {
       router.replace(`/login?from=${encodeURIComponent(pathname)}`);
     } else if (allowedRoles && !allowedRoles.includes(userRole)) {
-      router.replace('/');
+      router.replace('/dashboard');
     }
   }, [loading, isAuthenticated, userRole, allowedRoles, router, pathname]);
 

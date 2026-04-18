@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, CheckCircle, Clock, X, MessageSquare } from 'lucide-react';
-import { reportService, ProgressReport, ReviewReportRequest } from '../../services/reportService';
-import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { reportService, ProgressReport, ReviewReportRequest } from '@/services/reportService';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export const MentorReportsPage = () => {
   const [reports, setReports] = useState<ProgressReport[]>([]);
@@ -70,7 +70,7 @@ export const MentorReportsPage = () => {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {reports.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
             <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -140,7 +140,7 @@ export const MentorReportsPage = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-2xl bg-white rounded-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                   <h2 className="text-xl font-bold text-dark flex items-center gap-2">

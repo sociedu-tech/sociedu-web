@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Menu, X, LogOut } from 'lucide-react';
+import { LayoutDashboard, Menu, UserCircle, User, X, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { ROLES, hasRole } from '@/constants/roles';
+import { UserAvatarMenu } from '@/components/ui/UserAvatarMenu';
 
 type NavItem = { name: string; path: string; isHash: boolean };
 
@@ -27,7 +28,7 @@ export const Navbar = () => {
   const navLinks: NavItem[] = [
     { name: 'Tìm Mentor', path: '/mentors', isHash: false },
     { name: 'Trở thành Mentor', path: '/register', isHash: false },
-    ...(isAuthenticated && userRole !== 'mentor' && userRole !== 'admin'
+    ...(isAuthenticated && !hasRole(userRole, ROLES.MENTOR, ROLES.ADMIN)
       ? [{ name: 'Nộp báo cáo', path: '/my-reports', isHash: false as const }]
       : []),
     { name: 'Cách hoạt động', path: '#how-it-works', isHash: true },
@@ -50,25 +51,14 @@ export const Navbar = () => {
 
   const isRouteActive = (path: string) => pathname === path;
 
-  const avatarHref =
-    userRole === 'admin'
-      ? '/admin'
-      : userRole === 'mentor'
-        ? '/mentor'
-        : `/profile/${user?.id}`;
-
-  const avatarLabel =
-    userRole === 'admin'
-      ? 'Bảng điều khiển quản trị'
-      : userRole === 'mentor'
-        ? 'Bảng điều khiển Mentor'
-        : 'Trang cá nhân';
+  const profileHref =
+    user?.id != null && String(user.id).length > 0 ? `/profile/${user.id}` : '/profile';
 
   return (
     <nav
       className={cn(
         'sticky top-0 z-100 w-full transition-all duration-300',
-        isScrolled ? 'bg-white py-2.5 border-b border-border shadow-glass' : 'bg-transparent py-4'
+        isScrolled ? 'bg-white py-2.5 border-b border-border' : 'bg-transparent py-4'
       )}
       aria-label="Điều hướng chính"
     >
@@ -124,51 +114,7 @@ export const Navbar = () => {
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              {userRole === 'mentor' && (
-                <Link
-                  href="/mentor"
-                  className="text-[12.8px] tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
-                >
-                  Bảng điều khiển Mentor
-                </Link>
-              )}
-              {userRole === 'admin' && (
-                <Link
-                  href="/admin"
-                  className="text-[12.8px] tracking-[1px] font-semibold text-primary hover:bg-badge-primary-bg px-3 py-1.5 rounded-[4px] transition-colors hidden md:block"
-                >
-                  Bảng điều khiển quản trị
-                </Link>
-              )}
-              <Link
-                href={avatarHref}
-                className="flex items-center gap-2 group p-1.5 pr-4 rounded-[8px] border border-border hover:border-border-hover transition-colors"
-                aria-label={avatarLabel}
-                title={avatarLabel}
-              >
-                <div className="w-8 h-8 rounded-full bg-teal-light flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm overflow-hidden">
-                  {user?.avatarUrl ? (
-                    <Image src={user.avatarUrl} alt={user.fullName || 'avatar'} className="w-full h-full object-cover" width={32} height={32} unoptimized />
-                  ) : (
-                    <User className="w-4 h-4" aria-hidden />
-                  )}
-                </div>
-                <div className="hidden xl:block text-left relative top-0.5">
-                  <p className="text-sm font-semibold text-dark leading-none truncate max-w-[100px]">
-                    {user?.fullName || 'User'}
-                  </p>
-                </div>
-              </Link>
-              <button
-                type="button"
-                onClick={logout}
-                className="w-10 h-10 flex items-center justify-center text-gray hover:text-red-500 hover:bg-red-50 rounded-[4px] transition-all"
-                aria-label="Đăng xuất"
-              >
-                <LogOut size={18} aria-hidden />
-              </button>
-            </div>
+            <UserAvatarMenu variant="site" user={user} profileHref={profileHref} onLogout={logout} />
           )}
 
           <button
@@ -191,7 +137,7 @@ export const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden absolute top-full left-0 w-full bg-white border-t border-border overflow-hidden shadow-glass"
+            className="lg:hidden absolute top-full left-0 w-full bg-white border-t border-border overflow-hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Menu điều hướng"
@@ -224,13 +170,31 @@ export const Navbar = () => {
               <div className="pt-4 border-t border-gray-100 space-y-4">
                 {isAuthenticated ? (
                   <>
+                    {!pathname.startsWith('/dashboard') ? (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-[8px] p-2 text-base font-semibold text-dark hover:bg-surface-muted"
+                      >
+                        <LayoutDashboard className="h-6 w-6 text-primary" aria-hidden />
+                        Bảng điều khiển
+                      </Link>
+                    ) : null}
                     <Link
-                      href={avatarHref}
+                      href={profileHref}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 text-base font-semibold text-dark p-2 hover:bg-surface-muted rounded-[8px]"
+                      className="flex items-center gap-3 rounded-[8px] p-2 text-base font-semibold text-dark hover:bg-surface-muted"
                     >
-                      <User className="w-6 h-6 text-primary" aria-hidden />
-                      {avatarLabel}
+                      <User className="h-6 w-6 text-primary" aria-hidden />
+                      Hồ sơ công khai
+                    </Link>
+                    <Link
+                      href="/dashboard/profile/edit"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-[8px] p-2 text-base font-semibold text-dark hover:bg-surface-muted"
+                    >
+                      <UserCircle className="h-6 w-6 text-primary" aria-hidden />
+                      Cập nhật hồ sơ
                     </Link>
                     <button
                       type="button"
@@ -238,9 +202,9 @@ export const Navbar = () => {
                         logout();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center gap-3 text-base font-semibold text-secondary-red p-2 hover:bg-red-50 rounded-[8px] w-full text-left mt-2"
+                      className="mt-2 flex w-full items-center gap-3 rounded-[8px] p-2 text-left text-base font-semibold text-secondary-red hover:bg-red-50"
                     >
-                      <LogOut className="w-6 h-6" aria-hidden />
+                      <LogOut className="h-6 w-6" aria-hidden />
                       Đăng xuất
                     </button>
                   </>

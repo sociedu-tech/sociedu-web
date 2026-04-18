@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MentorRevenue } from '../../components/mentor/MentorRevenue';
+import { MentorRevenue } from '@/components/dashboard/mentor/MentorRevenue';
 
 export const MentorRevenuePage = () => {
   return (

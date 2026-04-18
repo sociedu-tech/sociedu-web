@@ -31,7 +31,7 @@ export function RegisterPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/');
+      router.replace('/dashboard');
     }
   }, [isAuthenticated, router]);
 
@@ -98,7 +98,7 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-page flex items-center justify-center p-4">
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[8px] shadow-glass overflow-hidden border border-border">
+      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[8px] overflow-hidden border border-border">
 
         <div className="hidden lg:flex flex-col justify-between p-10 bg-dark text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-20">
@@ -108,7 +108,7 @@ export function RegisterPage() {
 
           <div className="relative z-10">
             <Link href="/" className="flex items-center gap-3 mb-12 group">
-              <div className="w-12 h-12 bg-white rounded-[8px] flex items-center justify-center text-dark shadow-glass group-hover:translate-x-1 transition-transform">
+              <div className="w-12 h-12 bg-white rounded-[8px] flex items-center justify-center text-dark group-hover:translate-x-1 transition-transform">
                 <GraduationCap className="w-7 h-7 text-primary" />
               </div>
               <span className="text-3xl font-semibold tracking-tighter">Mentoree</span>

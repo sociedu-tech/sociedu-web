@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MentorSchedule } from '../../components/mentor/MentorSchedule';
+import { MentorSchedule } from '@/components/dashboard/mentor/MentorSchedule';
 
 export const MentorSchedulePage = () => {
   return (

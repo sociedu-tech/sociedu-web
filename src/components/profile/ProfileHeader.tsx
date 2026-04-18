@@ -12,11 +12,11 @@ interface ProfileHeaderProps {
 
 export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHeaderProps) => {
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
       <div className="p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center md:items-start text-center md:text-left">
           <div className="relative group">
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
+              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100">
               <Image 
                 src={user.avatar} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
@@ -27,7 +27,7 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
               />
             </div>
             {isOwnProfile && (
-              <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-lg text-blue-600 hover:bg-blue-50 transition-all border border-gray-100">
+              <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl text-blue-600 hover:bg-blue-50 transition-all border border-gray-100">
                 <Camera size={18} />
               </button>
             )}
@@ -68,13 +68,13 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
               {isOwnProfile ? (
                 <Link
                   href="/edit-profile"
-                  className="w-full sm:w-auto px-6 py-2.5 bg-airbnb-dark text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-gray-200 text-center"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-airbnb-dark text-white rounded-2xl font-bold hover:bg-black transition-all text-center"
                 >
                   Chỉnh sửa hồ sơ
                 </Link>
               ) : (
                 <>
-                  <button className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+                  <button className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all">
                     Kết nối
                   </button>
                   <button className="w-full sm:w-auto px-6 py-2.5 border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all">
