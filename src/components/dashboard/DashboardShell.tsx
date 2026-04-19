@@ -63,6 +63,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         isMobile={isMobile}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
+        onMenuToggle={toggleMenuState}
         user={user}
       />
 

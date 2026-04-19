@@ -1,7 +1,7 @@
 import type { User } from '@/types';
 
 /** `NEXT_PUBLIC_ADMIN_PREVIEW_DATA=false` để gọi API thật; mặc định: dùng dữ liệu mẫu (xem UI). */
-export const ADMIN_PREVIEW_DATA_ENABLED = process.env.NEXT_PUBLIC_ADMIN_PREVIEW_DATA !== 'false';
+export const ADMIN_PREVIEW_DATA_ENABLED = process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_ADMIN_PREVIEW_DATA === 'true';
 
 const avatar = (seed: string) => `https://i.pravatar.cc/128?u=${encodeURIComponent(seed)}`;
 
@@ -11,7 +11,7 @@ export const ADMIN_MOCK_USERS: User[] = [
     name: 'Nguyễn Minh An',
     email: 'minhan@student.edu.vn',
     avatar: avatar('minhan'),
-    role: 'buyer',
+    role: 'user',
     joinedDate: '12/03/2026',
     rating: 4.8,
   },
@@ -37,7 +37,7 @@ export const ADMIN_MOCK_USERS: User[] = [
     name: 'Lê Thu Hà',
     email: 'thuha@uni.edu.vn',
     avatar: avatar('thuha'),
-    role: 'buyer',
+    role: 'user',
     joinedDate: '28/02/2026',
   },
 ];

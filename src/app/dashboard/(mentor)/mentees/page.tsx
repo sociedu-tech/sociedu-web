@@ -1,11 +1,5 @@
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ROLES } from '@/constants/roles';
-import { MentorMenteesPage } from '@/views/mentor/MentorMenteesPage';
+import { MentorMenteesPage } from '@/features/mentor/views/MentorMenteesPage';
 
 export default function DashboardMenteesPage() {
-  return (
-    <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
-      <MentorMenteesPage />
-    </ProtectedRoute>
-  );
+  return <MentorMenteesPage />;
 }

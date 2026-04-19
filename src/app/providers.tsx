@@ -1,18 +1,20 @@
 'use client';
 
 import { AuthProvider } from '@/context/AuthContext';
-import { CartProvider } from '@/context/CartContext';
 import { UserProvider } from '@/context/UserContext';
 import { WebSocketProvider } from '@/context/WebSocketContext';
+import { ToastProvider } from '@/context/ToastContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <UserProvider>
-        <WebSocketProvider>
-          <CartProvider>{children}</CartProvider>
-        </WebSocketProvider>
-      </UserProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <UserProvider>
+          <WebSocketProvider>
+            {children}
+          </WebSocketProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 }

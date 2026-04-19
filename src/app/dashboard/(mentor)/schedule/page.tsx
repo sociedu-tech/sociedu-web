@@ -1,11 +1,5 @@
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ROLES } from '@/constants/roles';
-import { MentorSchedulePage } from '@/views/mentor/MentorSchedulePage';
+import { MentorSchedulePage } from '@/features/mentor/views/MentorSchedulePage';
 
 export default function DashboardSchedulePage() {
-  return (
-    <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
-      <MentorSchedulePage />
-    </ProtectedRoute>
-  );
+  return <MentorSchedulePage />;
 }

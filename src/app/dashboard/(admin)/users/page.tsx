@@ -1,21 +1,23 @@
 'use client';
 
-import { AdminSurface, AdminViewHeader } from '@/components/admin';
+import { DashboardSurface } from '@/components/dashboard/modules/layout/DashboardSurface';
+import { DashboardViewHeader } from '@/components/dashboard/modules/layout/DashboardViewHeader';
 import { ADMIN_MANAGEMENT_USERS } from '@/data/adminManagementMock';
-import { AdminUsersManagementView } from '@/views/admin/AdminUsersManagementView';
+import { AdminUsersManagementView } from '@/features/admin/views/AdminUsersManagementView';
 
 export default function AdminUsersPage() {
   return (
     <>
-      <AdminViewHeader
+      <DashboardViewHeader
         title="Người dùng & phân quyền"
         description="Xem trạng thái tài khoản, lọc theo vai trò, tạm khóa hoặc cấp quyền mentor cho học viên. Dữ liệu mẫu — kết nối API để đồng bộ thật."
+        layout="compact"
       />
-      <AdminSurface>
+      <DashboardSurface>
         <div className="p-4 sm:p-6">
           <AdminUsersManagementView initialUsers={ADMIN_MANAGEMENT_USERS} />
         </div>
-      </AdminSurface>
+      </DashboardSurface>
     </>
   );
 }

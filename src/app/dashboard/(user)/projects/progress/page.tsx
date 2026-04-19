@@ -1,4 +1,4 @@
-import { DashboardProjectProgressPage } from '@/views/dashboard/DashboardProjectProgressPage';
+import { DashboardProjectProgressPage } from '@/features/dashboard/views/DashboardProjectProgressPage';
 
 export default function Page() {
   return <DashboardProjectProgressPage />;

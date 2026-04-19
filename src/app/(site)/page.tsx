@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { LandingPage } from '@/views/LandingPage';
+import { LandingPage } from '@/features/landing/views/LandingPage';
 
 export const metadata: Metadata = {
   title: 'Mentoree · Mentor kèm đồ án, BTL, NCKH cho sinh viên Việt Nam',
