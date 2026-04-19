@@ -7,7 +7,7 @@ import {
   loadInitialDemoOffers,
   saveDemoOffers,
   type DemoMentorOffer,
-} from '@/features/projects/projectOfferDemoStorage';
+} from '@/views/dashboard/projects/projectOfferDemoStorage';
 
 /** Đề xuất lộ trình + giá từ mentor — học viên chấp nhận / từ chối (demo + sessionStorage). */
 export function MenteeIncomingOffers() {

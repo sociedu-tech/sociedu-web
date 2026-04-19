@@ -95,12 +95,9 @@ export function LoginPage() {
           </div>
 
           <div className="relative z-10">
-            <Link href="/" className="flex items-center gap-3 mb-12 group">
-              <div className="w-12 h-12 bg-white rounded-[8px] flex items-center justify-center text-dark group-hover:translate-x-1 transition-transform">
-                <GraduationCap className="w-7 h-7 text-primary" />
-              </div>
+            {/* <Link href="/" className="flex items-center gap-3 mb-12 group">
               <span className="text-3xl font-semibold tracking-tighter">Mentoree</span>
-            </Link>
+            </Link> */}
 
             <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight mb-6">
               Đồng hành cùng <br />

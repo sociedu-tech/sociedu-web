@@ -38,6 +38,9 @@ const persistAuthTokens = (data?: AuthPayload) => {
   }
 };
 
+/** Một request verify-email cho mỗi token (tránh Strict Mode / effect lặp gọi API hai lần). */
+const verifyEmailInflight = new Map<string, Promise<AuthPayload | undefined>>();
+
 export const authService = {
   login: async (credentials: unknown) => {
     const res = await api.post(`${AUTH}/login`, credentials);
@@ -50,10 +53,23 @@ export const authService = {
     return res.data as AuthPayload;
   },
   verifyEmail: async (token: string) => {
-    const res = await api.post(`${AUTH}/verify-email`, { token });
-    const data = res.data as AuthPayload | undefined;
-    persistAuthTokens(data);
-    return data;
+    const key = token.trim();
+    const existing = verifyEmailInflight.get(key);
+    if (existing) return existing;
+
+    const p = (async () => {
+      const res = await api.post(`${AUTH}/verify-email`, { token: key });
+      const data = res.data as AuthPayload | undefined;
+      persistAuthTokens(data);
+      return data;
+    })();
+
+    verifyEmailInflight.set(key, p);
+    try {
+      return await p;
+    } finally {
+      verifyEmailInflight.delete(key);
+    }
   },
   resendVerification: async (email: string) => {
     const res = await api.post(`${AUTH}/resend-verification`, { email });

@@ -1,4 +1,4 @@
-import { SessionsHub } from '@/features/sessions/SessionsHub';
+import { SessionsHub } from '@/views/dashboard/sessions/SessionsHub';
 
 export default function DashboardSessionsPage() {
   return <SessionsHub />;

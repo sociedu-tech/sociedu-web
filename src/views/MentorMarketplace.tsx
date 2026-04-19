@@ -70,11 +70,19 @@ export const MentorMarketplace = () => {
   const [sortBy, setSortBy] = useState<SortKey>('popular');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const fetchMentors = async () => {
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  useEffect(() => {
+    const ms = searchTerm.trim() ? 400 : 0;
+    const id = window.setTimeout(() => setDebouncedQuery(searchTerm.trim()), ms);
+    return () => window.clearTimeout(id);
+  }, [searchTerm]);
+
+  const fetchMentors = async (q: string) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await mentorService.getAll();
+      const data = await mentorService.getMentors(q ? { q } : undefined);
       setMentors(data);
     } catch {
       setError('Không thể tải danh sách mentor. Vui lòng thử lại.');
@@ -84,8 +92,8 @@ export const MentorMarketplace = () => {
   };
 
   useEffect(() => {
-    fetchMentors();
-  }, []);
+    fetchMentors(debouncedQuery);
+  }, [debouncedQuery]);
 
   const allCategories = useMemo(() => {
     const set = new Set<string>();
@@ -105,7 +113,6 @@ export const MentorMarketplace = () => {
   }, [priceBounds.max]);
 
   const filtered = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
     const list = mentors.filter((m) => {
       const info = m.mentorInfo;
       if (!info) return false;
@@ -115,11 +122,6 @@ export const MentorMarketplace = () => {
         if (!hit) return false;
       }
       if (typeof info.price === 'number' && info.price > maxPrice) return false;
-      if (term) {
-        const blob =
-          `${m.name} ${info.headline ?? ''} ${(info.expertise ?? []).join(' ')}`.toLowerCase();
-        if (!blob.includes(term)) return false;
-      }
       return true;
     });
 
@@ -139,7 +141,7 @@ export const MentorMarketplace = () => {
       }
     });
     return list;
-  }, [mentors, searchTerm, selectedCategories, verifiedOnly, maxPrice, sortBy]);
+  }, [mentors, selectedCategories, verifiedOnly, maxPrice, sortBy]);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
@@ -261,7 +263,7 @@ export const MentorMarketplace = () => {
           <div className="absolute -top-24 left-1/2 h-[280px] w-[720px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-primary">
+          <p className="text-[11px] font-bold  text-primary">
             Danh bạ mentor sinh viên · Mentoree
           </p>
           <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-tight text-dark md:text-5xl">
@@ -396,7 +398,7 @@ export const MentorMarketplace = () => {
 
           <section className="lg:col-span-3" aria-label="Danh sách mentor">
             {error ? (
-              <ErrorMessage message={error} onRetry={fetchMentors} />
+              <ErrorMessage message={error} onRetry={() => fetchMentors(debouncedQuery)} />
             ) : loading ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {Array.from({ length: 6 }).map((_, i) => (

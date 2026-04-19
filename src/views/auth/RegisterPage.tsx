@@ -105,13 +105,6 @@ export function RegisterPage() {
           </div>
 
           <div className="relative z-10">
-            <Link href="/" className="flex items-center gap-3 mb-12 group">
-              <div className="w-12 h-12 bg-white rounded-[8px] flex items-center justify-center text-dark group-hover:translate-x-1 transition-transform">
-                <GraduationCap className="w-7 h-7 text-primary" />
-              </div>
-              <span className="text-3xl font-semibold tracking-tighter">Mentoree</span>
-            </Link>
-
             <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight mb-6">
               Bắt đầu hành trình <br />
               <span className="text-primary">cùng mentor.</span>
@@ -146,30 +139,14 @@ export function RegisterPage() {
         <div className="p-6 lg:p-10 flex flex-col justify-center">
           {success ? (
             <div className="max-w-md mx-auto w-full">
-              <div className="flex flex-col items-center text-center mb-8">
-                <div
-                  className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/80"
-                  aria-hidden
-                >
-                  <Mail className="h-8 w-8 text-emerald-600" strokeWidth={1.75} />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-semibold leading-tight text-dark tracking-tight mb-2">
-                  Kiểm tra email để kích hoạt tài khoản
-                </h2>
-                <p className="text-gray text-[15px] leading-relaxed font-medium">
-                  Chúng tôi đã gửi liên kết xác minh tới địa chỉ bạn vừa đăng ký. Mở email và nhấn vào liên kết để hoàn tất — thường chỉ mất vài giây.
+              <div className="mb-6 text-center">
+                <Mail className="mx-auto h-10 w-10 text-primary" strokeWidth={1.5} aria-hidden />
+                <h2 className="mt-4 text-xl font-semibold text-dark">Mở email và xác minh</h2>
+                <p className="mt-2 text-sm text-gray leading-relaxed">
+                  Đã gửi liên kết kích hoạt tới{' '}
+                  <span className="font-medium text-dark break-all">{registeredEmail}</span>. Kiểm tra cả thư mục Spam.
                 </p>
               </div>
-
-              <div className="rounded-[8px] border border-border bg-page/80 px-4 py-3 mb-6 text-left">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray mb-1">Email</p>
-                <p className="text-sm font-semibold text-dark break-all">{registeredEmail}</p>
-              </div>
-
-              <p className="text-sm text-gray font-medium mb-6 leading-relaxed">
-                Không thấy thư? Đợi 1–2 phút, kiểm tra thư mục <span className="text-dark font-semibold">Spam</span> hoặc{' '}
-                <span className="text-dark font-semibold">Quảng cáo</span>, rồi dùng nút bên dưới nếu cần.
-              </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
@@ -220,109 +197,109 @@ export function RegisterPage() {
             </div>
           ) : (
             <>
-          <div className="mb-7">
-            <h2 className="text-3xl md:text-4xl font-semibold leading-[1.1] text-dark tracking-tight mb-2">
-              Tạo tài khoản mới
-            </h2>
-            <p className="text-gray font-medium">
-              Tham gia Mentoree ngay hôm nay.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="register-fullName" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
-                Họ và tên
-              </label>
-              <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
-                <input
-                  id="register-fullName"
-                  type="text"
-                  name="fullName"
-                  placeholder="Nguyễn Văn A"
-                  required
-                  autoComplete="name"
-                  className={inputFocusClass}
-                />
+              <div className="mb-7">
+                <h2 className="text-3xl md:text-4xl font-semibold leading-[1.1] text-dark tracking-tight mb-2">
+                  Tạo tài khoản mới
+                </h2>
+                <p className="text-gray font-medium">
+                  Tham gia Mentoree ngay hôm nay.
+                </p>
               </div>
-              {fieldErrors.firstName && (
-                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.firstName}</p>
-              )}
-              {fieldErrors.lastName && (
-                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.lastName}</p>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <label htmlFor="register-email" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
-                Email
-              </label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
-                <input
-                  id="register-email"
-                  type="email"
-                  name="email"
-                  placeholder="name@university.edu.vn"
-                  required
-                  autoComplete="email"
-                  className={inputFocusClass}
-                />
-              </div>
-              {fieldErrors.email && (
-                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.email}</p>
-              )}
-            </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="register-fullName" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
+                    Họ và tên
+                  </label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
+                    <input
+                      id="register-fullName"
+                      type="text"
+                      name="fullName"
+                      placeholder="Nguyễn Văn A"
+                      required
+                      autoComplete="name"
+                      className={inputFocusClass}
+                    />
+                  </div>
+                  {fieldErrors.firstName && (
+                    <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.firstName}</p>
+                  )}
+                  {fieldErrors.lastName && (
+                    <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.lastName}</p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <label htmlFor="register-password" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
-                Mật khẩu
-              </label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
-                <input
-                  id="register-password"
-                  type="password"
-                  name="password"
-                  placeholder="••••••••"
-                  required
-                  autoComplete="new-password"
-                  className={inputFocusClass}
-                />
-              </div>
-              {fieldErrors.password && (
-                <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.password}</p>
-              )}
-            </div>
+                <div className="space-y-2">
+                  <label htmlFor="register-email" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
+                    Email
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
+                    <input
+                      id="register-email"
+                      type="email"
+                      name="email"
+                      placeholder="name@university.edu.vn"
+                      required
+                      autoComplete="email"
+                      className={inputFocusClass}
+                    />
+                  </div>
+                  {fieldErrors.email && (
+                    <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.email}</p>
+                  )}
+                </div>
 
-            {error && (
-              <div className="p-4 bg-red-50 rounded-[8px] border border-red-100 flex items-center gap-3 text-red-600 text-sm font-bold">
-                <AlertCircle size={18} aria-hidden /> {error}
-              </div>
-            )}
+                <div className="space-y-2">
+                  <label htmlFor="register-password" className="text-[12.8px] font-semibold text-gray tracking-[1px] ml-1">
+                    Mật khẩu
+                  </label>
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray group-focus-within:text-primary transition-colors" size={18} aria-hidden />
+                    <input
+                      id="register-password"
+                      type="password"
+                      name="password"
+                      placeholder="••••••••"
+                      required
+                      autoComplete="new-password"
+                      className={inputFocusClass}
+                    />
+                  </div>
+                  {fieldErrors.password && (
+                    <p className="text-sm font-medium text-red-600 ml-1">{fieldErrors.password}</p>
+                  )}
+                </div>
 
-            <button type="submit" disabled={loading} className="w-full btn-primary disabled:opacity-50">
-              {loading ? (
-                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  Đăng ký ngay
-                  <ArrowRight size={20} aria-hidden />
-                </>
-              )}
-            </button>
-          </form>
+                {error && (
+                  <div className="p-4 bg-red-50 rounded-[8px] border border-red-100 flex items-center gap-3 text-red-600 text-sm font-bold">
+                    <AlertCircle size={18} aria-hidden /> {error}
+                  </div>
+                )}
 
-          <p className="mt-7 text-center text-gray font-medium">
-            Đã có tài khoản?
-            <Link
-              href="/login"
-              className="ml-2 text-primary font-semibold hover:underline"
-            >
-              Đăng nhập ngay
-            </Link>
-          </p>
+                <button type="submit" disabled={loading} className="w-full btn-primary disabled:opacity-50">
+                  {loading ? (
+                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      Đăng ký ngay
+                      <ArrowRight size={20} aria-hidden />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-7 text-center text-gray font-medium">
+                Đã có tài khoản?
+                <Link
+                  href="/login"
+                  className="ml-2 text-primary font-semibold hover:underline"
+                >
+                  Đăng nhập ngay
+                </Link>
+              </p>
             </>
           )}
         </div>

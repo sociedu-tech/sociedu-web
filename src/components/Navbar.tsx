@@ -78,7 +78,7 @@ export const Navbar = () => {
                 key={link.name}
                 type="button"
                 onClick={() => handleHashNav(link.path)}
-                className="text-[12px]  tracking-[1.5px] font-medium transition-colors hover:text-primary text-gray"
+                className="text-[12px]  font-medium transition-colors hover:text-primary text-gray"
               >
                 {link.name}
               </button>
@@ -87,7 +87,7 @@ export const Navbar = () => {
                 key={link.name}
                 href={link.path}
                 className={cn(
-                  'text-[12px] tracking-[1.5px] font-medium transition-colors hover:text-primary',
+                  'text-[12px] font-medium transition-colors hover:text-primary',
                   isRouteActive(link.path) ? 'text-primary' : 'text-gray'
                 )}
               >

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Inbox, Layers, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MENTOR_OPPORTUNITY_BASE_COUNTS } from '@/features/projects/mentorOpportunitiesData';
+import { MENTOR_OPPORTUNITY_BASE_COUNTS } from '@/views/dashboard/projects/mentorOpportunitiesData';
 
 type PipelineSummaryProps = {
   /** Số gợi ý đang mở (có thể truyền động; mặc định từ mock). */

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FolderOpen, Plus } from 'lucide-react';
-import { MenteeIncomingOffers } from '@/features/projects/MenteeIncomingOffers';
+import { MenteeIncomingOffers } from '@/views/dashboard/projects/MenteeIncomingOffers';
 
 /** Học viên: dự án / gói đang tham gia (placeholder — nối API sau). */
 export function ProjectListUser() {

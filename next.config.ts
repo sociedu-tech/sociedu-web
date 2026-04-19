@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       { source: '/mentor', destination: '/dashboard/packages', permanent: false },
       { source: '/mentor/:path+', destination: '/dashboard/:path+', permanent: false },
-      { source: '/admin', destination: '/dashboard/admin', permanent: false },
+      { source: '/admin', destination: '/dashboard/admin/stats', permanent: false },
     ];
   },
   images: {

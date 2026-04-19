@@ -1,104 +1,104 @@
 /**
- * Nội dung landing Mentoree · UniShare — định vị cho sinh viên Việt Nam.
- * Dịch vụ cốt lõi: kèm đồ án (BTL, đồ án môn học, đồ án tốt nghiệp / ĐATN),
- * nghiên cứu khoa học (NCKH), khóa luận, tiểu luận, ôn thi cuối kỳ,
- * luyện phỏng vấn thực tập, review CV, tư vấn ngành/định hướng.
+ * Nội dung landing Mentoree — ngắn gọn, tổng quát (không gắn một loại hình cụ thể).
  */
+
 export const landingHero = {
-  eyebrow: 'Mentoree · Mentor đồng hành cùng sinh viên Việt Nam',
-  titleLine1: 'Vượt qua đồ án, BTL và NCKH',
+  eyebrow: 'Mentoree · Đồng hành cùng sinh viên',
+  titleLine1: 'Học và phát triển',
   titleHighlight: 'cùng mentor',
-  titleLine2: 'đi trước.',
+  titleLine2: 'phù hợp với bạn.',
   subtitle:
-    'Kết nối với anh chị sinh viên giỏi và chuyên gia thực chiến để được kèm 1-1: đồ án môn học, bài tập lớn, đồ án tốt nghiệp, nghiên cứu khoa học, luyện phỏng vấn thực tập và định hướng nghề nghiệp.',
-  primaryCta: { label: 'Tìm mentor cho đồ án', href: '/mentors' },
+    'Kết nối với anh chị đi trước và chuyên gia để được hỗ trợ 1-1 theo mục tiêu của bạn — từ môn học, dự án, nghiên cứu đến định hướng nghề nghiệp.',
+  primaryCta: { label: 'Tìm mentor', href: '/mentors' },
   secondaryCta: { label: 'Đăng ký miễn phí', href: '/register' },
 };
 
 export const landingStats = [
-  { value: '500+', label: 'Mentor là anh chị đi trước' },
-  { value: '30+', label: 'Trường đại học tại Việt Nam' },
-  { value: '20+', label: 'Ngành & chuyên ngành' },
-  { value: '95%', label: 'Sinh viên hài lòng sau buổi đầu' },
+  { value: '500+', label: 'Mentor đồng hành' },
+  { value: '30+', label: 'Trường đại học' },
+  { value: '20+', label: 'Lĩnh vực' },
+  { value: '95%', label: 'Hài lòng sau buổi đầu' },
 ];
+
+/** Tiêu đề khu vực About trên LandingPage */
+export const landingAboutSection = {
+  heading: 'Mentoree là gì?',
+  tagline: 'Một nơi để bạn nhận hỗ trợ học thuật và phát triển bản thân — linh hoạt theo nhu cầu.',
+};
 
 export const landingAboutBlocks = [
   {
     number: '01',
-    title: 'Kèm 1-1 cho đồ án & BTL',
+    title: 'Học thuật & dự án',
     description:
-      'Mentor review đề tài, hướng dẫn code/báo cáo, góp ý trước khi nộp và luyện bảo vệ — từ bài tập lớn, đồ án môn học đến đồ án tốt nghiệp (ĐATN).',
+      'Gỡ khó bài tập, dự án môn học hoặc đề tài dài hơn: mentor cùng bạn làm rõ hướng đi, review và góp ý — bạn vẫn là người làm chủ sản phẩm.',
     variant: 'light' as const,
   },
   {
     number: '02',
-    title: 'Hỗ trợ NCKH & khóa luận',
+    title: 'Nghiên cứu & viết luận',
     description:
-      'Giúp bạn chọn hướng nghiên cứu, đọc paper, viết đề cương, xử lý số liệu và trình bày theo chuẩn báo cáo/seminar NCKH sinh viên.',
+      'Định hướng đọc tài liệu, cấu trúc báo cáo và trình bày — phù hợp khi bạn cần khung rõ ràng hơn là làm hộ.',
     variant: 'dark' as const,
   },
   {
     number: '03',
-    title: 'Định hướng ngành & thực tập',
+    title: 'Hướng nghiệp & thực tế',
     description:
-      'Review CV, luyện phỏng vấn thực tập/fresher, tư vấn lộ trình kỹ năng và chọn chuyên ngành dựa trên kinh nghiệm thật của mentor.',
+      'Tư vấn lộ trình, kỹ năng mềm, CV và phỏng vấn — dựa trên kinh nghiệm thật của mentor, không công thức chung cho mọi người.',
     variant: 'accent' as const,
   },
 ];
 
+/** Cột trái mục “Vì sao chọn Mentoree?” */
+export const landingWhyIntro = {
+  lead:
+    'Mentor hiểu bối cảnh học tập tại Việt Nam và đồng hành theo tiến độ của bạn — không một khuôn mẫu cho tất cả.',
+};
+
 export const landingWhyChoose = [
   {
-    title: 'Hiểu chương trình học của sinh viên Việt Nam',
+    title: 'Sát thực tế sinh viên',
     description:
-      'Mentor từ các trường kỹ thuật, kinh tế, ngoại ngữ… nắm rõ format đồ án, tiêu chí chấm NCKH và văn hoá bảo vệ hội đồng tại Việt Nam.',
+      'Người đi trước trong nhiều ngành — nắm cách học, cách làm bài và áp lực deadline mà bạn đang gặp.',
     emphasis: true,
   },
   {
-    title: 'Gói học linh hoạt theo deadline',
+    title: 'Linh hoạt thời gian & gói',
     description:
-      'Đặt lẻ 1 buổi gỡ khó, gói kèm theo tuần tới lúc bảo vệ, hoặc đồng hành dài hạn theo kỳ — chọn đúng nhu cầu, không trả dư.',
+      'Buổi lẻ khi cần gỡ nhanh, hoặc đồng hành dài hơn theo mục tiêu — bạn chọn mức phù hợp.',
     emphasis: false,
   },
   {
-    title: 'Giá sinh viên, thanh toán an toàn',
+    title: 'Minh bạch & an toàn',
     description:
-      'Mức giá phù hợp túi tiền sinh viên, thanh toán qua cổng an toàn, có lịch sử giao dịch và chính sách hoàn tiền rõ ràng.',
+      'Thông tin mentor, giá và lịch rõ ràng; thanh toán qua nền tảng, có lịch sử và chính sách hủy/đổi theo quy định.',
     emphasis: false,
   },
 ];
 
+/** Khối tính năng (nền tối) — tiêu đề cột trái */
+export const landingFeaturesIntro = {
+  title: 'Bạn làm được gì trên Mentoree?',
+  body: 'Tìm đúng người, đặt lịch, học 1-1 và theo dõi tiến độ — gọn trong một luồng.',
+};
+
 export const landingFeatures = [
   {
-    title: 'Tìm mentor theo môn học & đề tài',
-    points: [
-      'Lọc theo ngành (CNTT, Kinh tế, Điện-Điện tử, Cơ khí, Ngôn ngữ…).',
-      'Chọn mentor từ trường/khối ngành phù hợp với bạn.',
-      'Xem hồ sơ: môn đã hỗ trợ, đề tài đã kèm, đánh giá của sinh viên trước.',
-    ],
+    title: 'Tìm mentor phù hợp',
+    points: ['Lọc theo ngành, kỹ năng và mục tiêu.', 'Xem hồ sơ, kinh nghiệm và đánh giá trước khi chọn.'],
   },
   {
-    title: 'Đặt lịch quanh deadline',
-    points: [
-      'Chọn khung giờ rảnh của bạn — học tối, cuối tuần đều được.',
-      'Nhắc lịch trước buổi qua email/thông báo.',
-      'Đổi/hủy lịch theo chính sách minh bạch khi kế hoạch thay đổi.',
-    ],
+    title: 'Đặt lịch theo bạn',
+    points: ['Chọn khung giờ phù hợp; nhắc lịch qua thông báo.', 'Đổi/hủy theo chính sách hiển thị rõ.'],
   },
   {
-    title: 'Gói kèm đồ án & NCKH',
-    points: [
-      'Gói lẻ 1 buổi: gỡ bug, chữa báo cáo, ôn trước bảo vệ.',
-      'Gói theo dự án: đồng hành từ đề cương tới lúc nộp.',
-      'Gói dài hạn: mentor định hướng theo từng kỳ.',
-    ],
+    title: 'Gói học linh hoạt',
+    points: ['Buổi đơn hoặc gói theo mục tiêu.', 'Mức giá do mentor công bố — bạn so sánh và quyết định.'],
   },
   {
-    title: 'Cộng đồng sinh viên học hỏi',
-    points: [
-      'Tài liệu, template báo cáo/slide bảo vệ do mentor biên soạn.',
-      'Chia sẻ kinh nghiệm thực tập, câu hỏi phỏng vấn thường gặp.',
-      'Kết nối nhiều mentor cho nhiều môn/đồ án khác nhau.',
-    ],
+    title: 'Cộng đồng & tài liệu',
+    points: ['Chia sẻ kinh nghiệm và mẫu tham khảo hữu ích.', 'Kết nối nhiều mentor cho nhiều nhu cầu khác nhau.'],
   },
 ];
 
@@ -146,38 +146,50 @@ export const testimonials = [
   },
 ];
 
+export const landingFaqSection = {
+  subtitle: 'Vài câu hỏi thường gặp trước khi bạn bắt đầu.',
+};
+
 export const faqs = [
   {
-    question: 'Mentoree hỗ trợ những loại đồ án nào cho sinh viên?',
+    question: 'Mentoree phù hợp loại hỗ trợ nào?',
     answer:
-      'Mentor có thể đồng hành với bài tập lớn (BTL), đồ án môn học, đồ án chuyên ngành, đồ án tốt nghiệp (ĐATN), khóa luận, tiểu luận và đề tài nghiên cứu khoa học (NCKH) sinh viên ở nhiều ngành như CNTT, Kinh tế, Điện - Điện tử, Cơ khí, Xây dựng, Ngoại ngữ, Thiết kế…',
+      'Từ môn học, dự án, nghiên cứu, luận văn đến định hướng nghề — miễn là bạn cần người đi trước đồng hành 1-1. Phạm vi cụ thể phụ thuộc từng mentor và được mô tả trên hồ sơ.',
   },
   {
-    question: 'Mentor trên Mentoree là ai?',
+    question: 'Mentor là ai?',
     answer:
-      'Đa số là anh chị sinh viên giỏi, cựu sinh viên đã đi làm và giảng viên trẻ/NCS tại các trường đại học Việt Nam. Hồ sơ mentor được xác thực trước khi xuất hiện công khai.',
+      'Anh chị sinh viên giỏi, cựu SV, người đi làm hoặc giảng viên trẻ tại các trường. Hồ sơ được kiểm duyệt trước khi hiển thị công khai.',
   },
   {
-    question: 'Chi phí một buổi kèm là bao nhiêu?',
+    question: 'Chi phí thế nào?',
     answer:
-      'Mức giá do mentor tự đặt, hiển thị công khai trên hồ sơ. Có gói buổi lẻ để gỡ khó nhanh và gói theo dự án (kèm tới lúc nộp/bảo vệ) — bạn chủ động chọn theo ngân sách sinh viên.',
+      'Mỗi mentor đặt giá và gói (buổi lẻ hoặc theo mục tiêu). Bạn xem trước trên hồ sơ và chọn phù hợp ngân sách.',
   },
   {
-    question: 'Các buổi học diễn ra như thế nào?',
+    question: 'Buổi học diễn ra ra sao?',
     answer:
-      'Mặc định học online qua video call, màn hình chia sẻ để mentor hướng dẫn trực tiếp trên code/báo cáo. Một số mentor nhận gặp offline nếu cùng khu vực.',
+      'Chủ yếu học online qua video call, chia sẻ màn hình khi cần. Một số mentor có thể gặp trực tiếp nếu cùng khu vực.',
   },
   {
-    question: 'Tôi có thể đổi lịch hoặc hoàn tiền không?',
+    question: 'Đổi lịch hoặc hoàn tiền?',
     answer:
-      'Bạn có thể đổi/hủy lịch theo chính sách hiển thị trên gói của mentor (thường trước 24 giờ). Nếu buổi học không diễn ra đúng cam kết, bạn có thể yêu cầu hoàn tiền qua kênh hỗ trợ của nền tảng.',
+      'Theo chính sách hiển thị trên từng gói (thường có thời hạn hủy/đổi). Nếu buổi không đúng cam kết, liên hệ hỗ trợ để xử lý.',
   },
   {
-    question: 'Mentoree có làm hộ đồ án hay viết thuê không?',
+    question: 'Mentoree có làm hộ bài hay viết thuê không?',
     answer:
-      'Không. Mentor chỉ hướng dẫn, review, góp ý và luyện bảo vệ — giúp bạn tự hoàn thiện sản phẩm của mình. Điều này đảm bảo bạn học được kỹ năng và tránh rủi ro vi phạm quy chế học thuật.',
+      'Không. Mentor hướng dẫn, góp ý và luyện — bạn tự hoàn thành công việc của mình, phù hợp quy chế học thuật.',
   },
 ];
+
+export const landingCta = {
+  titlePrefix: 'Sẵn sàng ',
+  titleHighlight: 'bắt đầu',
+  titleSuffix: '?',
+  body: 'Đăng ký miễn phí, tìm mentor phù hợp và đặt buổi đầu trong vài phút.',
+  primaryLabel: 'Tìm mentor',
+};
 
 export const mentorCategories = [
   {

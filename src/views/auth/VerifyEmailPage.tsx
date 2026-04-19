@@ -63,11 +63,6 @@ export function VerifyEmailPage() {
       const storageKey = `${VERIFY_OK_PREFIX}${token}`;
 
       if (typeof window !== 'undefined' && sessionStorage.getItem(storageKey) === '1') {
-        try {
-          await reloadSession();
-        } catch {
-          /* session có thể đã hết; để user thấy lỗi ở lần gọi API nếu cần */
-        }
         if (!cancelled) router.replace('/dashboard');
         finish();
         return;
