@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-/** Khối nội dung có viền nhẹ — dùng cho bảng, form, biểu đồ */
+/** Khối nội dung có viền nhẹ — alias `Card` variant dashboard (giữ import cũ trong codebase). */
 export function DashboardCard({
   children,
   className,
@@ -15,15 +16,9 @@ export function DashboardCard({
   padding?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        'rounded-2xl border border-slate-200/80 bg-white',
-        padding && 'p-5 sm:p-6',
-        className,
-      )}
-    >
+    <Card variant="dashboard" padding={padding} className={className}>
       {children}
-    </div>
+    </Card>
   );
 }
 

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Package, Shield, UserPlus } from 'lucide-react';
 import { useAdminData } from '@/hooks/useAdminData';
-import { AdminHomeCharts } from '@/components/admin';
+import { AdminHomeCharts, ADMIN_PATHS } from '@/components/admin';
 import { DashboardSection } from '@/components/dashboard/DashboardPrimitives';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
@@ -51,7 +51,7 @@ export function AdminDashboardHomePage() {
         title="Phân tích"
         action={
           <Link
-            href="/dashboard/admin/stats"
+            href={ADMIN_PATHS.stats}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 underline-offset-4 hover:text-slate-900 hover:underline"
           >
             Mở quản trị đầy đủ

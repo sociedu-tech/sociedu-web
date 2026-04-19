@@ -26,9 +26,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = normalizePath(usePathname() || '');
   const { loading, error, refresh, data } = useAdminSectionData();
 
-  const title =
-    ADMIN_PAGE_TITLES[pathname] ??
-    (pathname.startsWith('/dashboard/admin') ? 'Quản trị hệ thống' : 'Quản trị hệ thống');
+  const title = ADMIN_PAGE_TITLES[pathname] ?? 'Quản trị hệ thống';
 
   if (loading) {
     return (

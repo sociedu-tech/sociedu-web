@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
+import { ADMIN_PATHS, isAdminDashboardPath } from '@/components/admin/adminPaths';
 
 export type ShellNavItem = {
   href: string;
@@ -33,7 +34,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
   if (r === ROLES.ADMIN) {
     return [
       { href: '/dashboard', label: 'Tổng quan', icon: Home, exact: true, group: 'Chính' },
-      { href: '/dashboard/admin/stats', label: 'Quản trị hệ thống', icon: Shield, group: 'Chính' },
+      { href: ADMIN_PATHS.stats, label: 'Quản trị hệ thống', icon: Shield, group: 'Chính' },
       { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Liên hệ' },
     ];
   }
@@ -94,8 +95,8 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
     return pathname === item.href || pathname === `${item.href}/`;
   }
   const n = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
-  if (item.href === '/dashboard/admin/stats') {
-    return n.startsWith('/dashboard/admin');
+  if (item.href === ADMIN_PATHS.stats) {
+    return isAdminDashboardPath(n);
   }
   if (item.href === '/dashboard/projects') {
     return (
@@ -107,11 +108,11 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 }
 
 const TITLE_ENTRIES: [string, string][] = [
-  ['/dashboard/admin/stats', 'Thống kê'],
-  ['/dashboard/admin/mentor-requests', 'Yêu cầu mentor'],
-  ['/dashboard/admin/product-requests', 'Đăng tài liệu'],
-  ['/dashboard/admin/update-requests', 'Cập nhật tài liệu'],
-  ['/dashboard/admin/users', 'Người dùng'],
+  [ADMIN_PATHS.stats, 'Thống kê'],
+  [ADMIN_PATHS.mentorRequests, 'Yêu cầu mentor'],
+  [ADMIN_PATHS.productRequests, 'Đăng tài liệu'],
+  [ADMIN_PATHS.updateRequests, 'Cập nhật tài liệu'],
+  [ADMIN_PATHS.users, 'Người dùng'],
   ['/dashboard/packages', 'Gói dịch vụ'],
   ['/dashboard/schedule', 'Lịch dạy'],
   ['/dashboard/mentees', 'Học viên'],
@@ -130,7 +131,6 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/projects/progress') return 'Tiến độ dự án';
   if (normalized.startsWith('/dashboard/projects/')) return 'Chi tiết dự án';
   if (normalized === '/dashboard/sessions') return 'Buổi học';
-  if (normalized === '/dashboard/admin') return 'Quản trị hệ thống';
   for (const [prefix, title] of TITLE_ENTRIES) {
     if (normalized === prefix || normalized.startsWith(`${prefix}/`)) {
       return title;

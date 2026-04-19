@@ -9,6 +9,12 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, hasRole } from '@/constants/roles';
 import { UserAvatarMenu } from '@/components/ui/UserAvatarMenu';
+import { Button, IconButton } from '@/components/ui';
+import {
+  siteHeaderAuthLinkClassName,
+  siteNavDesktopHashButtonClassName,
+  siteNavDesktopItemClassName,
+} from '@/components/ui/siteChrome';
 
 type NavItem = { name: string; path: string; isHash: boolean };
 
@@ -78,7 +84,7 @@ export const Navbar = () => {
                 key={link.name}
                 type="button"
                 onClick={() => handleHashNav(link.path)}
-                className="text-[12px]  font-medium transition-colors hover:text-primary text-gray"
+                className={siteNavDesktopHashButtonClassName()}
               >
                 {link.name}
               </button>
@@ -86,10 +92,7 @@ export const Navbar = () => {
               <Link
                 key={link.name}
                 href={link.path}
-                className={cn(
-                  'text-[12px] font-medium transition-colors hover:text-primary',
-                  isRouteActive(link.path) ? 'text-primary' : 'text-gray'
-                )}
+                className={siteNavDesktopItemClassName(isRouteActive(link.path))}
               >
                 {link.name}
               </Link>
@@ -100,33 +103,28 @@ export const Navbar = () => {
         <div className="flex items-center gap-3">
           {!isAuthenticated ? (
             <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/login"
-                className="text-[15px]  text-dark hover:text-primary transition-colors px-2"
-              >
+              <Link href="/login" className={siteHeaderAuthLinkClassName}>
                 Đăng nhập
               </Link>
-              <Link
-                href="/register"
-                className="btn-primary py-2 px-5 text-sm"
-              >
+              <Button href="/register" variant="primary" size="compact">
                 Đăng ký
-              </Link>
+              </Button>
             </div>
           ) : (
             <UserAvatarMenu variant="site" user={user} profileHref={profileHref} onLogout={logout} />
           )}
 
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((o) => !o)}
-            className="lg:hidden p-2 rounded-[4px] hover:bg-surface-muted min-w-10 min-h-10 flex items-center justify-center"
+          <IconButton
+            variant="ghost"
+            size="md"
+            className="lg:hidden"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-nav-menu"
             aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            onClick={() => setIsMobileMenuOpen((o) => !o)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" aria-hidden /> : <Menu className="w-6 h-6" aria-hidden />}
-          </button>
+          </IconButton>
         </div>
       </div>
 
@@ -217,13 +215,15 @@ export const Navbar = () => {
                     >
                       Đăng nhập
                     </Link>
-                    <Link
+                    <Button
                       href="/register"
+                      variant="primary"
+                      size="default"
+                      className="block w-full text-center py-2.5"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="btn-primary block w-full text-center py-2.5"
                     >
                       Đăng ký
-                    </Link>
+                    </Button>
                   </>
                 )}
               </div>
