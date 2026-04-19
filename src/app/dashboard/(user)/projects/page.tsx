@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { ProjectsHub } from '@/views/dashboard/projects/ProjectsHub';
+import { ProjectsHub } from '@/features/dashboard/views/projects/ProjectsHub';
 
 export default function DashboardProjectsPage() {
   return (

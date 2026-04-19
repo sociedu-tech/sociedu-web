@@ -9,7 +9,7 @@ export const DEFAULT_GUEST_USER: User = {
   name: 'Khách',
   email: '',
   avatar: '',
-  role: 'buyer',
+  role: 'user',
   joinedDate: new Date().toISOString()
 };
 

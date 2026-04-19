@@ -1,5 +1,4 @@
-import type { AdminTimeRange } from '@/components/admin/charts/types';
-import type { AdminSeriesPoint } from '@/components/admin/charts/types';
+import type { StatsSeriesPoint, StatsTimeRange } from '@/components/dashboard/stats';
 
 export type AdminAnalyticsKpis = {
   liveSessions: number;
@@ -9,22 +8,22 @@ export type AdminAnalyticsKpis = {
 };
 
 export type AdminAnalyticsBundle = {
-  range: AdminTimeRange;
+  range: StatsTimeRange;
   kpis: AdminAnalyticsKpis;
   /** % so với kỳ trước (mẫu) */
   deltas: Record<keyof AdminAnalyticsKpis, number>;
   series: {
-    sessions: AdminSeriesPoint[];
-    bookings: AdminSeriesPoint[];
-    mentors: AdminSeriesPoint[];
-    learners: AdminSeriesPoint[];
+    sessions: StatsSeriesPoint[];
+    bookings: StatsSeriesPoint[];
+    mentors: StatsSeriesPoint[];
+    learners: StatsSeriesPoint[];
   };
   /** Phân bổ booking theo loại (mẫu) */
   bookingMix: { name: string; value: number }[];
 };
 
-function smoothSeries(n: number, seed: number, min: number, max: number): AdminSeriesPoint[] {
-  const out: AdminSeriesPoint[] = [];
+function smoothSeries(n: number, seed: number, min: number, max: number): StatsSeriesPoint[] {
+  const out: StatsSeriesPoint[] = [];
   for (let i = 0; i < n; i++) {
     const t = i / Math.max(1, n - 1);
     const wave = Math.sin(seed * 0.3 + t * 4) * 0.25 + 0.75;
@@ -34,7 +33,7 @@ function smoothSeries(n: number, seed: number, min: number, max: number): AdminS
   return out;
 }
 
-function labelSets(range: AdminTimeRange): { n: number; labels: string[] } {
+function labelSets(range: StatsTimeRange): { n: number; labels: string[] } {
   switch (range) {
     case '7d':
       return {
@@ -74,7 +73,7 @@ function labelSets(range: AdminTimeRange): { n: number; labels: string[] } {
 }
 
 /** Dữ liệu mẫu cho dashboard thống kê admin (thay API sau). */
-export function getAdminAnalyticsMock(range: AdminTimeRange): AdminAnalyticsBundle {
+export function getAdminAnalyticsMock(range: StatsTimeRange): AdminAnalyticsBundle {
   const { n, labels } = labelSets(range);
 
   const mult =
@@ -99,7 +98,7 @@ export function getAdminAnalyticsMock(range: AdminTimeRange): AdminAnalyticsBund
   const s3 = smoothSeries(n, 3, 2, 18);
   const s4 = smoothSeries(n, 4, 15, 95);
 
-  const applyLabels = (arr: AdminSeriesPoint[]): AdminSeriesPoint[] =>
+  const applyLabels = (arr: StatsSeriesPoint[]): StatsSeriesPoint[] =>
     arr.map((p, i) => ({ ...p, label: labels[i] ?? `Đ${i + 1}` }));
 
   return {

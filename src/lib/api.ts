@@ -5,17 +5,21 @@
 
 export const getAuthToken = (): string | null => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('token');
+  // Fallback to localStorage if cookie is somehow missing but local storage is there
+  const matches = document.cookie.match(new RegExp('(^| )access_token=([^;]+)'));
+  return matches ? decodeURIComponent(matches[2]) : localStorage.getItem('token');
 };
 
 export const setAuthToken = (token: string) => {
   if (typeof window === 'undefined') return;
   localStorage.setItem('token', token);
+  document.cookie = `access_token=${encodeURIComponent(token)}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
 };
 
 export const removeAuthToken = () => {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('token');
+  document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 };
 
 export const API_BASE_URL =
@@ -79,8 +83,22 @@ const parseApiEnvelope = async (response: Response): Promise<ApiEnvelope> => {
   }
 };
 
-const request = async (url: string, options: RequestInit = {}) => {
-  const token = getAuthToken();
+import { authService, getRefreshToken } from '@/services/authService';
+
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const subscribeTokenRefresh = (cb: (token: string) => void) => {
+  refreshSubscribers.push(cb);
+};
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+};
+
+const request = async (url: string, options: RequestInit = {}): Promise<ApiEnvelope> => {
+  let token = getAuthToken();
   const headers = new Headers(options.headers || {});
 
   if (token) {
@@ -92,7 +110,44 @@ const request = async (url: string, options: RequestInit = {}) => {
   }
 
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
-  const response = await fetch(fullUrl, { ...options, headers });
+  let response = await fetch(fullUrl, { ...options, headers });
+  
+  if (response.status === 401) {
+    const refreshTokenRecord = getRefreshToken();
+    if (refreshTokenRecord) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          const payload = await authService.refresh(refreshTokenRecord);
+          token = payload.accessToken ?? '';
+          setAuthToken(token);
+          onRefreshed(token);
+        } catch (error) {
+          refreshSubscribers = [];
+          authService.logout();
+          throw new ApiClientError('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.', { status: 401 });
+        } finally {
+          isRefreshing = false;
+        }
+      } else {
+        await new Promise<string>((resolve) => {
+          subscribeTokenRefresh((newToken) => resolve(newToken));
+        });
+        token = getAuthToken();
+      }
+
+      // Retry request with new token
+      const newHeaders = new Headers(options.headers || {});
+      if (token) {
+        newHeaders.set('Authorization', `Bearer ${token}`);
+      }
+      if (!newHeaders.has('Content-Type') && !(options.body instanceof FormData)) {
+        newHeaders.set('Content-Type', 'application/json');
+      }
+      response = await fetch(fullUrl, { ...options, headers: newHeaders });
+    }
+  }
+
   const result = await parseApiEnvelope(response);
 
   if (!response.ok) {

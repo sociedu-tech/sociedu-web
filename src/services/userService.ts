@@ -155,7 +155,7 @@ const mapBundleToUser = (bundle: NonNullable<ReturnType<typeof parseProfileBundl
     name: displayName(profile),
     email: asStr(pick(profile, 'email')).trim(),
     avatar: avatarUrlFor(userId, pick(profile, 'avatarFileId', 'avatar_file_id')),
-    role: 'buyer',
+    role: 'user',
     bio: asStr(pick(profile, 'bio')).trim() || undefined,
     joinedDate: formatJoined(pick(profile, 'createdAt', 'created_at')),
     experience: experiences.length ? experiences : undefined,

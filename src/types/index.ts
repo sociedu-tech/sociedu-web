@@ -1,9 +1,11 @@
+import type { AppRole } from '@/constants/roles';
+
 export interface User {
   id: string;
   name: string;
   email: string;
   avatar: string;
-  role: 'buyer' | 'seller' | 'admin' | 'mentor';
+  role: AppRole;
   coverImage?: string;
   bio?: string;
   joinedDate: string;

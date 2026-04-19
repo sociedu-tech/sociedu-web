@@ -86,7 +86,7 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
 
   const roleRaw = asStr(pick(raw, 'role')).toLowerCase();
   const role: User['role'] =
-    roleRaw === 'admin' ? 'admin' : roleRaw === 'seller' ? 'seller' : roleRaw === 'mentor' ? 'mentor' : 'mentor';
+    roleRaw === 'admin' ? 'admin' : (roleRaw === 'seller' || roleRaw === 'mentor') ? 'mentor' : 'mentor';
 
   const mi = pick(raw, 'mentorInfo', 'mentor_info');
   const mentorBlock = isRecord(mi) ? mi : {};

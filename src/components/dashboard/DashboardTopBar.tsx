@@ -30,14 +30,16 @@ export function DashboardTopBar({
   return (
     <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-4 bg-[#f7f7f7] px-4 lg:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <button
-          type="button"
-          onClick={isMobile ? onMobileMenuToggle : onMenuToggle}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-slate-700 transition-colors hover:bg-slate-100"
-          aria-label={isMobile ? 'Mở menu' : 'Thu gọn hoặc mở rộng sidebar'}
-        >
-          <Menu className="size-[18px]" strokeWidth={2} />
-        </button>
+        {isMobile && (
+          <button
+            type="button"
+            onClick={onMobileMenuToggle}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-slate-700 transition-colors hover:bg-slate-100"
+            aria-label="Mở menu"
+          >
+            <Menu className="size-[18px]" strokeWidth={2} />
+          </button>
+        )}
 
         <nav
           className="hidden min-w-0 items-center gap-1 text-[13px] text-slate-500 sm:flex"
@@ -45,10 +47,10 @@ export function DashboardTopBar({
         >
           <Link
             href="/dashboard"
+            aria-label="Trang chủ dashboard"
             className="flex shrink-0 items-center gap-1.5 rounded-lg px-1.5 py-1 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
             <Home className="size-4 shrink-0 text-slate-400" strokeWidth={2} />
-            <span className="hidden md:inline">Tổng quan</span>
           </Link>
           {crumbs.map((c, i) => (
             <span key={`${c.label}-${i}`} className="flex min-w-0 items-center gap-1.5">

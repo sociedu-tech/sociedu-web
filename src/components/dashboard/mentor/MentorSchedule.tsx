@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import { Calendar as CalendarIcon, Clock, Video, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
@@ -13,15 +15,21 @@ export const MentorSchedule = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-lg font-semibold text-dark">Lịch trình & Lớp học</h2>
-        <div className="flex gap-3">
-          <div className="flex items-center gap-2 bg-white px-2 py-1.5 rounded-lg border border-gray-200">
-            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-500"><ChevronLeft size={16} /></button>
-            <span className="font-medium text-sm text-dark px-2">Tháng 4, 2026</span>
-            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors text-gray-500"><ChevronRight size={16} /></button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        <div className="flex flex-wrap gap-3 sm:justify-end">
+          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5">
+            <button type="button" className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100">
+              <ChevronLeft size={16} />
+            </button>
+            <span className="px-2 text-sm font-medium text-slate-900">Tháng 4, 2026</span>
+            <button type="button" className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100">
+              <ChevronRight size={16} />
+            </button>
           </div>
-          <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-all flex items-center gap-2">
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
+          >
             <Plus size={16} /> Khung giờ rảnh
           </button>
         </div>
