@@ -38,10 +38,10 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
     return [
       { href: ROUTES.DASHBOARD.ADMIN.OVERVIEW.path, label: 'Trang chủ', icon: Home, exact: true, group: 'Chính' },
       { href: ROUTES.DASHBOARD.SHARED.CHAT.path, label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Chính' },
-      { 
-        href: ROUTES.DASHBOARD.ADMIN.MENTORS.path, 
-        label: 'Quản lý Mentor', 
-        icon: UserCog, 
+      {
+        href: ROUTES.DASHBOARD.ADMIN.MENTORS.path,
+        label: 'Quản lý Mentor',
+        icon: UserCog,
         group: 'Quản trị',
         children: [
           { href: ROUTES.DASHBOARD.ADMIN.MENTORS.path, label: 'Danh mục', exact: true },
@@ -136,6 +136,8 @@ const TITLE_ENTRIES: [string, string][] = [
   ['/dashboard/reports', 'Chấm báo cáo'],
 ];
 
+
+// sd?
 export function getDashboardTitle(pathname: string): string {
   const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
   if (normalized === '/dashboard') return 'Trang chủ';
