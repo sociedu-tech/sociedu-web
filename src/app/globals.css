@@ -1,9 +1,24 @@
 @import "tailwindcss";
 @import "../styles/theme.css";
 
+/*
+  Nền responsive production:
+  - Không để document rộng hơn viewport (Safari iOS hay “thu nhỏ” cả trang).
+  - 100dvh: chiều cao thực khi thanh địa chỉ ẩn/hiện; kết hợp viewport meta từ app/layout.
+*/
 @layer base {
+  html {
+    height: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Gợi ý ô input/search không tự đổi dark style khi chưa có theme toggle toàn app */
+    color-scheme: light;
+  }
+
   body {
-    @apply bg-page text-dark font-sans antialiased text-[15px] font-medium leading-[1.55] tracking-[-0.12px];
+    @apply min-h-dvh w-full bg-page text-dark font-sans antialiased text-[15px] font-medium leading-[1.55] tracking-[-0.12px];
+    overflow-x: clip;
   }
 }
 
