@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Inconsolata } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -53,6 +53,21 @@ export const metadata: Metadata = {
       'Kết nối với anh chị đi trước và chuyên gia để được kèm 1-1 đồ án, BTL, NCKH, khóa luận và luyện phỏng vấn thực tập.',
   },
   robots: { index: true, follow: true },
+};
+
+/**
+ * Viewport chuẩn App Router — tránh scale lạ trên mobile, vẫn cho phép zoom (a11y).
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
+  ],
 };
 
 export default function RootLayout({
