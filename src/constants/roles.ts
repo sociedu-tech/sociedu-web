@@ -6,7 +6,7 @@ export const ROLES = {
   ADMIN: 'admin',
   MENTOR: 'mentor',
   /** Học viên (API thường trả `buyer`) */
-  USER: 'buyer',
+  USER: 'user',
   /** Chưa đăng nhập hoặc không có role */
   GUEST: 'guest',
 } as const;

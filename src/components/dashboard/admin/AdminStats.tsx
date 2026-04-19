@@ -51,29 +51,29 @@ const mockStats = {
 
 export const AdminStats = () => {
   return (
-    <div className="p-6 space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
-          <p className="text-xs font-bold text-blue-600 tracking-widest mb-1">Tổng doanh thu</p>
-          <p className="text-3xl font-black text-blue-900">128.500kđ</p>
-          <p className="text-xs text-blue-600 mt-2 font-bold">+12% so với tháng trước</p>
+    <div className="space-y-8 p-5 sm:p-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="dashboard-stat-tile p-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Tổng doanh thu</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">128.500kđ</p>
+          <p className="mt-2 text-xs font-medium text-emerald-700">+12% so với tháng trước</p>
         </div>
-        <div className="bg-green-50 p-6 rounded-3xl border border-green-100">
-          <p className="text-xs font-bold text-green-600 tracking-widest mb-1">Người dùng mới</p>
-          <p className="text-3xl font-black text-green-900">1,240</p>
-          <p className="text-xs text-green-600 mt-2 font-bold">+8% so với tháng trước</p>
+        <div className="dashboard-stat-tile p-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Người dùng mới</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">1.240</p>
+          <p className="mt-2 text-xs font-medium text-emerald-700">+8% so với tháng trước</p>
         </div>
-        <div className="bg-orange-50 p-6 rounded-3xl border border-orange-100">
-          <p className="text-xs font-bold text-orange-600 tracking-widest mb-1">Tài liệu đã bán</p>
-          <p className="text-3xl font-black text-orange-900">3,520</p>
-          <p className="text-xs text-orange-600 mt-2 font-bold">+15% so với tháng trước</p>
+        <div className="dashboard-stat-tile p-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Tài liệu đã bán</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">3.520</p>
+          <p className="mt-2 text-xs font-medium text-emerald-700">+15% so với tháng trước</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-airbnb-gray tracking-widest">Doanh thu theo tháng</h3>
-          <div className="h-[300px] w-full">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Doanh thu theo tháng</h3>
+          <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={mockStats.revenue}>
                 <defs>
@@ -94,9 +94,9 @@ export const AdminStats = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-airbnb-gray tracking-widest">Tăng trưởng người dùng</h3>
-          <div className="h-[300px] w-full">
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tăng trưởng người dùng</h3>
+          <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockStats.userGrowth}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-chart-grid)" />
@@ -111,9 +111,9 @@ export const AdminStats = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-airbnb-gray tracking-widest">Phân bổ danh mục</h3>
-          <div className="h-[300px] w-full flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="space-y-3 lg:col-span-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Phân bổ danh mục</h3>
+          <div className="flex h-[260px] w-full flex-col items-center justify-center gap-4 sm:flex-row">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -138,7 +138,7 @@ export const AdminStats = () => {
               {mockStats.categoryDistribution.map((entry, index) => (
                 <div key={entry.name} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[index % COLORS.length]}} />
-                  <span className="text-xs font-bold text-airbnb-dark">{entry.name}</span>
+                  <span className="text-xs font-medium text-slate-800">{entry.name}</span>
                 </div>
               ))}
             </div>

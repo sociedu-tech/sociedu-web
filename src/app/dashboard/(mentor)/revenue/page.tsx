@@ -1,11 +1,6 @@
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ROLES } from '@/constants/roles';
-import { MentorRevenuePage } from '@/views/mentor/MentorRevenuePage';
+import { redirect } from 'next/navigation';
 
-export default function DashboardRevenuePage() {
-  return (
-    <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
-      <MentorRevenuePage />
-    </ProtectedRoute>
-  );
+/** Doanh thu đã gộp vào Tổng quan mentor (`/dashboard`). */
+export default function DashboardRevenueRedirectPage() {
+  redirect('/dashboard');
 }

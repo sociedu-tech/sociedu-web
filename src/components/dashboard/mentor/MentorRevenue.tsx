@@ -1,12 +1,59 @@
 import React from 'react';
-import { 
-  TrendingUp, TrendingDown, DollarSign, Wallet, 
-  ArrowUpRight, ArrowDownRight, CreditCard, History,
-  Filter, Download
+import {
+  TrendingUp,
+  Wallet,
+  ArrowUpRight,
+  ArrowDownRight,
+  CreditCard,
+  History,
+  Filter,
+  Download,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export const MentorRevenue = () => {
+const statGridClass = (compact: boolean) =>
+  cn(
+    'grid gap-4',
+    compact ? 'grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+  );
+
+type MentorRevenueProps = {
+  /** Khi true: ẩn tiêu đề + nút (dùng trong Tổng quan với `DashboardSection`). */
+  embedded?: boolean;
+  showStatCards?: boolean;
+  showTransactions?: boolean;
+  /** 2×2 thẻ nhỏ — phù hợp cột phụ tổng quan. */
+  compactStats?: boolean;
+  /** false khi tiêu đề đã có ở `DashboardSection` bên ngoài. */
+  showTransactionsHeading?: boolean;
+};
+
+export function MentorRevenueToolbar() {
+  return (
+    <div className="flex flex-wrap gap-2 sm:gap-3">
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+      >
+        <Filter size={16} /> Bộ lọc
+      </button>
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+      >
+        <Download size={16} /> Xuất báo cáo
+      </button>
+    </div>
+  );
+}
+
+export function MentorRevenue({
+  embedded = false,
+  showStatCards = true,
+  showTransactions = true,
+  compactStats = false,
+  showTransactionsHeading = true,
+}: MentorRevenueProps) {
   const transactions = [
     { id: 1, mentee: 'Nguyễn Văn A', package: 'Khóa học React nâng cao', amount: 500000, date: '02/04/2026', status: 'Hoàn thành', type: 'credit' },
     { id: 2, mentee: 'Trần Thị B', package: 'Tư vấn UI/UX Career', amount: 300000, date: '01/04/2026', status: 'Hoàn thành', type: 'credit' },
@@ -16,20 +63,16 @@ export const MentorRevenue = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-lg font-semibold text-dark">Thống kê Doanh thu</h2>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
-            <Filter size={16} /> Bộ lọc
-          </button>
-          <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
-            <Download size={16} /> Xuất báo cáo
-          </button>
+      {!embedded ? (
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <h2 className="text-lg font-semibold text-dark">Thống kê Doanh thu</h2>
+          <MentorRevenueToolbar />
         </div>
-      </div>
+      ) : null}
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {showStatCards ? (
+      <div className={statGridClass(compactStats)}>
         <div className="bg-primary p-6 rounded-2xl text-white relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10">
@@ -83,13 +126,17 @@ export const MentorRevenue = () => {
           </p>
         </div>
       </div>
+      ) : null}
 
       {/* Transaction History */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <h3 className="font-semibold text-dark mb-6 flex items-center gap-2 text-base">
-           <History className="text-gray-400" size={18} /> Lịch sử giao dịch gần đây
-        </h3>
-        
+      {showTransactions ? (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+        {showTransactionsHeading ? (
+          <h3 className="mb-6 flex items-center gap-2 text-base font-semibold text-dark">
+            <History className="text-gray-400" size={18} /> Lịch sử giao dịch gần đây
+          </h3>
+        ) : null}
+
         <div className="space-y-4">
           {transactions.map(tx => (
             <div key={tx.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 group transition-colors">
@@ -122,10 +169,14 @@ export const MentorRevenue = () => {
           ))}
         </div>
         
-        <button className="w-full mt-6 py-3 text-sm font-medium text-primary border border-dashed border-gray-200 rounded-xl hover:bg-primary/5 hover:border-primary/30 transition-colors">
+        <button
+          type="button"
+          className="mt-6 w-full rounded-xl border border-dashed border-gray-200 py-3 text-sm font-medium text-primary transition-colors hover:border-primary/30 hover:bg-primary/5"
+        >
           Xem lịch sử chi tiết
         </button>
       </div>
+      ) : null}
     </div>
   );
 };

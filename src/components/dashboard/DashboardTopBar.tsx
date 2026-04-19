@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Bell, Home, Menu } from 'lucide-react';
+import { Bell, ChevronRight, Home, Menu } from 'lucide-react';
 import { getDashboardBreadcrumb } from '@/lib/dashboardNav';
 import { UserAvatarMenu, type UserAvatarMenuUser } from '@/components/ui/UserAvatarMenu';
 
@@ -28,51 +28,50 @@ export function DashboardTopBar({
   const crumbs = getDashboardBreadcrumb(pathname);
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 lg:px-6">
+    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-slate-200/90 bg-white px-4 lg:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <button
           type="button"
           onClick={isMobile ? onMobileMenuToggle : onMenuToggle}
-          className="flex size-9 shrink-0 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-slate-700 transition-colors hover:bg-slate-100"
           aria-label={isMobile ? 'Mở menu' : 'Thu gọn hoặc mở rộng sidebar'}
         >
           <Menu className="size-[18px]" strokeWidth={2} />
         </button>
 
         <nav
-          className="hidden min-w-0 items-center gap-2 text-sm text-gray-500 sm:flex"
+          className="hidden min-w-0 items-center gap-1 text-[13px] text-slate-500 sm:flex"
           aria-label="Breadcrumb"
         >
           <Link
             href="/dashboard"
-            className="flex shrink-0 items-center gap-1 transition-colors hover:text-gray-900"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg px-1.5 py-1 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
-            <Home className="size-4 shrink-0" strokeWidth={2} />
-            <span className="hidden md:inline">Bảng điều khiển</span>
+            <Home className="size-4 shrink-0 text-slate-400" strokeWidth={2} />
+            <span className="hidden md:inline">Tổng quan</span>
           </Link>
           {crumbs.map((c, i) => (
-            <span key={`${c.label}-${i}`} className="flex min-w-0 items-center gap-2">
-              <span className="text-gray-300">/</span>
+            <span key={`${c.label}-${i}`} className="flex min-w-0 items-center gap-1.5">
+              <ChevronRight className="size-3.5 shrink-0 text-slate-300" strokeWidth={2} aria-hidden />
               {c.href ? (
-                <Link href={c.href} className="truncate transition-colors hover:text-gray-900">
+                <Link href={c.href} className="truncate rounded-lg px-1.5 py-1 transition-colors hover:bg-slate-100 hover:text-slate-900">
                   {c.label}
                 </Link>
               ) : (
-                <span className="truncate font-medium text-gray-900">{c.label}</span>
+                <span className="truncate rounded-lg px-1.5 py-1 font-medium text-slate-900">{c.label}</span>
               )}
             </span>
           ))}
         </nav>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <button
           type="button"
-          className="relative flex size-9 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="flex size-9 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
           aria-label="Thông báo"
         >
           <Bell className="size-[18px]" strokeWidth={2} />
-          <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-red-500 ring-2 ring-white" />
         </button>
 
         <UserAvatarMenu
