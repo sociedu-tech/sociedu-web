@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Plus, Minus } from 'lucide-react';
+import { Button, Container, StatTile } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import {
   landingHero,
@@ -17,10 +18,6 @@ import {
   faqs,
   landingCta,
 } from '@/views/landing/landingContent';
-
-function Container({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn('mx-auto w-full max-w-7xl px-4 md:px-6', className)}>{children}</div>;
-}
 
 const SECTION_SCROLL_MARGIN = 'scroll-mt-24 md:scroll-mt-28';
 
@@ -87,30 +84,18 @@ export const LandingPage = () => {
           </p>
 
           <div className="mx-auto mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href={landingHero.primaryCta.href}
-              className="btn-primary inline-flex min-h-[48px] items-center gap-2 rounded-full px-8 py-3 text-sm font-bold"
-            >
+            <Button href={landingHero.primaryCta.href} variant="primary" size="pill">
               {landingHero.primaryCta.label}
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-            <Link
-              href={landingHero.secondaryCta.href}
-              className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-border bg-white px-8 py-3 text-sm font-bold text-dark transition hover:border-neutral-300 hover:bg-neutral-50"
-            >
+              <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+            </Button>
+            <Button href={landingHero.secondaryCta.href} variant="secondary" size="pill">
               {landingHero.secondaryCta.label}
-            </Link>
+            </Button>
           </div>
 
           <div className="mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
             {landingStats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-border/80 bg-white/95 px-3 py-4 text-center backdrop-blur-sm md:px-4 md:py-5"
-              >
-                <div className="text-xl font-black tracking-tight text-primary md:text-2xl">{s.value}</div>
-                <div className="mt-1.5 text-[11px] font-medium leading-snug text-gray md:text-xs">{s.label}</div>
-              </div>
+              <StatTile key={s.label} value={s.value} label={s.label} />
             ))}
           </div>
         </Container>
@@ -303,15 +288,12 @@ export const LandingPage = () => {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm text-white/75 md:text-base">{landingCta.body}</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/mentors" className="btn-primary inline-flex min-w-[180px] justify-center rounded-lg px-8 py-3">
+            <Button href="/mentors" variant="primary" size="cta">
               {landingCta.primaryLabel}
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex min-w-[180px] items-center justify-center rounded-lg border border-white/25 bg-white/10 px-8 py-3 text-sm font-bold text-white transition hover:bg-white/20"
-            >
+            </Button>
+            <Button href="/register" variant="ghostOnDark" size="cta">
               Đăng ký sinh viên
-            </Link>
+            </Button>
           </div>
         </Container>
       </section>

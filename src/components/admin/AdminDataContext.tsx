@@ -7,7 +7,7 @@ type AdminDataContextValue = ReturnType<typeof useAdminData>;
 
 const AdminDataContext = createContext<AdminDataContextValue | null>(null);
 
-/** Một lần fetch dữ liệu quản trị cho toàn khu `/dashboard/admin/*`. */
+/** Một lần fetch dữ liệu quản trị cho toàn khu route admin dưới `/dashboard` (stats, mentor-requests, …). */
 export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const value = useAdminData();
   return <AdminDataContext.Provider value={value}>{children}</AdminDataContext.Provider>;

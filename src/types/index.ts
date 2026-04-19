@@ -99,3 +99,13 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+export type {
+  UserAccountStatus,
+  AdminUserRow,
+  BookingStatus,
+  AdminBookingRow,
+  ModerationTargetType,
+  ModerationReportStatus,
+  AdminModerationReport,
+} from './adminDomain';

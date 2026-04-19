@@ -5,7 +5,7 @@ import { ROLES } from '@/constants/roles';
  * - `page.tsx` — `/dashboard` (tổng quan, UI theo role)
  * - `(user)/` — học viên: `projects/*`, `sessions`
  * - `(mentor)/` — mentor: `packages`, `schedule`, `mentees`, …
- * - `(admin)/` — quản trị: `admin/page` (redirect), `admin/stats`, `admin/mentor-requests`, …
+ * - `(admin)/` — quản trị: `mentor-requests`, `users`, … (tổng quan + thống kê tại `/dashboard`)
  * - `(shared)/` — dùng mọi role: `chat`, `profile/edit`
  *
  * Định nghĩa tập trung: URL dashboard + role được phép (đối chiếu guard / menu).
@@ -47,8 +47,8 @@ export const DASHBOARD_ROUTES = {
     roles: [ROLES.ADMIN, ROLES.MENTOR, ROLES.USER] as const,
   },
   admin: {
-    path: '/dashboard/admin/stats',
-    label: 'Quản trị hệ thống',
+    path: '/dashboard',
+    label: 'Tổng quan quản trị',
     roles: [ROLES.ADMIN] as const,
   },
   packages: {

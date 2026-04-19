@@ -4,9 +4,7 @@ import {
   Users,
   ShoppingBag,
   FileText,
-  Shield,
   Search,
-  UserCircle,
   Home,
   Package,
   FolderKanban,
@@ -14,8 +12,11 @@ import {
   MessageCircle,
   TrendingUp,
   Sparkles,
+  UserCheck,
+  Flag,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
+import { ADMIN_PATHS } from '@/components/admin/adminPaths';
 
 export type ShellNavItem = {
   href: string;
@@ -33,7 +34,10 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
   if (r === ROLES.ADMIN) {
     return [
       { href: '/dashboard', label: 'Tổng quan', icon: Home, exact: true, group: 'Chính' },
-      { href: '/dashboard/admin/stats', label: 'Quản trị hệ thống', icon: Shield, group: 'Chính' },
+      { href: ADMIN_PATHS.mentorRequests, label: 'Yêu cầu mentor', icon: UserCheck, group: 'Quản trị' },
+      { href: ADMIN_PATHS.users, label: 'Người dùng', icon: Users, group: 'Quản trị' },
+      { href: ADMIN_PATHS.bookings, label: 'Đặt lịch', icon: Calendar, group: 'Quản trị' },
+      { href: ADMIN_PATHS.moderation, label: 'Báo cáo', icon: Flag, group: 'Quản trị' },
       { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Liên hệ' },
     ];
   }
@@ -48,7 +52,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
       { href: '/dashboard/reports', label: 'Chấm báo cáo', icon: FileText, group: 'Công việc' },
       { href: '/dashboard/projects/progress', label: 'Tiến độ dự án', icon: TrendingUp, group: 'Công việc' },
-      { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Liên hệ' }
+      { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Liên hệ' },
     ];
   }
 
@@ -63,7 +67,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
   ];
 }
 
-const SHELL_GROUP_ORDER = ['Chính', 'Công việc', 'Học tập', 'Liên hệ', 'Tài khoản'] as const;
+const SHELL_GROUP_ORDER = ['Chính', 'Quản trị', 'Công việc', 'Học tập', 'Liên hệ', 'Tài khoản'] as const;
 
 export type ShellNavGroup = { title: string; items: ShellNavItem[] };
 
@@ -94,9 +98,6 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
     return pathname === item.href || pathname === `${item.href}/`;
   }
   const n = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
-  if (item.href === '/dashboard/admin/stats') {
-    return n.startsWith('/dashboard/admin');
-  }
   if (item.href === '/dashboard/projects') {
     return (
       n === '/dashboard/projects' ||
@@ -107,11 +108,10 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 }
 
 const TITLE_ENTRIES: [string, string][] = [
-  ['/dashboard/admin/stats', 'Thống kê'],
-  ['/dashboard/admin/mentor-requests', 'Yêu cầu mentor'],
-  ['/dashboard/admin/product-requests', 'Đăng tài liệu'],
-  ['/dashboard/admin/update-requests', 'Cập nhật tài liệu'],
-  ['/dashboard/admin/users', 'Người dùng'],
+  [ADMIN_PATHS.mentorRequests, 'Yêu cầu mentor'],
+  [ADMIN_PATHS.users, 'Người dùng'],
+  [ADMIN_PATHS.bookings, 'Đặt lịch'],
+  [ADMIN_PATHS.moderation, 'Báo cáo & khiếu nại'],
   ['/dashboard/packages', 'Gói dịch vụ'],
   ['/dashboard/schedule', 'Lịch dạy'],
   ['/dashboard/mentees', 'Học viên'],
@@ -130,7 +130,6 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/projects/progress') return 'Tiến độ dự án';
   if (normalized.startsWith('/dashboard/projects/')) return 'Chi tiết dự án';
   if (normalized === '/dashboard/sessions') return 'Buổi học';
-  if (normalized === '/dashboard/admin') return 'Quản trị hệ thống';
   for (const [prefix, title] of TITLE_ENTRIES) {
     if (normalized === prefix || normalized.startsWith(`${prefix}/`)) {
       return title;
