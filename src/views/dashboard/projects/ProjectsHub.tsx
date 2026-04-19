@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
-import { ProjectListUser } from '@/features/projects/ProjectList.user';
-import { ProjectListMentor } from '@/features/projects/ProjectList.mentor';
-import { ProjectListAdmin } from '@/features/projects/ProjectList.admin';
+import { ProjectListUser } from '@/views/dashboard/projects/ProjectList.user';
+import { ProjectListMentor } from '@/views/dashboard/projects/ProjectList.mentor';
+import { ProjectListAdmin } from '@/views/dashboard/projects/ProjectList.admin';
 
 /**
  * Phân nhánh UI theo role (client — JWT hiện ở localStorage).

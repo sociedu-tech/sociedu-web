@@ -20,14 +20,14 @@ import {
 } from 'lucide-react';
 import { DashboardCard } from '@/components/dashboard/DashboardPrimitives';
 import { useAuth } from '@/context/AuthContext';
-import { appendDemoOffer } from '@/features/projects/projectOfferDemoStorage';
+import { appendDemoOffer } from '@/views/dashboard/projects/projectOfferDemoStorage';
 import {
   MOCK_REQUESTS,
   MOCK_SUGGESTED,
   findOpportunity,
   type StudentRequest,
   type SuggestedProject,
-} from '@/features/projects/mentorOpportunitiesData';
+} from '@/views/dashboard/projects/mentorOpportunitiesData';
 import { cn } from '@/lib/utils';
 
 type MentorOffer = {

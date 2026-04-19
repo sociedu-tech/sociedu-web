@@ -20,7 +20,7 @@ export const removeAuthToken = () => {
 
 export const API_BASE_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_BASE_URL) ||
-  'http://localhost:9999';
+  'http://localhost:9992';
 
 export type ApiEnvelope<T = unknown> = {
   code?: number;

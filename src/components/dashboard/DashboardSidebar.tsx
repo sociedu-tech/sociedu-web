@@ -75,7 +75,7 @@ export function DashboardSidebar({
         {groups.map((section, sectionIdx) => (
           <div key={section.title} className="flex flex-col gap-0.5">
             {showText ? (
-              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+              <p className="mb-1.5 px-3 text-[10px] font-semibold  text-slate-400">
                 {section.title}
               </p>
             ) : sectionIdx > 0 ? (

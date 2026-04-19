@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
-import { SessionsListUser } from '@/features/sessions/SessionsList.user';
-import { SessionsListMentor } from '@/features/sessions/SessionsList.mentor';
-import { SessionsListAdmin } from '@/features/sessions/SessionsList.admin';
+import { SessionsListUser } from '@/views/dashboard/sessions/SessionsList.user';
+import { SessionsListMentor } from '@/views/dashboard/sessions/SessionsList.mentor';
+import { SessionsListAdmin } from '@/views/dashboard/sessions/SessionsList.admin';
 
 export function SessionsHub() {
   const { userRole } = useAuth();

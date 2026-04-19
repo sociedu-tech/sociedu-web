@@ -50,7 +50,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     pathname === '/dashboard/chat' || pathname.startsWith('/dashboard/chat/');
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f7f7] font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased">
+    <div
+      className={cn(
+        'flex flex-col bg-[#f7f7f7] font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased',
+        isChatPage ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen',
+      )}
+    >
       <DashboardSidebar
         items={navItems}
         pathname={pathname}
@@ -62,7 +67,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       />
 
       <div
-        className="flex min-h-0 min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out"
+        className={cn(
+          'flex min-h-0 min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out',
+          isChatPage && 'h-[100dvh] overflow-hidden',
+        )}
         style={{ marginLeft }}
       >
         <DashboardTopBar
@@ -83,7 +91,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <div
             className={cn(
               isChatPage
-                ? 'flex min-h-0 w-full max-w-none flex-1 flex-col px-0 py-0'
+                ? 'flex h-full min-h-0 w-full max-w-none flex-1 flex-col px-0 py-0'
                 : 'mx-auto min-h-[calc(100dvh-3.5rem)] w-full max-w-[1280px] px-4 py-8 sm:px-6 lg:px-8',
             )}
           >

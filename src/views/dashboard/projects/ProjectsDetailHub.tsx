@@ -2,9 +2,9 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
-import { ProjectDetailUser } from '@/features/projects/ProjectDetail.user';
-import { ProjectDetailMentor } from '@/features/projects/ProjectDetail.mentor';
-import { ProjectDetailAdmin } from '@/features/projects/ProjectDetail.admin';
+import { ProjectDetailUser } from '@/views/dashboard/projects/ProjectDetail.user';
+import { ProjectDetailMentor } from '@/views/dashboard/projects/ProjectDetail.mentor';
+import { ProjectDetailAdmin } from '@/views/dashboard/projects/ProjectDetail.admin';
 
 type Props = { projectId: string };
 

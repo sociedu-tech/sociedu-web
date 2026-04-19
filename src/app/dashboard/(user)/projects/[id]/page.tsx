@@ -1,4 +1,4 @@
-import { ProjectsDetailHub } from '@/features/projects/ProjectsDetailHub';
+import { ProjectsDetailHub } from '@/views/dashboard/projects/ProjectsDetailHub';
 
 type Props = {
   params: Promise<{ id: string }>;

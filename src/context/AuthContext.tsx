@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { authService, setRefreshToken, type AuthPayload } from '@/services/authService';
 import { userService } from '@/services/userService';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
 
-  const hydrateCurrentUser = async () => {
+  const hydrateCurrentUser = useCallback(async () => {
     const savedToken = getAuthToken();
     if (!savedToken) {
       setUser(null);
@@ -95,9 +95,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       avatarUrl: me?.avatar,
     });
     setToken(savedToken);
-  };
+  }, []);
 
-  const reloadSession = async () => {
+  const reloadSession = useCallback(async () => {
     setLoading(true);
     try {
       await hydrateCurrentUser();
@@ -108,36 +108,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, [hydrateCurrentUser]);
 
   useEffect(() => {
     void reloadSession();
-  }, []);
+  }, [reloadSession]);
 
-  const login = async (credentials: unknown) => {
-    const data = await authService.login(credentials);
-    await applyAuthPayload(data);
-  };
+  const applyAuthPayload = useCallback(
+    async (payload: AuthPayload | undefined) => {
+      if (!payload) {
+        return;
+      }
+      saveAuthMeta(payload);
+      await reloadSession();
+    },
+    [reloadSession],
+  );
 
-  const applyAuthPayload = async (payload: AuthPayload | undefined) => {
-    if (!payload) {
-      return;
-    }
-    saveAuthMeta(payload);
-    await reloadSession();
-  };
+  const login = useCallback(
+    async (credentials: unknown) => {
+      const data = await authService.login(credentials);
+      await applyAuthPayload(data);
+    },
+    [applyAuthPayload],
+  );
 
-  const logout = () => {
+  const logout = useCallback(() => {
     void authService.logout();
     setUser(null);
     setToken(null);
     clearAuthStorage();
-  };
+  }, []);
 
   const userRole = user?.roles?.[0] ? normalizeRole(user.roles[0]) : ROLES.GUEST;
 
-  return (
-    <AuthContext.Provider value={{
+  const value = useMemo(
+    () => ({
       user,
       isAuthenticated: !!user && !!token,
       userRole,
@@ -148,10 +154,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       reloadSession,
       logout,
       setUser,
-    }}>
-      {children}
-    </AuthContext.Provider>
+    }),
+    [user, userRole, loading, token, login, applyAuthPayload, reloadSession, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

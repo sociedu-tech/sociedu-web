@@ -8,15 +8,12 @@ import {
   CalendarPlus,
   FileText,
   ImageIcon,
-  MoreHorizontal,
   Paperclip,
   PanelRightClose,
   PanelRightOpen,
-  Phone,
   Plus,
   Search,
   Send,
-  Video,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -208,39 +205,28 @@ export function DashboardChatPage() {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-white">
-      {/* Header: full width */}
-      <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
-        <h1 className="text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">Tin nhắn</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={createConversation}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-50"
-          >
-            <Plus className="size-4" strokeWidth={2} />
-            Tạo hội thoại
-          </button>
-          <Link
-            href="/dashboard/sessions"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white transition-colors hover:opacity-95"
-          >
-            <CalendarPlus className="size-4" strokeWidth={2} />
-            Lên lịch hẹn
-          </Link>
-        </div>
-      </header>
-
-      {/* 3 cột: danh sách | chat | ảnh & file */}
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white">
+      {/* 3 cột: danh sách | chat | ảnh & file — chỉ các khối overflow bên trong được scroll */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Danh sách */}
         <aside
           className={cn(
-            'flex w-full shrink-0 flex-col border-slate-200 lg:w-[min(100%,300px)] lg:border-r',
+            'flex min-h-0 w-full flex-1 flex-col overflow-hidden border-slate-200 lg:h-full lg:w-[min(100%,300px)] lg:flex-none lg:shrink-0 lg:border-r',
             mobileThread && 'max-lg:hidden',
           )}
         >
           <div className="border-b border-slate-200 p-3">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-slate-900">Hội thoại</h2>
+              <button
+                type="button"
+                onClick={createConversation}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-colors hover:bg-slate-50"
+              >
+                <Plus className="size-3.5" strokeWidth={2} />
+                Tạo mới
+              </button>
+            </div>
             <div className="relative">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
@@ -303,7 +289,7 @@ export function DashboardChatPage() {
         {/* Luồng chat */}
         <section
           className={cn(
-            'flex min-h-0 min-w-0 flex-1 flex-col border-slate-200 lg:border-r',
+            'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-slate-200 lg:border-r',
             !mobileThread && 'max-lg:hidden',
           )}
           aria-label="Nội dung hội thoại"
@@ -332,38 +318,23 @@ export function DashboardChatPage() {
                   <p className="truncate font-semibold text-slate-900">{active.name}</p>
                   <p className="truncate text-xs text-slate-500">{active.roleLabel}</p>
                 </div>
+                <Link
+                  href="/dashboard/sessions"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:opacity-95 sm:px-3 sm:text-sm"
+                  title="Lên lịch hẹn"
+                >
+                  <CalendarPlus className="size-4 shrink-0" strokeWidth={2} />
+                  <span className="hidden sm:inline">Lên lịch hẹn</span>
+                </Link>
                 <button
                   type="button"
                   onClick={() => setRightPanelOpen((o) => !o)}
-                  className="flex size-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 lg:hidden"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 lg:hidden"
                   aria-expanded={rightPanelOpen}
                   aria-label="Ảnh và tệp đã gửi"
                 >
                   {rightPanelOpen ? <PanelRightClose className="size-5" /> : <PanelRightOpen className="size-5" />}
                 </button>
-                <div className="hidden items-center gap-1 sm:flex">
-                  <button
-                    type="button"
-                    className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-                    aria-label="Gọi thoại"
-                  >
-                    <Phone className="size-[18px]" strokeWidth={2} />
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-                    aria-label="Gọi video"
-                  >
-                    <Video className="size-[18px]" strokeWidth={2} />
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-                    aria-label="Tùy chọn"
-                  >
-                    <MoreHorizontal className="size-[18px]" strokeWidth={2} />
-                  </button>
-                </div>
               </div>
 
               <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-slate-50/90 p-3 sm:p-4">
@@ -476,7 +447,7 @@ export function DashboardChatPage() {
         {/* Sidebar phải: ảnh & tệp (desktop luôn hiện; mobile overlay) */}
         <aside
           className={cn(
-            'flex w-full shrink-0 flex-col border-slate-200 bg-white lg:w-72 lg:max-w-[320px] xl:w-80',
+            'flex min-h-0 w-full flex-col overflow-hidden border-slate-200 bg-white lg:h-full lg:w-72 lg:max-w-[320px] xl:w-80',
             'max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-[45] max-lg:w-[min(100vw-3rem,20rem)] max-lg:border-l max-lg:shadow-2xl',
             !rightPanelOpen && 'max-lg:hidden',
           )}

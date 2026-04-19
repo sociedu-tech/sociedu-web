@@ -1,29 +1,60 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   landingHero,
   landingStats,
+  landingAboutSection,
   landingAboutBlocks,
+  landingWhyIntro,
   landingWhyChoose,
+  landingFeaturesIntro,
   landingFeatures,
+  landingFaqSection,
   faqs,
+  landingCta,
 } from '@/views/landing/landingContent';
 
 function Container({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn('mx-auto w-full max-w-7xl px-4 md:px-6', className)}>{children}</div>;
 }
 
+const SECTION_SCROLL_MARGIN = 'scroll-mt-24 md:scroll-mt-28';
+
 export const LandingPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    const scrollToHash = () => {
+      const raw = window.location.hash;
+      if (!raw || raw === '#') return;
+      const id = decodeURIComponent(raw.slice(1));
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    scrollToHash();
+    const t = window.setTimeout(scrollToHash, 100);
+    window.addEventListener('hashchange', scrollToHash);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener('hashchange', scrollToHash);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-dark">
       {/* Hero — đồng bộ màu primary & typography với toàn app */}
-      <section className="relative overflow-hidden border-b border-border bg-white pt-8 pb-14 md:pt-12 md:pb-20">
+      <section
+        id="hero"
+        className="relative overflow-hidden border-b border-border bg-white pt-8 pb-14 md:pt-12 md:pb-20"
+      >
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute -top-32 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-3xl" />
           <div
@@ -37,7 +68,7 @@ export const LandingPage = () => {
         </div>
 
         <Container className="relative z-10">
-          <p className="text-center text-[11px] font-bold uppercase tracking-[0.28em] text-primary">
+          <p className="text-center text-[11px] font-bold text-primary">
             {landingHero.eyebrow}
           </p>
           <h1 className="mx-auto mt-6 max-w-4xl text-center text-4xl font-black leading-[1.08] tracking-tight md:text-6xl md:leading-[1.05]">
@@ -86,14 +117,18 @@ export const LandingPage = () => {
       </section>
 
       {/* Giới thiệu ngắn — 3 khối */}
-      <section className="border-b border-border bg-surface-muted py-14 md:py-20" aria-labelledby="about-heading">
+      <section
+        id="about"
+        className={cn('border-b border-border bg-surface-muted py-14 md:py-20', SECTION_SCROLL_MARGIN)}
+        aria-labelledby="about-heading"
+      >
         <Container>
           <div className="mb-10 max-w-2xl">
             <h2 id="about-heading" className="text-3xl font-black uppercase tracking-tight text-primary md:text-4xl">
-              Mentoree đồng hành cùng sinh viên
+              {landingAboutSection.heading}
             </h2>
-            <p className="mt-3 text-sm font-semibold uppercase tracking-widest text-gray-700">
-              Đồ án · BTL · NCKH · Khóa luận · Thực tập
+            <p className="mt-3 text-sm font-medium leading-relaxed text-gray-700 md:text-base">
+              {landingAboutSection.tagline}
             </p>
           </div>
           <div className="space-y-3">
@@ -128,7 +163,7 @@ export const LandingPage = () => {
       </section>
 
       {/* Cách hoạt động — anchor cho Navbar */}
-      <section id="how-it-works" className="py-14 md:py-24">
+      <section id="how-it-works" className={cn('py-14 md:py-24', SECTION_SCROLL_MARGIN)}>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,320px)_1fr] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
@@ -136,10 +171,7 @@ export const LandingPage = () => {
                 Vì sao sinh viên
                 <span className="block text-primary">chọn Mentoree?</span>
               </h2>
-              <p className="mt-5 text-sm leading-relaxed text-gray">
-                Mentor là anh chị đi trước cùng trường/khối ngành, hiểu chương trình học tại Việt Nam và biết
-                cách gỡ khó đúng giai đoạn deadline đồ án, BTL hay NCKH của bạn.
-              </p>
+              <p className="mt-5 text-sm leading-relaxed text-gray">{landingWhyIntro.lead}</p>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               {landingWhyChoose.map((item, idx) => (
@@ -172,17 +204,17 @@ export const LandingPage = () => {
       </section>
 
       {/* Tính năng */}
-      <section className="border-y border-border bg-[#0b1220] py-14 text-white md:py-20">
+      <section
+        id="features"
+        className={cn('border-y border-border bg-[#0b1220] py-14 text-white md:py-20', SECTION_SCROLL_MARGIN)}
+      >
         <Container>
           <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:items-start">
             <div className="rounded-2xl bg-primary p-6">
               <h3 className="text-2xl font-extrabold uppercase leading-tight md:text-3xl">
-                Bốn việc Mentoree làm cùng bạn
+                {landingFeaturesIntro.title}
               </h3>
-              <p className="mt-3 text-sm text-white/85">
-                Từ tìm mentor đúng môn, đặt lịch quanh deadline, chọn gói kèm đồ án/NCKH đến kết nối cộng đồng
-                sinh viên học hỏi.
-              </p>
+              <p className="mt-3 text-sm text-white/85">{landingFeaturesIntro.body}</p>
               <Link
                 href="/register"
                 className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-white/90"
@@ -216,12 +248,10 @@ export const LandingPage = () => {
       </section>
 
       {/* FAQ — anchor #faq */}
-      <section id="faq" className="py-16 md:py-24">
+      <section id="faq" className={cn('py-16 md:py-24', SECTION_SCROLL_MARGIN)}>
         <Container className="max-w-3xl">
           <h2 className="text-center text-3xl font-black tracking-tight md:text-4xl">Câu hỏi thường gặp</h2>
-          <p className="mx-auto mt-3 max-w-lg text-center text-sm text-gray">
-            Mọi điều sinh viên hay hỏi trước khi đặt buổi kèm đầu tiên.
-          </p>
+          <p className="mx-auto mt-3 max-w-lg text-center text-sm text-gray">{landingFaqSection.subtitle}</p>
           <div className="mt-10 space-y-3">
             {faqs.map((faq, idx) => {
               const open = openFaq === idx;
@@ -264,17 +294,17 @@ export const LandingPage = () => {
       </section>
 
       {/* CTA cuối — không lặp footer (AppShell đã có Footer) */}
-      <section className="border-t border-border bg-dark py-14 text-white md:py-20">
+      <section id="cta" className={cn('border-t border-border bg-dark py-14 text-white md:py-20', SECTION_SCROLL_MARGIN)}>
         <Container className="text-center">
           <h2 className="text-3xl font-black leading-tight md:text-4xl">
-            Deadline tới rồi — <span className="text-primary">gọi mentor</span> thôi!
+            {landingCta.titlePrefix}
+            <span className="text-primary">{landingCta.titleHighlight}</span>
+            {landingCta.titleSuffix}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-white/75 md:text-base">
-            Đăng ký miễn phí bằng email sinh viên, tìm mentor đúng môn/đề tài và đặt buổi kèm 1-1 chỉ trong vài phút.
-          </p>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-white/75 md:text-base">{landingCta.body}</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link href="/mentors" className="btn-primary inline-flex min-w-[180px] justify-center rounded-lg px-8 py-3">
-              Tìm mentor cho đồ án
+              {landingCta.primaryLabel}
             </Link>
             <Link
               href="/register"

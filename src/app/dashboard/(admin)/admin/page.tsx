@@ -1,11 +1,7 @@
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ROLES } from '@/constants/roles';
-import { AdminDashboard } from '@/views/admin/AdminDashboard';
+import { redirect } from 'next/navigation';
+import { ADMIN_PATHS } from '@/components/admin/adminPaths';
 
-export default function DashboardAdminPage() {
-  return (
-    <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-      <AdminDashboard />
-    </ProtectedRoute>
-  );
+/** `/dashboard/admin` → mặc định vào trang thống kê. */
+export default function AdminIndexPage() {
+  redirect(ADMIN_PATHS.stats);
 }
