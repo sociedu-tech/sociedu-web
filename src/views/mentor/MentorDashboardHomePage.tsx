@@ -1,40 +1,43 @@
 'use client';
 
 import React from 'react';
-import { MentorStats } from '@/components/dashboard/mentor/MentorStats';
-import { useMentorData } from '@/hooks/useMentorData';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { useAuth } from '@/context/AuthContext';
+import { MentorOpportunityPipelineSummary } from '@/components/dashboard/mentor/MentorOpportunityPipelineSummary';
+import { MentorRevenue, MentorRevenueToolbar } from '@/components/dashboard/mentor/MentorRevenue';
+import { MentorOverviewCharts } from '@/components/dashboard/overview/MentorOverviewCharts';
+import { DashboardSection } from '@/components/dashboard/DashboardPrimitives';
 
 export function MentorDashboardHomePage() {
-  const { data, loading, error, refresh } = useMentorData('1');
-
-  if (loading) {
-    return <LoadingSpinner label="Đang tải tổng quan..." />;
-  }
-  if (error) {
-    return <ErrorMessage message={error} onRetry={refresh} />;
-  }
+  const { user } = useAuth();
+  const greeting = user?.fullName?.trim() || 'Mentor';
 
   return (
     <div className="space-y-8">
-      <section className="dashboard-content-card relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-primary/[0.07] blur-3xl"
-          aria-hidden
-        />
-        <div className="relative">
-          <p className="text-[10px] font-semibold uppercase tracking-[1px] text-gray">Mentor</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.12px] text-dark md:text-[28px] md:leading-tight">
-            Tổng quan hoạt động
-          </h2>
-          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray">
-            Số liệu nhanh về doanh thu, đặt chỗ và đánh giá — điều hướng chi tiết qua menu bên trái.
+      <header className="border-b border-slate-200/90 pb-6">
+        <div className="min-w-0 space-y-1">
+          <p className="text-sm font-medium text-slate-500">Tổng quan</p>
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+            Xin chào, {greeting}
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-slate-600">
+            Doanh thu và hoạt động ở giữa trang; lịch sử giao dịch nằm cuối. Pipeline cơ hội dự án xem nhanh bên dưới.
           </p>
         </div>
-      </section>
+      </header>
 
-      {data?.stats ? <MentorStats stats={data.stats} /> : null}
+      <MentorOpportunityPipelineSummary />
+
+      <DashboardSection title="Doanh thu" action={<MentorRevenueToolbar />}>
+        <MentorRevenue embedded showStatCards showTransactions={false} compactStats={false} />
+      </DashboardSection>
+
+      <DashboardSection title="Hoạt động & xu hướng">
+        <MentorOverviewCharts />
+      </DashboardSection>
+
+      <DashboardSection title="Lịch sử giao dịch gần đây">
+        <MentorRevenue embedded showStatCards={false} showTransactions showTransactionsHeading={false} />
+      </DashboardSection>
     </div>
   );
 }

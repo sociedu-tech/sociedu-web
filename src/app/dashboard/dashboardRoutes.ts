@@ -12,14 +12,29 @@ export const DASHBOARD_ROUTES = {
     label: 'Dự án',
     roles: [ROLES.ADMIN, ROLES.MENTOR, ROLES.USER] as const,
   },
+  projectProgress: {
+    path: '/dashboard/projects/progress',
+    label: 'Tiến độ dự án',
+    roles: [ROLES.MENTOR, ROLES.USER] as const,
+  },
   projectDetail: {
     path: '/dashboard/projects/[id]',
     label: 'Chi tiết dự án',
     roles: [ROLES.ADMIN, ROLES.MENTOR, ROLES.USER] as const,
   },
+  projectNew: {
+    path: '/dashboard/projects/new',
+    label: 'Tạo dự án mới',
+    roles: [ROLES.USER] as const,
+  },
   sessions: {
     path: '/dashboard/sessions',
     label: 'Buổi học',
+    roles: [ROLES.ADMIN, ROLES.MENTOR, ROLES.USER] as const,
+  },
+  chat: {
+    path: '/dashboard/chat',
+    label: 'Tin nhắn',
     roles: [ROLES.ADMIN, ROLES.MENTOR, ROLES.USER] as const,
   },
   admin: {
@@ -42,11 +57,6 @@ export const DASHBOARD_ROUTES = {
     label: 'Học viên',
     roles: [ROLES.MENTOR] as const,
   },
-  revenue: {
-    path: '/dashboard/revenue',
-    label: 'Doanh thu',
-    roles: [ROLES.MENTOR] as const,
-  },
   orders: {
     path: '/dashboard/orders',
     label: 'Đơn hàng',
@@ -55,6 +65,11 @@ export const DASHBOARD_ROUTES = {
   reports: {
     path: '/dashboard/reports',
     label: 'Chấm báo cáo',
+    roles: [ROLES.MENTOR] as const,
+  },
+  opportunities: {
+    path: '/dashboard/opportunities',
+    label: 'Cơ hội dự án',
     roles: [ROLES.MENTOR] as const,
   },
 } as const;

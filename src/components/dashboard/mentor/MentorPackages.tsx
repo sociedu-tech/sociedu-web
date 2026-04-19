@@ -13,27 +13,26 @@ interface MentorPackagesProps {
 export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: MentorPackagesProps) => {
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-dark">Quản lý Gói dịch vụ</h2>
-        <div className="flex gap-3">
-          <button 
-            onClick={onAdd}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-dark transition-colors flex items-center gap-2"
-          >
-            <Plus size={16} /> Thêm gói mới
-          </button>
-          <button 
-            onClick={onSave}
-            className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-all flex items-center gap-2"
-          >
-            <Save size={16} /> Lưu thay đổi
-          </button>
-        </div>
+      <div className="flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+        >
+          <Plus size={16} /> Thêm gói
+        </button>
+        <button
+          type="button"
+          onClick={onSave}
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95"
+        >
+          <Save size={16} /> Lưu
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {packages.map((pkg) => (
-          <div key={pkg.id} className="bg-white p-6 rounded-2xl border border-gray-200 space-y-4 relative group transition-all">
+          <div key={pkg.id} className="group relative space-y-4 rounded-2xl border border-slate-200/90 bg-white p-6 transition-colors hover:border-slate-300/90">
             <button 
               onClick={() => onRemove(pkg.id)}
               className="absolute top-4 right-4 p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-red-50"

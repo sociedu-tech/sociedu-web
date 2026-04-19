@@ -2,36 +2,26 @@
 
 import React from 'react';
 import { MentorPackages } from '@/components/dashboard/mentor/MentorPackages';
-import { MentorStats } from '@/components/dashboard/mentor/MentorStats';
 import { useMentorData } from '@/hooks/useMentorData';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { DashboardSection } from '@/components/dashboard/DashboardPrimitives';
 
 export const MentorPackagesPage = () => {
-  const { 
-    data, 
-    loading, 
-    error, 
-    refresh,
-    addPackage,
-    removePackage,
-    updatePackage,
-    savePackages
-  } = useMentorData('1');
+  const { data, loading, error, refresh, addPackage, removePackage, updatePackage, savePackages } = useMentorData('1');
 
-  if (loading) return <LoadingSpinner label="Đang tải gói dịch vụ..." />;
+  if (loading) return <LoadingSpinner label="Đang tải…" />;
   if (error) return <ErrorMessage message={error} onRetry={refresh} />;
 
   return (
-    <div className="space-y-8">
-      <MentorStats stats={data.stats} />
-      <MentorPackages 
-        packages={data.packages || []} 
+    <DashboardSection title="Gói dịch vụ của bạn">
+      <MentorPackages
+        packages={data.packages || []}
         onAdd={addPackage}
         onRemove={removePackage}
         onUpdate={updatePackage}
         onSave={savePackages}
       />
-    </div>
+    </DashboardSection>
   );
 };

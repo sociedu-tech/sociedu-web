@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { getShellNavItems } from '@/lib/dashboardNav';
@@ -39,14 +40,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const marginLeft = (() => {
     if (isMobile) return '0';
-    return menuState === 'collapsed' ? '4rem' : '16rem';
+    return menuState === 'collapsed' ? '4.25rem' : '17.5rem';
   })();
 
   const profileHref =
     user?.id != null && String(user.id).length > 0 ? `/profile/${user.id}` : '/profile';
 
+  const isChatPage =
+    pathname === '/dashboard/chat' || pathname.startsWith('/dashboard/chat/');
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-[15px] font-medium text-gray-900 antialiased">
+    <div className="flex min-h-screen flex-col bg-[#f7f7f7] font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased">
       <DashboardSidebar
         items={navItems}
         pathname={pathname}
@@ -70,8 +74,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           profileHref={profileHref}
           onLogout={logout}
         />
-        <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-white p-3 sm:p-6">
-          <div className="mx-auto max-w-7xl">{children}</div>
+        <main
+          className={cn(
+            'min-h-0 flex-1 bg-[#f7f7f7]',
+            isChatPage ? 'flex flex-col overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
+          )}
+        >
+          <div
+            className={cn(
+              isChatPage
+                ? 'flex min-h-0 w-full max-w-none flex-1 flex-col px-0 py-0'
+                : 'mx-auto min-h-[calc(100dvh-3.5rem)] w-full max-w-[1280px] px-4 py-8 sm:px-6 lg:px-8',
+            )}
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>

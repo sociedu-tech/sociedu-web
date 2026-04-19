@@ -102,7 +102,7 @@ export const Navbar = () => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-[15px] tracking-[1.5px] font-medium text-dark hover:text-primary transition-colors px-2"
+                className="text-[15px]  text-dark hover:text-primary transition-colors px-2"
               >
                 Đăng nhập
               </Link>

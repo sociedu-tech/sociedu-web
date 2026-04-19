@@ -48,13 +48,13 @@ export const MentorStats = ({ stats }: MentorStatsProps) => {
       {items.map((item) => (
         <div key={item.key} className="dashboard-stat-tile flex items-center gap-4 p-5">
           <div
-            className={`flex size-12 shrink-0 items-center justify-center rounded-[8px] ${item.iconWrap}`}
+            className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${item.iconWrap}`}
           >
             <item.icon className="size-6" strokeWidth={2} />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-gray">{item.label}</p>
-            <p className="mt-0.5 truncate text-xl font-semibold tabular-nums tracking-[-0.12px] text-dark sm:text-2xl">
+            <p className="text-sm font-medium text-slate-600">{item.label}</p>
+            <p className="mt-0.5 truncate text-xl font-semibold tabular-nums text-slate-900 sm:text-2xl">
               {item.get(stats)}
             </p>
           </div>

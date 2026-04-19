@@ -11,8 +11,6 @@ import {
   Lock,
   User,
   ArrowRight,
-  Github,
-  Chrome,
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
@@ -85,7 +83,7 @@ export function RegisterPage() {
     setError(null);
     try {
       const message = await authService.resendVerification(registeredEmail);
-      setResendMessage(message || 'Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư.');
+      setResendMessage(message || 'Đã gửi lại email. Kiểm tra hộp thư (và thư mục Spam) trong vài phút tới.');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Không thể gửi lại email xác minh.');
     } finally {
@@ -146,6 +144,82 @@ export function RegisterPage() {
         </div>
 
         <div className="p-6 lg:p-10 flex flex-col justify-center">
+          {success ? (
+            <div className="max-w-md mx-auto w-full">
+              <div className="flex flex-col items-center text-center mb-8">
+                <div
+                  className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/80"
+                  aria-hidden
+                >
+                  <Mail className="h-8 w-8 text-emerald-600" strokeWidth={1.75} />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-semibold leading-tight text-dark tracking-tight mb-2">
+                  Kiểm tra email để kích hoạt tài khoản
+                </h2>
+                <p className="text-gray text-[15px] leading-relaxed font-medium">
+                  Chúng tôi đã gửi liên kết xác minh tới địa chỉ bạn vừa đăng ký. Mở email và nhấn vào liên kết để hoàn tất — thường chỉ mất vài giây.
+                </p>
+              </div>
+
+              <div className="rounded-[8px] border border-border bg-page/80 px-4 py-3 mb-6 text-left">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-gray mb-1">Email</p>
+                <p className="text-sm font-semibold text-dark break-all">{registeredEmail}</p>
+              </div>
+
+              <p className="text-sm text-gray font-medium mb-6 leading-relaxed">
+                Không thấy thư? Đợi 1–2 phút, kiểm tra thư mục <span className="text-dark font-semibold">Spam</span> hoặc{' '}
+                <span className="text-dark font-semibold">Quảng cáo</span>, rồi dùng nút bên dưới nếu cần.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  disabled={resendLoading}
+                  onClick={handleResendVerification}
+                  className="flex-1 px-4 py-3 rounded-[8px] border border-border bg-white text-dark font-semibold text-sm hover:bg-page transition-colors disabled:opacity-60"
+                >
+                  {resendLoading ? 'Đang gửi lại…' : 'Gửi lại email xác minh'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/login')}
+                  className="flex-1 px-4 py-3 rounded-[8px] btn-primary text-sm font-semibold"
+                >
+                  Đăng nhập
+                </button>
+              </div>
+
+              {resendMessage && (
+                <div className="mt-4 flex items-start gap-2 rounded-[8px] border border-emerald-100 bg-emerald-50/80 px-3 py-2.5 text-sm text-emerald-900">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" aria-hidden />
+                  <span className="font-medium leading-snug">{resendMessage}</span>
+                </div>
+              )}
+
+              {error && (
+                <div className="mt-4 p-3 bg-red-50 rounded-[8px] border border-red-100 flex items-center gap-2 text-red-600 text-sm font-semibold">
+                  <AlertCircle size={16} aria-hidden /> {error}
+                </div>
+              )}
+
+              <p className="mt-8 text-center text-sm text-gray font-medium">
+                Sai email?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSuccess(false);
+                    setRegisteredEmail('');
+                    setResendMessage(null);
+                    setError(null);
+                  }}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  Đăng ký lại
+                </button>
+              </p>
+            </div>
+          ) : (
+            <>
           <div className="mb-7">
             <h2 className="text-3xl md:text-4xl font-semibold leading-[1.1] text-dark tracking-tight mb-2">
               Tạo tài khoản mới
@@ -228,33 +302,7 @@ export function RegisterPage() {
               </div>
             )}
 
-            {success && (
-              <div className="p-4 bg-green-50 rounded-[8px] border border-green-100 text-green-700 text-sm">
-                <div className="flex items-center gap-3 font-bold">
-                  <CheckCircle2 size={18} aria-hidden /> Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản.
-                </div>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={resendLoading}
-                    onClick={handleResendVerification}
-                    className="px-4 py-2 rounded-lg border border-green-300 text-green-700 font-semibold hover:bg-green-100 disabled:opacity-60"
-                  >
-                    {resendLoading ? 'Đang gửi...' : 'Gửi lại email xác minh'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/login')}
-                    className="px-4 py-2 rounded-lg border border-green-300 text-green-700 font-semibold hover:bg-green-100"
-                  >
-                    Đi tới đăng nhập
-                  </button>
-                </div>
-                {resendMessage && <p className="mt-2 text-green-700 font-medium">{resendMessage}</p>}
-              </div>
-            )}
-
-            <button type="submit" disabled={loading || success} className="w-full btn-primary disabled:opacity-50">
+            <button type="submit" disabled={loading} className="w-full btn-primary disabled:opacity-50">
               {loading ? (
                 <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
@@ -275,6 +323,8 @@ export function RegisterPage() {
               Đăng nhập ngay
             </Link>
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>
