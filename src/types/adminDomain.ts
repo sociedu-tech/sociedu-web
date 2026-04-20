@@ -41,6 +41,54 @@ export type ModerationTargetType = 'user' | 'mentor' | 'booking' | 'session' | '
 
 export type ModerationReportStatus = 'open' | 'in_review' | 'resolved' | 'dismissed';
 
+/** Tranh chấp sau buổi học — minh chứng & quy trình xử lý (admin). */
+export type SessionDisputeParty = 'learner' | 'mentor' | 'admin';
+
+export type SessionDisputePhase =
+  | 'submitted'
+  | 'evidence'
+  | 'admin_review'
+  | 'decision'
+  | 'closed';
+
+export interface SessionDisputeEvidence {
+  id: string;
+  party: SessionDisputeParty;
+  uploadedAt: string;
+  title: string;
+  detail: string;
+  /** Nhãn file minh chứng (demo) */
+  fileLabel?: string;
+}
+
+export interface SessionDisputeStage {
+  phase: SessionDisputePhase;
+  label: string;
+  description: string;
+  done: boolean;
+  /** Thời điểm hoàn thành bước (nếu có) */
+  completedAt?: string;
+}
+
+export interface SessionDisputeDetail {
+  sessionCode: string;
+  sessionAt: string;
+  menteeName: string;
+  mentorName: string;
+  /** Ai khởi tạo khiếu nại */
+  openedByParty: SessionDisputeParty;
+  /** Lý do / tường trình phía mở khiếu nại */
+  openerStatement: string;
+  /** Lý do / phản hồi phía còn lại */
+  counterStatement: string;
+  currentPhase: SessionDisputePhase;
+  /** Các giai đoạn xử lý (admin + các bên nộp minh chứng) */
+  stages: SessionDisputeStage[];
+  evidence: SessionDisputeEvidence[];
+  /** Kết luận / ghi chú admin (sau quyết định) */
+  adminResolutionNote?: string;
+}
+
 export interface AdminModerationReport {
   id: string;
   createdAt: string;
@@ -53,4 +101,6 @@ export interface AdminModerationReport {
   summary: string;
   status: ModerationReportStatus;
   priority: 'low' | 'normal' | 'high';
+  /** Chỉ khi `targetType === 'session'`: quy trình tranh chấp + minh chứng */
+  sessionDispute?: SessionDisputeDetail;
 }

@@ -59,7 +59,6 @@ export function MenteeOverviewChartGrids() {
             data={menteeAvgProgressSeries}
             name="Tiến độ TB"
             height={240}
-            colorVar="var(--color-chart-area-stroke)"
             yDomain={[0, 100]}
             yTickFormatter={(v) => `${v}%`}
             yAllowDecimals={false}

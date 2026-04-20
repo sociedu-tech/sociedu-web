@@ -46,15 +46,17 @@
   --color-peach: #ffedd5;
   --color-pink-light: #fce7f3;
 
-  --color-chart-1: #0088fe;
-  --color-chart-2: #00c49f;
-  --color-chart-3: #ffbb28;
-  --color-chart-4: #ff8042;
-  --color-chart-5: #8884d8;
-  --color-chart-grid: #f1f5f9;
+  /* Dashboard / biểu đồ: chỉ primary + slate (trùng sidebar slate-900) */
+  --color-dashboard-ink: #0f172a;
+  --color-chart-1: #0f172a;
+  --color-chart-2: #146ef5;
+  --color-chart-3: #334155;
+  --color-chart-4: #64748b;
+  --color-chart-5: #94a3b8;
+  --color-chart-grid: #e2e8f0;
   --color-chart-tick: #64748b;
-  --color-chart-area-stroke: #3b82f6;
-  --color-chart-line: #10b981;
+  --color-chart-area-stroke: #0f172a;
+  --color-chart-line: #0f172a;
 
   --color-scrollbar-track: #f1f5f9;
   --color-scrollbar-thumb: #cbd5e1;

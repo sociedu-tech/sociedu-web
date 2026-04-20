@@ -16,7 +16,6 @@ import {
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { AdminFallbackBanner } from '@/features/admin/ui/AdminFallbackBanner';
 import { ROUTES } from '@/constants/routes';
-import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 /**
  * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + hàng chờ duyệt mentor.
@@ -40,23 +39,8 @@ export function AdminDashboardHomePage() {
         />
       ) : null}
 
-      <DashboardViewHeader
-        layout="featured"
-        eyebrow="Quản trị"
-        title="Bảng điều khiển vận hành"
-        description="Theo dõi hoạt động nền tảng: session, đặt lịch, đội ngũ mentor và học viên. Dùng bộ lọc thời gian để so sánh xu hướng; xử lý hàng chờ duyệt mentor ngay bên dưới."
-      />
-
-      <section className="space-y-6" aria-labelledby="metrics-heading">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 id="metrics-heading" className="text-base font-semibold text-slate-900">
-              Chỉ số chính
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Tổng hợp theo khoảng thời gian bạn chọn (dữ liệu mẫu cho đến khi nối API).
-            </p>
-          </div>
+      <section className="space-y-6" aria-label="Chỉ số chính">
+        <div className="flex justify-end">
           <StatsTimeRangeFilter value={range} onChange={setRange} />
         </div>
 
@@ -67,62 +51,42 @@ export function AdminDashboardHomePage() {
             hint="Ước tính realtime"
             deltaPct={analytics.deltas.liveSessions}
             icon={Activity}
-            accent="indigo"
+            tone="featured"
           />
           <StatsKpiCard
             label="Tổng booking"
             value={analytics.kpis.totalBookings}
             deltaPct={analytics.deltas.totalBookings}
             icon={CalendarCheck}
-            accent="emerald"
           />
           <StatsKpiCard
             label="Tổng mentor"
             value={analytics.kpis.totalMentors}
             deltaPct={analytics.deltas.totalMentors}
             icon={GraduationCap}
-            accent="violet"
           />
           <StatsKpiCard
             label="Học viên mới"
             value={analytics.kpis.newLearners}
             deltaPct={analytics.deltas.newLearners}
             icon={Users}
-            accent="amber"
           />
         </div>
       </section>
 
-      <section className="space-y-6" aria-labelledby="charts-heading">
-        <div>
-          <h2 id="charts-heading" className="text-base font-semibold text-slate-900">
-            Phân tích xu hướng
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Biểu đồ minh họa tăng trưởng theo từng thành phần — có thể tái sử dụng ở các báo cáo sau này.
-          </p>
-        </div>
-
+      <section className="space-y-6" aria-label="Phân tích xu hướng">
         <div className="grid gap-6 lg:grid-cols-2">
           <StatsChartCard title="Session theo thời gian" subtitle="Số session trong kỳ">
-            <StatsAreaChart
-              data={analytics.series.sessions}
-              name="Session"
-              colorVar="rgb(79 70 229)"
-            />
+            <StatsAreaChart data={analytics.series.sessions} name="Session" />
           </StatsChartCard>
           <StatsChartCard title="Booking theo thời gian" subtitle="Lượt đặt lịch">
-            <StatsLineChart data={analytics.series.bookings} name="Booking" colorVar="rgb(16 185 129)" />
+            <StatsLineChart data={analytics.series.bookings} name="Booking" />
           </StatsChartCard>
           <StatsChartCard title="Mentor hoạt động" subtitle="Theo kỳ">
-            <StatsBarChart data={analytics.series.mentors} name="Mentor" colorVar="rgb(139 92 246)" />
+            <StatsBarChart data={analytics.series.mentors} name="Mentor" />
           </StatsChartCard>
           <StatsChartCard title="Học viên mới" subtitle="Người đăng ký / kích hoạt">
-            <StatsAreaChart
-              data={analytics.series.learners}
-              name="Học viên"
-              colorVar="rgb(245 158 11)"
-            />
+            <StatsAreaChart data={analytics.series.learners} name="Học viên" />
           </StatsChartCard>
         </div>
 
@@ -131,16 +95,8 @@ export function AdminDashboardHomePage() {
         </StatsChartCard>
       </section>
 
-      <section className="space-y-5" aria-labelledby="queue-heading">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 id="queue-heading" className="text-base font-semibold text-slate-900">
-              Hàng chờ duyệt mentor
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Hồ sơ đăng ký trở thành mentor cần xử lý trước khi hiển thị công khai trên nền tảng.
-            </p>
-          </div>
+      <section className="space-y-5" aria-label="Hàng chờ duyệt mentor">
+        <div className="flex justify-end">
           <Link
             href={ROUTES.DASHBOARD.ADMIN.MENTOR_REQUESTS.path}
             className="inline-flex shrink-0 items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
@@ -152,8 +108,8 @@ export function AdminDashboardHomePage() {
         <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-100">
-                <UserPlus className="size-7 text-sky-700" strokeWidth={2} />
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
+                <UserPlus className="size-7 text-primary" strokeWidth={2} />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-600">Đang chờ xử lý</p>

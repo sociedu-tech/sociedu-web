@@ -5,6 +5,7 @@ import { CalendarClock } from 'lucide-react';
 import type { AdminBookingRow, BookingStatus } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminBookingsView } from '@/features/admin/hooks';
+import { adminSelect } from '@/features/admin/ui/adminClasses';
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
   { value: 'pending_payment', label: 'Chờ thanh toán' },
@@ -19,20 +20,20 @@ const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
 function statusBadgeClass(s: BookingStatus) {
   switch (s) {
     case 'completed':
-      return 'bg-emerald-50 text-emerald-900 ring-emerald-100';
+      return 'bg-primary/10 text-primary ring-primary/25';
     case 'in_progress':
-      return 'bg-sky-50 text-sky-900 ring-sky-100';
+      return 'bg-slate-900 text-white ring-slate-800';
     case 'confirmed':
-      return 'bg-indigo-50 text-indigo-900 ring-indigo-100';
+      return 'bg-slate-200 text-slate-900 ring-slate-300';
     case 'pending_payment':
-      return 'bg-amber-50 text-amber-900 ring-amber-100';
+      return 'bg-slate-100 text-slate-800 ring-slate-200';
     case 'cancelled_by_user':
     case 'cancelled_by_mentor':
-      return 'bg-slate-100 text-slate-700 ring-slate-200';
+      return 'bg-slate-50 text-slate-600 ring-slate-200';
     case 'no_show':
-      return 'bg-rose-50 text-rose-900 ring-rose-100';
+      return 'bg-slate-800 text-white ring-slate-700';
     default:
-      return 'bg-slate-50 text-slate-700 ring-slate-100';
+      return 'bg-slate-50 text-slate-700 ring-slate-200';
   }
 }
 
@@ -49,7 +50,7 @@ export function AdminBookingsView({ initialRows }: { initialRows: AdminBookingRo
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-full max-w-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-200 sm:w-auto"
+          className={`w-full max-w-xs sm:w-auto ${adminSelect}`}
         >
           <option value="all">Mọi trạng thái booking</option>
           {STATUS_OPTIONS.map((o) => (
@@ -104,7 +105,7 @@ export function AdminBookingsView({ initialRows }: { initialRows: AdminBookingRo
                     <select
                       value={r.status}
                       onChange={(e) => updateStatus(r.id, e.target.value as BookingStatus)}
-                      className="max-w-[200px] rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-indigo-300"
+                      className={`max-w-[200px] rounded-lg px-2 py-1 text-xs ${adminSelect}`}
                     >
                       {STATUS_OPTIONS.map((o) => (
                         <option key={o.value} value={o.value}>

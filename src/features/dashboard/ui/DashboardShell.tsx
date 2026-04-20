@@ -52,7 +52,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        'flex flex-col bg-[#f7f7f7] font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased',
+        'flex flex-col bg-slate-50 font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased',
         isChatPage ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen',
       )}
     >
@@ -85,7 +85,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         />
         <main
           className={cn(
-            'min-h-0 flex-1 bg-[#f7f7f7]',
+            'min-h-0 flex-1 bg-slate-50',
             isChatPage ? 'flex flex-col overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
           )}
         >

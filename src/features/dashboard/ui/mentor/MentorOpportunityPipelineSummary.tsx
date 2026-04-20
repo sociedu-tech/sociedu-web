@@ -46,14 +46,10 @@ export function MentorOpportunityPipelineSummary({
         className,
       )}
     >
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">Pipeline cơ hội</h2>
-          <p className="text-xs text-slate-500">Gợi ý hệ thống và yêu cầu trực tiếp từ học viên</p>
-        </div>
+      <div className="mb-4 flex justify-end">
         <Link
           href="/dashboard/opportunities"
-          className="inline-flex items-center justify-center gap-1.5 self-start rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 sm:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800"
         >
           Quản lý chi tiết
           <ArrowRight className="size-3.5" strokeWidth={2} />

@@ -6,7 +6,7 @@ import React from 'react';
 export const chartTooltipProps = {
   contentStyle: {
     borderRadius: 12,
-    border: '1px solid var(--color-border)',
+    border: '1px solid var(--color-chart-grid)',
     boxShadow: 'none',
     fontSize: 12,
   },
