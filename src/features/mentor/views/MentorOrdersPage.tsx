@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MentorOrders } from '@/components/dashboard/mentor/MentorOrders';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { MentorOrders } from '@/features/dashboard/ui/mentor/MentorOrders';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorOrdersPage = () => {
   return (

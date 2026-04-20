@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { MentorPackages } from '@/components/dashboard/mentor/MentorPackages';
-import { useMentorData } from '@/hooks/useMentorData';
+import { MentorPackages } from '@/features/dashboard/ui/mentor/MentorPackages';
+import { useMentorData } from '@/features/mentor/hooks';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { DashboardSurface, DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorPackagesPage = () => {
   const { data, loading, error, refresh, addPackage, removePackage, updatePackage, savePackages } = useMentorData('1');

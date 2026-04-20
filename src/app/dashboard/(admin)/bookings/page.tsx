@@ -1,7 +1,7 @@
 'use client';
 
-import { DashboardSurface } from '@/components/dashboard/modules/layout/DashboardSurface';
-import { DashboardViewHeader } from '@/components/dashboard/modules/layout/DashboardViewHeader';
+import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
+import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
 import { ADMIN_MANAGEMENT_BOOKINGS } from '@/data/adminManagementMock';
 import { AdminBookingsView } from '@/features/admin/views/AdminBookingsView';
 

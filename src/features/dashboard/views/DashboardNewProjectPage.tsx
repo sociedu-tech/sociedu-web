@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   Check,
@@ -17,194 +16,32 @@ import {
   Target,
   Users,
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { ROLES, normalizeRole } from '@/constants/roles';
-import { mentorService } from '@/services/mentorService';
-import type { User } from '@/types';
-import { DashboardCard } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardCard } from '@/features/dashboard/ui/DashboardPrimitives';
+import { useDashboardNewProjectPage } from '@/features/dashboard/hooks';
 import { cn } from '@/lib/utils';
 
-/** Lĩnh vực gợi ý — dùng để khớp với `mentorInfo.expertise` và tính điểm gợi ý. */
-const TOPIC_TAGS = [
-  'Lập trình web',
-  'Mobile / Flutter',
-  'Data Science',
-  'Machine Learning',
-  'UI/UX Design',
-  'DevOps & Cloud',
-  'Kỹ năng mềm',
-  'IELTS / Academic writing',
-  'Khóa luận / Đồ án',
-  'Startup & Product',
-] as const;
-
-const DURATION_OPTIONS = [
-  { value: '1-2w', label: '1–2 tuần' },
-  { value: '1m', label: 'Khoảng 1 tháng' },
-  { value: '2-3m', label: '2–3 tháng' },
-  { value: '3m+', label: 'Trên 3 tháng' },
-] as const;
-
-/** Khi API chưa có mentor — vẫn demo được luồng gợi ý (chỉ dùng khi danh sách rỗng). */
-const DEMO_MENTORS: User[] = [
-  {
-    id: 'demo-m1',
-    name: 'Phạm Minh An',
-    email: '',
-    avatar: 'https://i.pravatar.cc/128?img=12',
-    role: 'mentor',
-    joinedDate: new Date().toISOString(),
-    rating: 4.9,
-    mentorInfo: {
-      headline: 'Full-stack & hướng dẫn đồ án web',
-      expertise: ['Lập trình web', 'DevOps & Cloud', 'Khóa luận / Đồ án'],
-      price: 45,
-      rating: 4.9,
-      sessionsCompleted: 128,
-      verificationStatus: 'verified',
-    },
-  },
-  {
-    id: 'demo-m2',
-    name: 'Lê Thu Hà',
-    email: '',
-    avatar: 'https://i.pravatar.cc/128?img=45',
-    role: 'mentor',
-    joinedDate: new Date().toISOString(),
-    rating: 4.8,
-    mentorInfo: {
-      headline: 'Data & ML — từ ý tưởng đến báo cáo',
-      expertise: ['Data Science', 'Machine Learning', 'IELTS / Academic writing'],
-      price: 55,
-      rating: 4.8,
-      sessionsCompleted: 96,
-      verificationStatus: 'verified',
-    },
-  },
-  {
-    id: 'demo-m3',
-    name: 'Trần Đức Kiên',
-    email: '',
-    avatar: 'https://i.pravatar.cc/128?img=33',
-    role: 'mentor',
-    joinedDate: new Date().toISOString(),
-    rating: 4.7,
-    mentorInfo: {
-      headline: 'UI/UX & pitch deck cho startup',
-      expertise: ['UI/UX Design', 'Startup & Product', 'Kỹ năng mềm'],
-      price: 40,
-      rating: 4.7,
-      sessionsCompleted: 74,
-      verificationStatus: 'verified',
-    },
-  },
-];
-
-function scoreMentor(mentor: User, selectedTags: Set<string>, textBlob: string): number {
-  const info = mentor.mentorInfo;
-  if (!info?.expertise?.length) return 0;
-  let score = 0;
-  for (const ex of info.expertise) {
-    if (selectedTags.has(ex)) score += 24;
-    else if (textBlob.includes(ex.toLowerCase())) score += 8;
-  }
-  const rating = info.rating ?? mentor.rating ?? 0;
-  score += Math.round(rating * 3);
-  if (info.verificationStatus === 'verified') score += 6;
-  return score;
-}
-
 export function DashboardNewProjectPage() {
-  const router = useRouter();
-  const { userRole } = useAuth();
-  const role = normalizeRole(userRole);
-  const isMentee = role === ROLES.USER;
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [goals, setGoals] = useState('');
-  const [duration, setDuration] = useState<string>(DURATION_OPTIONS[2].value);
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
-
-  const [mentors, setMentors] = useState<User[]>([]);
-  const [mentorsLoading, setMentorsLoading] = useState(true);
-  const [mentorsError, setMentorsError] = useState<string | null>(null);
-
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setMentorsLoading(true);
-      setMentorsError(null);
-      try {
-        const data = await mentorService.getAll();
-        if (!cancelled) {
-          const withMentorInfo = data.filter((m) => m.mentorInfo?.expertise?.length);
-          setMentors(withMentorInfo.length > 0 ? withMentorInfo : DEMO_MENTORS);
-        }
-      } catch {
-        if (!cancelled) {
-          setMentors(DEMO_MENTORS);
-          setMentorsError('Không tải được danh sách mentor từ máy chủ. Đang hiển thị gợi ý mẫu.');
-        }
-      } finally {
-        if (!cancelled) setMentorsLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const textBlob = useMemo(() => {
-    return `${title} ${description} ${goals}`.toLowerCase();
-  }, [title, description, goals]);
-
-  const rankedMentors = useMemo(() => {
-    const list = mentors.map((m) => ({
-      mentor: m,
-      score: scoreMentor(m, selectedTags, textBlob),
-    }));
-    list.sort((a, b) => b.score - a.score);
-    const maxScore = list[0]?.score ?? 0;
-    return list.map((row) => ({
-      ...row,
-      matchPct:
-        maxScore > 0 ? Math.min(100, Math.round((row.score / maxScore) * 100)) : null,
-    }));
-  }, [mentors, selectedTags, textBlob]);
-
-  const topSuggestions = useMemo(() => rankedMentors.slice(0, 6), [rankedMentors]);
-
-  const toggleTag = useCallback((tag: string) => {
-    setSelectedTags((prev) => {
-      const next = new Set(prev);
-      if (next.has(tag)) next.delete(tag);
-      else next.add(tag);
-      return next;
-    });
-  }, []);
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-    const t = title.trim();
-    if (!t) {
-      setSubmitError('Vui lòng nhập tên dự án.');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await new Promise((r) => setTimeout(r, 700));
-      router.push('/dashboard/projects?created=1');
-    } catch {
-      setSubmitError('Không thể lưu. Vui lòng thử lại.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const {
+    isMentee,
+    title,
+    setTitle,
+    description,
+    setDescription,
+    goals,
+    setGoals,
+    duration,
+    setDuration,
+    selectedTags,
+    topicTags,
+    durationOptions,
+    mentorsLoading,
+    mentorsError,
+    submitting,
+    submitError,
+    onSubmit,
+    toggleTag,
+    topSuggestions,
+  } = useDashboardNewProjectPage();
 
   if (!isMentee) {
     return (
@@ -310,7 +147,7 @@ export function DashboardNewProjectPage() {
               <div>
                 <span className="mb-2 block text-sm font-medium text-slate-800">Thời gian dự kiến</span>
                 <div className="flex flex-wrap gap-2">
-                  {DURATION_OPTIONS.map((opt) => (
+                  {durationOptions.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -329,7 +166,7 @@ export function DashboardNewProjectPage() {
                 <p className="mt-2 text-xs text-slate-500">
                   Ước tính:{' '}
                   <span className="font-medium text-slate-700">
-                    {DURATION_OPTIONS.find((d) => d.value === duration)?.label ?? '—'}
+                    {durationOptions.find((d) => d.value === duration)?.label ?? '—'}
                   </span>
                 </p>
               </div>
@@ -350,7 +187,7 @@ export function DashboardNewProjectPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              {TOPIC_TAGS.map((tag) => {
+              {topicTags.map((tag) => {
                 const on = selectedTags.has(tag);
                 return (
                   <button

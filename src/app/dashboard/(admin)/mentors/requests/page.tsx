@@ -1,9 +1,9 @@
 'use client';
 
-import { AdminMentorRequests } from '@/components/admin/AdminMentorRequests';
-import { DashboardSurface } from '@/components/dashboard/modules/layout/DashboardSurface';
-import { DashboardViewHeader } from '@/components/dashboard/modules/layout/DashboardViewHeader';
-import { useAdminData } from '@/hooks/useAdminData';
+import { AdminMentorRequests } from '@/features/admin/ui/AdminMentorRequests';
+import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
+import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
+import { useAdminData } from '@/features/admin/hooks';
 export default function AdminMentorRequestsPage() {
   const { data, approveMentor } = useAdminData();
   return (

@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { Shield, UserCircle, UserPlus, Ban, CheckCircle2 } from 'lucide-react';
 import type { AdminUserRow, UserAccountStatus } from '@/types';
 import type { User } from '@/types';
 import { cn } from '@/lib/utils';
+import { useAdminUsersManagementView } from '@/features/admin/hooks';
 
 function roleLabel(role: User['role']) {
   switch (role) {
@@ -36,42 +37,8 @@ const accountStyles: Record<UserAccountStatus, string> = {
 };
 
 export function AdminUsersManagementView({ initialUsers }: { initialUsers: AdminUserRow[] }) {
-  const [users, setUsers] = useState<AdminUserRow[]>(initialUsers);
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  const filtered = useMemo(() => {
-    return users.filter((u) => {
-      if (roleFilter !== 'all' && u.role !== roleFilter) return false;
-      if (statusFilter !== 'all' && u.accountStatus !== statusFilter) return false;
-      return true;
-    });
-  }, [users, roleFilter, statusFilter]);
-
-  const setStatus = (id: string, accountStatus: UserAccountStatus) => {
-    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, accountStatus } : u)));
-  };
-
-  const promoteToMentor = (id: string) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id && u.role === 'user'
-          ? {
-              ...u,
-              role: 'mentor',
-              mentorInfo: {
-                headline: 'Mentor mới — cập nhật hồ sơ',
-                expertise: [],
-                price: 0,
-                rating: 0,
-                sessionsCompleted: 0,
-                verificationStatus: 'verified',
-              },
-            }
-          : u,
-      ),
-    );
-  };
+  const { users, roleFilter, setRoleFilter, statusFilter, setStatusFilter, filtered, setStatus, promoteToMentor } =
+    useAdminUsersManagementView(initialUsers);
 
   if (users.length === 0) {
     return (

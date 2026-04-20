@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { SessionsListUser } from '@/features/dashboard/views/sessions/SessionsList.user';
 import { SessionsListMentor } from '@/features/dashboard/views/sessions/SessionsList.mentor';
 import { SessionsListAdmin } from '@/features/dashboard/views/sessions/SessionsList.admin';

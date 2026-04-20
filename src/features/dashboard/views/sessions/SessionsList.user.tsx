@@ -1,7 +1,7 @@
 'use client';
 
 import { Video } from 'lucide-react';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 /** Học viên: buổi học đã đặt / sắp tới (placeholder). */
 export function SessionsListUser() {

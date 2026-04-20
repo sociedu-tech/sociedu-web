@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MenteeOverviewCharts } from '@/components/dashboard/overview/MenteeOverviewCharts';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { MenteeOverviewCharts } from '@/features/dashboard/ui/overview/MenteeOverviewCharts';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export function UserDashboardHomePage() {
   return (

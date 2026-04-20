@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { UserPlus, Activity, CalendarCheck, GraduationCap, Users } from 'lucide-react';
-import { useAdminData } from '@/hooks/useAdminData';
-import { getAdminAnalyticsMock } from '@/data/adminAnalyticsMock';
+import { useAdminData, useAdminDashboardHomePage } from '@/features/admin/hooks';
 import {
   StatsTimeRangeFilter,
   StatsKpiCard,
@@ -13,20 +12,18 @@ import {
   StatsLineChart,
   StatsBarChart,
   StatsDonutChart,
-  type StatsTimeRange,
-} from '@/components/dashboard/stats';
+} from '@/features/dashboard/ui/stats';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { AdminFallbackBanner } from '@/components/admin/AdminFallbackBanner';
+import { AdminFallbackBanner } from '@/features/admin/ui/AdminFallbackBanner';
 import { ROUTES } from '@/constants/routes';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 /**
  * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + hàng chờ duyệt mentor.
  */
 export function AdminDashboardHomePage() {
   const { data, loading, refresh, bannerVariant } = useAdminData();
-  const [range, setRange] = useState<StatsTimeRange>('30d');
-  const analytics = useMemo(() => getAdminAnalyticsMock(range), [range]);
+  const { range, setRange, analytics } = useAdminDashboardHomePage();
 
   if (loading) {
     return <LoadingSpinner label="Đang tải…" />;

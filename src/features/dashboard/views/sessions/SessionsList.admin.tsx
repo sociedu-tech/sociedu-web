@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 const DEFAULT_ROWS = [
   { id: 's1', title: 'Review đồ án — tuần 3', when: '20/04/2026 19:00', pair: 'Trần B ↔ Nguyễn A', status: 'Sắp diễn ra' },
