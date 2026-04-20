@@ -3,6 +3,72 @@ import type { User } from '@/types';
 
 const BASE_URL = '/api/v1/users/me';
 
+// ─── Raw API types (loosely typed to absorb any backend shape) ─────────────────
+
+export interface RawEducation {
+  id?: number | string;
+  universityName?: string;
+  university?: string | Record<string, unknown>;
+  fieldOfStudy?: string;
+  major?: string | Record<string, unknown>;
+  degree?: string;
+  startDate?: string;
+  endDate?: string;
+  gpa?: number;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RawLanguage {
+  id?: number | string;
+  language?: string;
+  name?: string;
+  level?: string;
+  [key: string]: unknown;
+}
+
+export interface RawExperience {
+  id?: number | string;
+  company?: string;
+  organization?: string;
+  position?: string;
+  role?: string;
+  title?: string;
+  startDate?: string;
+  endDate?: string;
+  isCurrent?: boolean;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RawCertificate {
+  id?: number | string;
+  name?: string;
+  title?: string;
+  issuingOrganization?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  credentialId?: string;
+  credentialUrl?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RawProfile {
+  userId?: string;
+  user_id?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  bio?: string;
+  headline?: string;
+  avatarFileId?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
@@ -78,10 +144,12 @@ const firstEducationFields = (
   const end = pick(row, 'endDate', 'end_date');
   const yearNum =
     typeof end === 'string' && /^\d{4}/.test(end) ? Number(end.slice(0, 4)) : undefined;
+  const gpa = typeof row.gpa === 'number' ? row.gpa : undefined;
   return {
     university: uni || undefined,
     major: major || undefined,
     year: Number.isFinite(yearNum) ? yearNum : undefined,
+    gpa,
   };
 };
 
@@ -104,7 +172,12 @@ const mapCertificatesToAchievements = (certs: unknown[]): string[] =>
     })
     .filter(Boolean);
 
-/** Backend có thể trả phẳng (`data` = profile) hoặc bundle public (`data.profile` + mảng). */
+/**
+ * Backend trả về ApiEnvelope: { code, message, data }.
+ * data có thể là:
+ *   - Profile phẳng: { userId, firstName, ... }
+ *   - Bundle: { profile: {...}, experiences: [...], educations: [...], ... }
+ */
 const parseProfileBundle = (
   data: unknown,
 ): {
@@ -182,13 +255,29 @@ const mapBundleToUser = (bundle: NonNullable<ReturnType<typeof parseProfileBundl
   return user;
 };
 
+// ─── Unwrap data from ApiEnvelope (res.data is the envelope's .data field) ────
+
+const unwrapArray = (res: { data?: unknown }): unknown[] => {
+  const raw = res.data;
+  if (Array.isArray(raw)) return raw;
+  // Backend có thể wrap thêm: { data: { content: [...] } }
+  if (isRecord(raw) && Array.isArray((raw as Record<string, unknown>).content)) {
+    return (raw as Record<string, unknown>).content as unknown[];
+  }
+  return [];
+};
+
+// ─── Service ──────────────────────────────────────────────────────────────────
+
 export const userService = {
-  // Profile
+  // ── Profile ──────────────────────────────────────────────────────────────────
+
   getMe: async (): Promise<User | null> => {
     const res = await api.get(`${BASE_URL}/profile`);
     const bundle = parseProfileBundle(res.data);
     return bundle ? mapBundleToUser(bundle) : null;
   },
+
   getUserProfile: async (id: string): Promise<User | null> => {
     try {
       const res = await api.get(`/api/v1/users/${id}/profile`);
@@ -196,97 +285,135 @@ export const userService = {
       if (!bundle) return null;
       return mapBundleToUser(bundle);
     } catch (error) {
-      console.error(`Failed to fetch user profile ${id}, using null fallback:`, error);
+      console.error(`Failed to fetch user profile ${id}:`, error);
       return null;
     }
   },
-  updateProfile: async (id: string | number, profileData: any) => {
+
+  /** PUT /api/v1/users/me/profile */
+  updateProfile: async (_id: string | number, profileData: unknown) => {
     const res = await api.put(`${BASE_URL}/profile`, profileData);
     const bundle = parseProfileBundle(res.data);
     return bundle ? mapBundleToUser(bundle) : (res.data as unknown);
   },
 
-  // Education
-  getEducations: async () => {
+  // ── Education ────────────────────────────────────────────────────────────────
+
+  /** GET /api/v1/users/me/educations */
+  getEducations: async (): Promise<RawEducation[]> => {
     try {
       const res = await api.get(`${BASE_URL}/educations`);
-      return res.data || [];
+      return unwrapArray(res) as RawEducation[];
     } catch (error) {
-      console.error('Failed to fetch educations, using empty fallback:', error);
+      console.error('Failed to fetch educations:', error);
       return [];
     }
   },
-  addEducation: async (data: any) => {
+
+  /** POST /api/v1/users/me/educations */
+  addEducation: async (data: Omit<RawEducation, 'id'>): Promise<RawEducation> => {
     const res = await api.post(`${BASE_URL}/educations`, data);
-    return res.data;
-  },
-  updateEducation: async (id: number | string, data: any) => {
-    const res = await api.put(`${BASE_URL}/educations/${id}`, data);
-    return res.data;
-  },
-  deleteEducation: async (id: number | string) => {
-    const res = await api.delete(`${BASE_URL}/educations/${id}`);
-    return res.data;
+    return (res.data ?? {}) as RawEducation;
   },
 
-  // Language
-  getLanguages: async () => {
+  /** PUT /api/v1/users/me/educations/{id} */
+  updateEducation: async (id: number | string, data: Partial<RawEducation>): Promise<RawEducation> => {
+    const res = await api.put(`${BASE_URL}/educations/${id}`, data);
+    return (res.data ?? {}) as RawEducation;
+  },
+
+  /** DELETE /api/v1/users/me/educations/{id} */
+  deleteEducation: async (id: number | string): Promise<void> => {
+    await api.delete(`${BASE_URL}/educations/${id}`);
+  },
+
+  // ── Language ─────────────────────────────────────────────────────────────────
+
+  /** GET /api/v1/users/me/languages */
+  getLanguages: async (): Promise<RawLanguage[]> => {
     try {
       const res = await api.get(`${BASE_URL}/languages`);
-      return res.data || [];
+      return unwrapArray(res) as RawLanguage[];
     } catch (error) {
-      console.error('Failed to fetch languages, using empty fallback:', error);
+      console.error('Failed to fetch languages:', error);
       return [];
     }
   },
-  addLanguage: async (data: any) => {
+
+  /** POST /api/v1/users/me/languages */
+  addLanguage: async (data: Omit<RawLanguage, 'id'>): Promise<RawLanguage> => {
     const res = await api.post(`${BASE_URL}/languages`, data);
-    return res.data;
-  },
-  deleteLanguage: async (id: number | string) => {
-    const res = await api.delete(`${BASE_URL}/languages/${id}`);
-    return res.data;
+    return (res.data ?? {}) as RawLanguage;
   },
 
-  // Experience
-  getExperiences: async () => {
+  /** PUT /api/v1/users/me/languages/{id} */
+  updateLanguage: async (id: number | string, data: Partial<RawLanguage>): Promise<RawLanguage> => {
+    const res = await api.put(`${BASE_URL}/languages/${id}`, data);
+    return (res.data ?? {}) as RawLanguage;
+  },
+
+  /** DELETE /api/v1/users/me/languages/{id} */
+  deleteLanguage: async (id: number | string): Promise<void> => {
+    await api.delete(`${BASE_URL}/languages/${id}`);
+  },
+
+  // ── Experience ───────────────────────────────────────────────────────────────
+
+  /** GET /api/v1/users/me/experiences */
+  getExperiences: async (): Promise<RawExperience[]> => {
     try {
       const res = await api.get(`${BASE_URL}/experiences`);
-      return res.data || [];
+      return unwrapArray(res) as RawExperience[];
     } catch (error) {
-      console.error('Failed to fetch experiences, using empty fallback:', error);
+      console.error('Failed to fetch experiences:', error);
       return [];
     }
-  },
-  addExperience: async (data: any) => {
-    const res = await api.post(`${BASE_URL}/experiences`, data);
-    return res.data;
-  },
-  updateExperience: async (id: number | string, data: any) => {
-    const res = await api.put(`${BASE_URL}/experiences/${id}`, data);
-    return res.data;
-  },
-  deleteExperience: async (id: number | string) => {
-    const res = await api.delete(`${BASE_URL}/experiences/${id}`);
-    return res.data;
   },
 
-  // Certificate
-  getCertificates: async () => {
+  /** POST /api/v1/users/me/experiences */
+  addExperience: async (data: Omit<RawExperience, 'id'>): Promise<RawExperience> => {
+    const res = await api.post(`${BASE_URL}/experiences`, data);
+    return (res.data ?? {}) as RawExperience;
+  },
+
+  /** PUT /api/v1/users/me/experiences/{id} */
+  updateExperience: async (id: number | string, data: Partial<RawExperience>): Promise<RawExperience> => {
+    const res = await api.put(`${BASE_URL}/experiences/${id}`, data);
+    return (res.data ?? {}) as RawExperience;
+  },
+
+  /** DELETE /api/v1/users/me/experiences/{id} */
+  deleteExperience: async (id: number | string): Promise<void> => {
+    await api.delete(`${BASE_URL}/experiences/${id}`);
+  },
+
+  // ── Certificate ──────────────────────────────────────────────────────────────
+
+  /** GET /api/v1/users/me/certificates */
+  getCertificates: async (): Promise<RawCertificate[]> => {
     try {
       const res = await api.get(`${BASE_URL}/certificates`);
-      return res.data || [];
+      return unwrapArray(res) as RawCertificate[];
     } catch (error) {
-      console.error('Failed to fetch certificates, using empty fallback:', error);
+      console.error('Failed to fetch certificates:', error);
       return [];
     }
   },
-  addCertificate: async (data: any) => {
+
+  /** POST /api/v1/users/me/certificates */
+  addCertificate: async (data: Omit<RawCertificate, 'id'>): Promise<RawCertificate> => {
     const res = await api.post(`${BASE_URL}/certificates`, data);
-    return res.data;
+    return (res.data ?? {}) as RawCertificate;
   },
-  deleteCertificate: async (id: number | string) => {
-    const res = await api.delete(`${BASE_URL}/certificates/${id}`);
-    return res.data;
+
+  /** PUT /api/v1/users/me/certificates/{id} */
+  updateCertificate: async (id: number | string, data: Partial<RawCertificate>): Promise<RawCertificate> => {
+    const res = await api.put(`${BASE_URL}/certificates/${id}`, data);
+    return (res.data ?? {}) as RawCertificate;
+  },
+
+  /** DELETE /api/v1/users/me/certificates/{id} */
+  deleteCertificate: async (id: number | string): Promise<void> => {
+    await api.delete(`${BASE_URL}/certificates/${id}`);
   },
 };

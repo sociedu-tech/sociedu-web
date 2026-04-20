@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle } from 'lucide-react';
-import { reportService, ProgressReport } from '../services/reportService';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
+import { reportService } from '@/services/reportService';
+import type { ProgressReport } from '@/services/reportService';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export const UserReportsPage = () => {
   const [reports, setReports] = useState<ProgressReport[]>([]);
