@@ -1,4 +1,4 @@
-import type { StatsSeriesPoint, StatsTimeRange } from '@/components/dashboard/stats';
+import type { StatsSeriesPoint, StatsTimeRange } from '@/features/dashboard/ui/stats';
 
 export type AdminAnalyticsKpis = {
   liveSessions: number;

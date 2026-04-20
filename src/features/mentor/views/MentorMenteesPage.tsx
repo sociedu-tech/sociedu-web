@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MentorMentees } from '@/components/dashboard/mentor/MentorMentees';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { MentorMentees } from '@/features/dashboard/ui/mentor/MentorMentees';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorMenteesPage = () => {
   return (

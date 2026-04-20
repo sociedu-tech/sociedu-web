@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FolderOpen } from 'lucide-react';
 import { MenteeIncomingOffers } from '@/features/dashboard/views/projects/MenteeIncomingOffers';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 /** Học viên: dự án / gói đang tham gia (placeholder — nối API sau). */
 export function ProjectListUser() {

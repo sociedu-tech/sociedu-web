@@ -1,35 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Check, Sparkles, User, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  loadInitialDemoOffers,
-  saveDemoOffers,
-  type DemoMentorOffer,
-} from '@/features/dashboard/views/projects/projectOfferDemoStorage';
+import { useMenteeIncomingOffers } from '@/features/dashboard/hooks';
 
 /** Đề xuất lộ trình + giá từ mentor — học viên chấp nhận / từ chối (demo + sessionStorage). */
 export function MenteeIncomingOffers() {
-  const [rows, setRows] = useState<DemoMentorOffer[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setRows(loadInitialDemoOffers());
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    saveDemoOffers(rows);
-  }, [rows, mounted]);
-
-  const pending = rows.filter((r) => r.status === 'pending');
+  const { mounted, pending, setStatus } = useMenteeIncomingOffers();
   if (!mounted || pending.length === 0) return null;
-
-  const setStatus = (id: string, status: 'accepted' | 'declined') => {
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-  };
 
   return (
     <div className="glass-card overflow-hidden border-indigo-100/80 bg-linear-to-br from-indigo-50/50 to-white">

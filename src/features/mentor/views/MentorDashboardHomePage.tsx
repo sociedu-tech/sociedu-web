@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { MentorOpportunityPipelineSummary } from '@/components/dashboard/mentor/MentorOpportunityPipelineSummary';
-import { MentorRevenue, MentorRevenueToolbar } from '@/components/dashboard/mentor/MentorRevenue';
-import { MentorOverviewCharts } from '@/components/dashboard/overview/MentorOverviewCharts';
-import { DashboardSection, DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { MentorOpportunityPipelineSummary } from '@/features/dashboard/ui/mentor/MentorOpportunityPipelineSummary';
+import { MentorRevenue, MentorRevenueToolbar } from '@/features/dashboard/ui/mentor/MentorRevenue';
+import { MentorOverviewCharts } from '@/features/dashboard/ui/overview/MentorOverviewCharts';
+import { DashboardSection, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export function MentorDashboardHomePage() {
   const { user } = useAuth();

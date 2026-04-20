@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
   User as UserIcon,
   Mail,
@@ -22,75 +21,24 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import type { User } from '@/types';
-import { userService } from '@/services/userService';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { useEditProfilePage } from '@/features/dashboard/hooks';
 
 export function EditProfilePage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await userService.getMe();
-        setUser(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setSaving(true);
-    setSaveSuccess(false);
-    try {
-      await userService.updateProfile(user.id, user);
-      setSaveSuccess(true);
-      setTimeout(() => router.push(`/profile/${user.id}`), 1500);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const updateField = (field: keyof User, value: any) => {
-    if (!user) return;
-    setUser({ ...user, [field]: value });
-  };
-
-  const updateMentorField = (field: string, value: any) => {
-    if (!user || !user.mentorInfo) return;
-    setUser({
-      ...user,
-      mentorInfo: { ...user.mentorInfo, [field]: value }
-    });
-  };
-
-  const addExperience = () => {
-    if (!user) return;
-    const newExp = { company: '', role: '', duration: '', description: '' };
-    setUser({ ...user, experience: [...(user.experience || []), newExp] });
-  };
-
-  const removeExperience = (index: number) => {
-    if (!user || !user.experience) return;
-    const newExp = [...user.experience];
-    newExp.splice(index, 1);
-    setUser({ ...user, experience: newExp });
-  };
+  const {
+    router,
+    loading,
+    saving,
+    saveSuccess,
+    error,
+    user,
+    handleSave,
+    updateField,
+    updateMentorField,
+    addExperience,
+    removeExperience,
+  } = useEditProfilePage();
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner size={48} /></div>;
   if (!user) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message="Không tìm thấy người dùng" /></div>;

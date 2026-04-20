@@ -1,7 +1,7 @@
 'use client';
 
 import { Video } from 'lucide-react';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 /** Mentor: lịch buổi với học viên (placeholder). */
 export function SessionsListMentor() {

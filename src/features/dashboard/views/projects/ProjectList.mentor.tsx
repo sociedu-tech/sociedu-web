@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FolderOpen } from 'lucide-react';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 /** Mentor: dự án / học viên đang hỗ trợ (placeholder). */
 export function ProjectListMentor() {

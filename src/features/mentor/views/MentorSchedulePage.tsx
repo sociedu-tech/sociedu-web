@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MentorSchedule } from '@/components/dashboard/mentor/MentorSchedule';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { MentorSchedule } from '@/features/dashboard/ui/mentor/MentorSchedule';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorSchedulePage = () => {
   return (

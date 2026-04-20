@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Plus, Minus } from 'lucide-react';
 import { Button, Container, StatTile } from '@/components/ui';
@@ -17,33 +17,13 @@ import {
   landingFaqSection,
   faqs,
   landingCta,
-} from '@/features/landing/views/landingContent';
+} from '@/data/landingContent';
+import { useLandingPage } from '@/features/landing/hooks';
 
 const SECTION_SCROLL_MARGIN = 'scroll-mt-24 md:scroll-mt-28';
 
 export const LandingPage = () => {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  useEffect(() => {
-    const scrollToHash = () => {
-      const raw = window.location.hash;
-      if (!raw || raw === '#') return;
-      const id = decodeURIComponent(raw.slice(1));
-      if (!id) return;
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    };
-
-    scrollToHash();
-    const t = window.setTimeout(scrollToHash, 100);
-    window.addEventListener('hashchange', scrollToHash);
-    return () => {
-      window.clearTimeout(t);
-      window.removeEventListener('hashchange', scrollToHash);
-    };
-  }, []);
+  const { openFaq, setOpenFaq } = useLandingPage();
 
   return (
     <div className="min-h-screen bg-white text-dark">

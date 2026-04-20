@@ -1,73 +1,30 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle } from 'lucide-react';
-import { reportService, ProgressReport } from '@/services/reportService';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useUserReportsPage } from '@/features/report/hooks';
 
 export const UserReportsPage = () => {
-  const [reports, setReports] = useState<ProgressReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Form State
-  const [mentorId, setMentorId] = useState('');
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [attachmentUrl, setAttachmentUrl] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  const fetchReports = async () => {
-    setLoading(true);
-    try {
-      const data = await reportService.getMyReports();
-      setReports(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!mentorId || !title || !content) {
-      setError("Vui lòng điền đầy đủ thông tin bắt buộc");
-      return;
-    }
-
-    setSubmitting(true);
-    setError(null);
-    try {
-      await reportService.submitReport({
-        mentorId: parseInt(mentorId),
-        title,
-        content,
-        attachmentUrl
-      });
-      setIsModalOpen(false);
-      resetForm();
-      fetchReports();
-    } catch (err: any) {
-      setError(err.message || 'Có lỗi xảy ra khi nộp báo cáo');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const resetForm = () => {
-    setMentorId('');
-    setTitle('');
-    setContent('');
-    setAttachmentUrl('');
-    setError(null);
-  };
+  const {
+    reports,
+    loading,
+    isModalOpen,
+    setIsModalOpen,
+    submitting,
+    mentorId,
+    setMentorId,
+    title,
+    setTitle,
+    content,
+    setContent,
+    attachmentUrl,
+    setAttachmentUrl,
+    error,
+    handleSubmit,
+    resetForm,
+  } = useUserReportsPage();
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-page"><LoadingSpinner size={48} /></div>;

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { CalendarClock } from 'lucide-react';
 import type { AdminBookingRow, BookingStatus } from '@/types';
 import { cn } from '@/lib/utils';
+import { useAdminBookingsView } from '@/features/admin/hooks';
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
   { value: 'pending_payment', label: 'Chờ thanh toán' },
@@ -40,17 +41,7 @@ function statusLabel(s: BookingStatus) {
 }
 
 export function AdminBookingsView({ initialRows }: { initialRows: AdminBookingRow[] }) {
-  const [rows, setRows] = useState<AdminBookingRow[]>(initialRows);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  const filtered = useMemo(() => {
-    if (statusFilter === 'all') return rows;
-    return rows.filter((r) => r.status === statusFilter);
-  }, [rows, statusFilter]);
-
-  const updateStatus = (id: string, status: BookingStatus) => {
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
-  };
+  const { statusFilter, setStatusFilter, filtered, updateStatus } = useAdminBookingsView(initialRows);
 
   return (
     <div className="space-y-5">

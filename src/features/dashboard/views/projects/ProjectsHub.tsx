@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
-import { DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { ProjectListUser } from '@/features/dashboard/views/projects/ProjectList.user';
 import { ProjectListMentor } from '@/features/dashboard/views/projects/ProjectList.mentor';
 import { ProjectListAdmin } from '@/features/dashboard/views/projects/ProjectList.admin';

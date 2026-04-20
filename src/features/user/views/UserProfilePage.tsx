@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
 import {
   AlertTriangle,
   Share2
@@ -13,34 +12,35 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { ReportModal } from '@/components/ReportModal';
 import { AnimatePresence } from 'motion/react';
 
-// Hooks
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { useAuth } from '@/context/AuthContext';
+import { useUserProfilePage } from '@/features/user/hooks';
 
 // Sub-components
-import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { ProfileAboutTab } from '@/components/profile/ProfileAboutTab';
-import { ProfileExperienceTab } from '@/components/profile/ProfileExperienceTab';
-import { ProfileActivityTab } from '@/components/profile/ProfileActivityTab';
-import { ProfileRecommendations } from '@/components/profile/ProfileRecommendations';
-import { ProfileProjects } from '@/components/profile/ProfileProjects';
-import { ProfileStats } from '@/components/profile/ProfileStats';
-import { ProfileContactModal } from '@/components/profile/ProfileContactModal';
+import { ProfileHeader } from '@/features/user/ui/profile/ProfileHeader';
+import { ProfileAboutTab } from '@/features/user/ui/profile/ProfileAboutTab';
+import { ProfileExperienceTab } from '@/features/user/ui/profile/ProfileExperienceTab';
+import { ProfileActivityTab } from '@/features/user/ui/profile/ProfileActivityTab';
+import { ProfileRecommendations } from '@/features/user/ui/profile/ProfileRecommendations';
+import { ProfileProjects } from '@/features/user/ui/profile/ProfileProjects';
+import { ProfileStats } from '@/features/user/ui/profile/ProfileStats';
+import { ProfileContactModal } from '@/features/user/ui/profile/ProfileContactModal';
 
 export function UserProfilePage() {
-  const params = useParams();
-  const id = params.id as string;
-  const router = useRouter();
-  const { isAuthenticated, user: currentUser } = useAuth();
-  const { user, loading, error, refetch } = useUserProfile(id);
-
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'about' | 'experience' | 'activity'>('about');
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
+  const {
+    id,
+    user,
+    loading,
+    error,
+    refetch,
+    isReportModalOpen,
+    setIsReportModalOpen,
+    isContactModalOpen,
+    setIsContactModalOpen,
+    activeTab,
+    setActiveTab,
+    userProducts,
+    isOwnProfile,
+    handleContactClick,
+  } = useUserProfilePage();
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-page">
@@ -59,18 +59,6 @@ export function UserProfilePage() {
       </div>
     </div>
   );
-
-  const userProducts: any[] = []; // removed product integration
-
-  const isOwnProfile = currentUser?.id?.toString() === id;
-
-  const handleContactClick = () => {
-    if (!isAuthenticated) {
-      router.push(`/login?from=${encodeURIComponent(`/profile/${id}`)}`);
-      return;
-    }
-    setIsContactModalOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-page pb-12">

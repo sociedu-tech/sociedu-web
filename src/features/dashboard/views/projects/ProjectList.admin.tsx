@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FolderOpen } from 'lucide-react';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/components/dashboard/DashboardTable';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 
 /** Admin: toàn bộ dự án trên hệ thống (placeholder). */
 export function ProjectListAdmin() {

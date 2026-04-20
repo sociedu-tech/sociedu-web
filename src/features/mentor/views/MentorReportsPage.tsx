@@ -1,54 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, CheckCircle, Clock, X, MessageSquare } from 'lucide-react';
-import { reportService, ProgressReport, ReviewReportRequest } from '@/services/reportService';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { DashboardSurface, DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { useMentorReportsPage } from '@/features/mentor/hooks';
 
 export const MentorReportsPage = () => {
-  const [reports, setReports] = useState<ProgressReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedReport, setSelectedReport] = useState<ProgressReport | null>(null);
-  const [feedbackText, setFeedbackText] = useState('');
-  const [reviewStatus, setReviewStatus] = useState<'REVIEWED' | 'REJECTED'>('REVIEWED');
-  const [reviewing, setReviewing] = useState(false);
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  const fetchReports = async () => {
-    setLoading(true);
-    try {
-      const data = await reportService.getAssignedReports();
-      setReports(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReview = async () => {
-    if (!selectedReport || !feedbackText.trim()) return;
-    setReviewing(true);
-    try {
-      const payload: ReviewReportRequest = {
-        status: reviewStatus,
-        mentorFeedback: feedbackText
-      };
-      await reportService.reviewReport(selectedReport.id, payload);
-      await fetchReports(); // refresh
-      setSelectedReport(null);
-      setFeedbackText('');
-    } catch (err) {
-      console.error("Lỗi khi chấm bài", err);
-    } finally {
-      setReviewing(false);
-    }
-  };
+  const {
+    reports,
+    loading,
+    selectedReport,
+    setSelectedReport,
+    feedbackText,
+    setFeedbackText,
+    reviewStatus,
+    setReviewStatus,
+    reviewing,
+    handleReview,
+  } = useMentorReportsPage();
 
   if (loading) {
     return (

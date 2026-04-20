@@ -1,10 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { authService } from '@/services/authService';
-import { isApiClientError } from '@/lib/api';
 import {
   GraduationCap,
   Mail,
@@ -14,24 +11,23 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useRegisterPage } from '@/features/auth/hooks';
 
 export function RegisterPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState('');
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace('/dashboard');
-    }
-  }, [isAuthenticated, router]);
+  const {
+    loading,
+    error,
+    success,
+    registeredEmail,
+    resendLoading,
+    resendMessage,
+    fieldErrors,
+    isAuthenticated,
+    handleSubmit,
+    handleResendVerification,
+    goToLogin,
+    resetRegistration,
+  } = useRegisterPage();
 
   if (isAuthenticated) {
     return (
@@ -40,56 +36,6 @@ export function RegisterPage() {
       </div>
     );
   }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setFieldErrors({});
-    setResendMessage(null);
-
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const fullName = formData.get('fullName') as string;
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const trimmedName = fullName.trim();
-    const nameParts = trimmedName.split(/\s+/);
-    const firstName = nameParts.pop() ?? '';
-    const lastName = nameParts.join(' ') || firstName;
-
-    try {
-      await authService.register({
-        email,
-        password,
-        firstName,
-        lastName,
-      });
-      setSuccess(true);
-      setRegisteredEmail(email);
-    } catch (err: unknown) {
-      if (isApiClientError(err) && err.errorType === 'VALIDATION_ERROR' && err.fieldErrors) {
-        setFieldErrors(err.fieldErrors);
-      }
-      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra, vui lòng thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendVerification = async () => {
-    if (!registeredEmail) return;
-    setResendLoading(true);
-    setResendMessage(null);
-    setError(null);
-    try {
-      const message = await authService.resendVerification(registeredEmail);
-      setResendMessage(message || 'Đã gửi lại email. Kiểm tra hộp thư (và thư mục Spam) trong vài phút tới.');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Không thể gửi lại email xác minh.');
-    } finally {
-      setResendLoading(false);
-    }
-  };
 
   const inputFocusClass =
     'w-full pl-12 pr-4 py-3 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium text-sm transition-all';
@@ -159,7 +105,7 @@ export function RegisterPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => router.push('/login')}
+                  onClick={goToLogin}
                   className="flex-1 px-4 py-3 rounded-[8px] btn-primary text-sm font-semibold"
                 >
                   Đăng nhập
@@ -183,12 +129,7 @@ export function RegisterPage() {
                 Sai email?{' '}
                 <button
                   type="button"
-                  onClick={() => {
-                    setSuccess(false);
-                    setRegisteredEmail('');
-                    setResendMessage(null);
-                    setError(null);
-                  }}
+                  onClick={resetRegistration}
                   className="text-primary font-semibold hover:underline"
                 >
                   Đăng ký lại

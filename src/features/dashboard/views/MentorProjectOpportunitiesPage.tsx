@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -18,106 +18,34 @@ import {
   Sparkles,
   User,
 } from 'lucide-react';
-import { DashboardCard } from '@/components/dashboard/DashboardPrimitives';
-import { useAuth } from '@/context/AuthContext';
-import { appendDemoOffer } from '@/features/dashboard/views/projects/projectOfferDemoStorage';
+import { DashboardCard } from '@/features/dashboard/ui/DashboardPrimitives';
 import {
-  MOCK_REQUESTS,
-  MOCK_SUGGESTED,
-  findOpportunity,
-  type StudentRequest,
-  type SuggestedProject,
-} from '@/features/dashboard/views/projects/mentorOpportunitiesData';
+  formatVnd,
+  initials,
+  useMentorProjectOpportunitiesPage,
+  type MentorOffer,
+  type MentorOpportunityTabId,
+} from '@/features/dashboard/hooks';
+import { type StudentRequest, type SuggestedProject } from '@/data/mentorOpportunitiesMock';
 import { cn } from '@/lib/utils';
 
-type MentorOffer = {
-  projectId: string;
-  roadmap: string;
-  priceVnd: number;
-  durationWeeks: number;
-  status: 'sent';
-  sentAt?: string;
-};
-
-type Draft = { roadmap: string; price: string; weeks: string };
-
-type TabId = 'suggested' | 'requests' | 'sent';
-
-function formatVnd(n: number) {
-  return `${n.toLocaleString('vi-VN')}đ`;
-}
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
-  return (parts[0]![0] + parts[parts.length - 1]![0]).toUpperCase();
-}
-
 export function MentorProjectOpportunitiesPage() {
-  const { user } = useAuth();
-  const [offers, setOffers] = useState<Record<string, MentorOffer>>({});
-  const [openFormId, setOpenFormId] = useState<string | null>(null);
-  const [drafts, setDrafts] = useState<Record<string, Draft>>({});
-  const [tab, setTab] = useState<TabId>('suggested');
-
-  const pendingSuggested = useMemo(
-    () => MOCK_SUGGESTED.filter((p) => offers[p.id]?.status !== 'sent'),
-    [offers],
-  );
-  const pendingRequests = useMemo(
-    () => MOCK_REQUESTS.filter((p) => offers[p.id]?.status !== 'sent'),
-    [offers],
-  );
-  const sentItems = useMemo(
-    () => [...MOCK_SUGGESTED, ...MOCK_REQUESTS].filter((p) => offers[p.id]?.status === 'sent'),
-    [offers],
-  );
-
-  const onTabChange = (t: TabId) => {
-    setTab(t);
-    setOpenFormId(null);
-  };
-
-  const updateDraft = (projectId: string, field: keyof Draft, value: string) => {
-    setDrafts((d) => ({
-      ...d,
-      [projectId]: { ...(d[projectId] ?? { roadmap: '', price: '', weeks: '4' }), [field]: value },
-    }));
-  };
-
-  const sendOffer = (projectId: string) => {
-    const meta = findOpportunity(projectId);
-    const d = drafts[projectId] ?? { roadmap: '', price: '', weeks: '4' };
-    const priceNum = Number(String(d.price).replace(/\D/g, '')) || 0;
-    const weeks = Math.max(1, parseInt(d.weeks, 10) || 4);
-    if (!d.roadmap.trim() || priceNum <= 0 || !meta) return;
-    setOffers((o) => ({
-      ...o,
-      [projectId]: {
-        projectId,
-        roadmap: d.roadmap.trim(),
-        priceVnd: priceNum,
-        durationWeeks: weeks,
-        status: 'sent',
-        sentAt: new Date().toISOString(),
-      },
-    }));
-    appendDemoOffer({
-      id: `offer-${projectId}-${Date.now()}`,
-      projectTitle: meta.title,
-      mentorName: user?.fullName?.trim() || 'Mentor',
-      roadmap: d.roadmap.trim(),
-      priceVnd: priceNum,
-      weeks,
-      status: 'pending',
-    });
-    setOpenFormId(null);
-    setTab('sent');
-  };
+  const {
+    offers,
+    openFormId,
+    setOpenFormId,
+    tab,
+    onTabChange,
+    updateDraft,
+    sendOffer,
+    getDraft,
+    pendingSuggested,
+    pendingRequests,
+    sentItems,
+  } = useMentorProjectOpportunitiesPage();
 
   const renderOfferForm = (projectId: string) => {
-    const d = drafts[projectId] ?? { roadmap: '', price: '', weeks: '4' };
+    const d = getDraft(projectId);
     return (
       <div className="mt-6 border-t border-slate-100 pt-6">
         <div className="grid gap-5 lg:grid-cols-2">
@@ -182,7 +110,7 @@ export function MentorProjectOpportunitiesPage() {
     );
   };
 
-  const tabs: { id: TabId; label: string; count: number; icon: typeof Sparkles }[] = [
+  const tabs: { id: MentorOpportunityTabId; label: string; count: number; icon: typeof Sparkles }[] = [
     { id: 'suggested', label: 'Gợi ý', count: pendingSuggested.length, icon: Sparkles },
     { id: 'requests', label: 'Yêu cầu', count: pendingRequests.length, icon: Inbox },
     { id: 'sent', label: 'Đã gửi', count: sentItems.length, icon: Layers },

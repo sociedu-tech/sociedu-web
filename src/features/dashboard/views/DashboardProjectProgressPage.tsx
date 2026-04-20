@@ -1,117 +1,27 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { ROLES, normalizeRole } from '@/constants/roles';
 import { cn } from '@/lib/utils';
-import { DashboardSurface, DashboardViewHeader } from '@/components/dashboard/DashboardPrimitives';
+import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { useDashboardProjectProgressPage } from '@/features/dashboard/hooks';
+import type { ProjectProgressStatus } from '@/data/dashboardProjectProgressMock';
 
-type Status = 'doing' | 'done' | 'paused';
-
-type ProgressRow = {
-  id: string;
-  project: string;
-  counterparty: string;
-  progress: number;
-  status: Status;
-  updatedAt: string;
-};
-
-const MOCK_MENTEE: ProgressRow[] = [
-  {
-    id: '1',
-    project: 'Đồ án web React + API',
-    counterparty: 'Nguyễn Minh · Mentor',
-    progress: 72,
-    status: 'doing',
-    updatedAt: '17/04/2026',
-  },
-  {
-    id: '2',
-    project: 'Báo cáo tốt nghiệp',
-    counterparty: 'Trần Lan · Mentor',
-    progress: 100,
-    status: 'done',
-    updatedAt: '12/04/2026',
-  },
-  {
-    id: '3',
-    project: 'Ứng dụng Flutter MVP',
-    counterparty: 'Lê Hải · Mentor',
-    progress: 28,
-    status: 'doing',
-    updatedAt: '18/04/2026',
-  },
-];
-
-const MOCK_MENTOR: ProgressRow[] = [
-  {
-    id: 'm1',
-    project: 'Đồ án web React + API',
-    counterparty: 'Học viên: Đỗ Quang Hợp',
-    progress: 72,
-    status: 'doing',
-    updatedAt: '17/04/2026',
-  },
-  {
-    id: 'm2',
-    project: 'Data pipeline Python',
-    counterparty: 'Học viên: Phạm An',
-    progress: 45,
-    status: 'doing',
-    updatedAt: '16/04/2026',
-  },
-  {
-    id: 'm3',
-    project: 'Kiến trúc microservices',
-    counterparty: 'Học viên: Vũ Khánh',
-    progress: 100,
-    status: 'done',
-    updatedAt: '10/04/2026',
-  },
-  {
-    id: 'm4',
-    project: 'Mobile UI/UX',
-    counterparty: 'Học viên: Mai Chi',
-    progress: 15,
-    status: 'paused',
-    updatedAt: '08/04/2026',
-  },
-];
-
-const filters: { id: 'all' | Status; label: string }[] = [
-  { id: 'all', label: 'Tất cả' },
-  { id: 'doing', label: 'Đang làm' },
-  { id: 'done', label: 'Hoàn thành' },
-  { id: 'paused', label: 'Tạm dừng' },
-];
-
-function statusLabel(s: Status) {
+function statusLabel(s: ProjectProgressStatus) {
   if (s === 'doing') return 'Đang làm';
   if (s === 'done') return 'Hoàn thành';
   return 'Tạm dừng';
 }
 
-function statusClass(s: Status) {
+function statusClass(s: ProjectProgressStatus) {
   if (s === 'doing') return 'bg-primary/[0.1] text-primary';
   if (s === 'done') return 'bg-emerald-50 text-emerald-800';
   return 'bg-slate-100 text-slate-600';
 }
 
 export function DashboardProjectProgressPage() {
-  const { userRole } = useAuth();
-  const isMentor = normalizeRole(userRole) === ROLES.MENTOR;
-  const base = isMentor ? MOCK_MENTOR : MOCK_MENTEE;
-  const [filter, setFilter] = useState<'all' | Status>('all');
-
-  const rows = useMemo(() => {
-    if (filter === 'all') return base;
-    return base.filter((r) => r.status === filter);
-  }, [base, filter]);
-
-  const cpHeader = isMentor ? 'Học viên / đối tác' : 'Mentor phụ trách';
+  const { filter, setFilter, rows, cpHeader, filters } = useDashboardProjectProgressPage();
 
   return (
     <div className="space-y-6 pb-2">
