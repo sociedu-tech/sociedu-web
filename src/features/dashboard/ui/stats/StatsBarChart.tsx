@@ -27,7 +27,7 @@ export function StatsBarChart({
   dataKey = 'value',
   name = 'Giá trị',
   height = 260,
-  colorVar = 'var(--color-chart-1)',
+  colorVar = 'var(--color-chart-area-stroke)',
   maxBarSize = 48,
   barRadius = [6, 6, 0, 0],
   xTickAngle,

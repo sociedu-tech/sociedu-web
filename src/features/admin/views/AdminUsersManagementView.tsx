@@ -7,6 +7,7 @@ import type { AdminUserRow, UserAccountStatus } from '@/types';
 import type { User } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminUsersManagementView } from '@/features/admin/hooks';
+import { adminSelect, adminBtnPrimary, adminBtnGhost } from '@/features/admin/ui/adminClasses';
 
 function roleLabel(role: User['role']) {
   switch (role) {
@@ -31,9 +32,9 @@ function accountLabel(s: UserAccountStatus) {
 }
 
 const accountStyles: Record<UserAccountStatus, string> = {
-  active: 'bg-emerald-50 text-emerald-900 ring-emerald-100',
-  suspended: 'bg-rose-50 text-rose-900 ring-rose-100',
-  pending: 'bg-amber-50 text-amber-900 ring-amber-100',
+  active: 'bg-primary/10 text-primary ring-primary/25',
+  suspended: 'bg-slate-900 text-white ring-slate-800',
+  pending: 'bg-slate-100 text-slate-800 ring-slate-200',
 };
 
 export function AdminUsersManagementView({ initialUsers }: { initialUsers: AdminUserRow[] }) {
@@ -56,7 +57,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-indigo-200"
+            className={adminSelect}
           >
             <option value="all">Mọi vai trò</option>
             <option value="user">Học viên</option>
@@ -66,7 +67,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-indigo-200"
+            className={adminSelect}
           >
             <option value="all">Mọi trạng thái tài khoản</option>
             <option value="active">Hoạt động</option>
@@ -108,10 +109,10 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                 <td className="px-4 py-3">
                   <span
                     className={cn(
-                      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-                      u.role === 'mentor' && 'bg-violet-100 text-violet-800',
-                      u.role === 'admin' && 'bg-rose-100 text-rose-800',
-                      u.role === 'user' && 'bg-slate-100 text-slate-700',
+                      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1',
+                      u.role === 'mentor' && 'bg-primary/10 text-primary ring-primary/20',
+                      u.role === 'admin' && 'bg-slate-900 text-white ring-slate-800',
+                      u.role === 'user' && 'bg-slate-100 text-slate-800 ring-slate-200',
                     )}
                   >
                     {u.role === 'admin' ? <Shield className="size-3" /> : null}
@@ -135,7 +136,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                       <button
                         type="button"
                         onClick={() => promoteToMentor(u.id)}
-                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+                        className={adminBtnPrimary}
                       >
                         <UserPlus className="size-3.5" />
                         Cấp mentor
@@ -145,7 +146,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                       <button
                         type="button"
                         onClick={() => setStatus(u.id, 'suspended')}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        className={adminBtnGhost}
                       >
                         <Ban className="size-3.5" />
                         Khóa
@@ -154,7 +155,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                       <button
                         type="button"
                         onClick={() => setStatus(u.id, 'active')}
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
+                        className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/15"
                       >
                         <CheckCircle2 className="size-3.5" />
                         Mở khóa
@@ -191,7 +192,7 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                 <button
                   type="button"
                   onClick={() => promoteToMentor(u.id)}
-                  className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white"
+                  className={`${adminBtnPrimary} px-3 py-2`}
                 >
                   Cấp mentor
                 </button>
@@ -201,7 +202,11 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                   Tạm khóa
                 </button>
               ) : (
-                <button type="button" onClick={() => setStatus(u.id, 'active')} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">
+                <button
+                  type="button"
+                  onClick={() => setStatus(u.id, 'active')}
+                  className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary"
+                >
                   Mở khóa
                 </button>
               )}

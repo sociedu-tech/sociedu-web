@@ -8,7 +8,7 @@ export function MenteeNextSessionBanner() {
   return (
     <div className="dashboard-stat-tile flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-light text-primary">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
           <CalendarDays className="size-5" strokeWidth={2} />
         </div>
         <div className="min-w-0">

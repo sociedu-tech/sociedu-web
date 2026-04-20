@@ -50,7 +50,18 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       },
       { href: ROUTES.DASHBOARD.ADMIN.USERS.path, label: 'Người dùng', icon: Users, group: 'Quản trị' },
       { href: ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, label: 'Đặt lịch', icon: Calendar, group: 'Quản trị' },
-      { href: ROUTES.DASHBOARD.ADMIN.REPORTS.path, label: 'Báo cáo', icon: Flag, group: 'Quản trị' },
+      {
+        href: ROUTES.DASHBOARD.ADMIN.REPORTS.path,
+        label: 'Báo cáo & tranh chấp',
+        icon: Flag,
+        group: 'Quản trị',
+        children: [
+          { href: ROUTES.DASHBOARD.ADMIN.REPORTS.path, label: 'Tất cả', exact: true },
+          { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`, label: 'Người dùng & mentor' },
+          { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`, label: 'Đánh giá' },
+          { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`, label: 'Buổi học & tranh chấp' },
+        ],
+      },
     ];
   }
 
@@ -148,6 +159,19 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/projects/progress') return 'Tiến độ dự án';
   if (normalized.startsWith('/dashboard/projects/')) return 'Chi tiết dự án';
   if (normalized === '/dashboard/sessions') return 'Buổi học';
+  if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — Tất cả';
+  if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Người dùng & mentor';
+  if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`) return 'Báo cáo — Đánh giá';
+  if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`) return 'Báo cáo — Buổi học';
+  if (/^\/dashboard\/moderation\/(all|people|reviews|sessions)\/[^/]+$/.test(normalized)) {
+    return 'Chi tiết báo cáo';
+  }
+  {
+    const m = normalized.match(/^\/dashboard\/moderation\/([^/]+)$/);
+    if (m && !['people', 'reviews', 'sessions', 'all'].includes(m[1])) {
+      return 'Chi tiết báo cáo';
+    }
+  }
   for (const [prefix, title] of TITLE_ENTRIES) {
     if (normalized === prefix || normalized.startsWith(`${prefix}/`)) {
       return title;

@@ -48,7 +48,7 @@ export const ROUTES = {
       MENTOR_REQUESTS: { path: '/dashboard/mentors/requests', label: 'Duyệt Mentor', roles: [ROLES.ADMIN], sidebar: true },
       PRODUCT_REQUESTS: { path: '/dashboard/product-requests', label: 'Duyệt Sản phẩm', roles: [ROLES.ADMIN], sidebar: true },
       BOOKINGS: { path: '/dashboard/bookings', label: 'Giao dịch / Booking', roles: [ROLES.ADMIN], sidebar: true },
-      REPORTS: { path: '/dashboard/moderation', label: 'Tố cáo & Khiếu nại', roles: [ROLES.ADMIN], sidebar: true },
+      REPORTS: { path: '/dashboard/moderation', label: 'Báo cáo & tranh chấp', roles: [ROLES.ADMIN], sidebar: true },
     }
   }
 } as const;

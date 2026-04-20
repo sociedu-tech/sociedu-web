@@ -60,11 +60,13 @@ export function DashboardChatPageView({
   send,
 }: DashboardChatPageViewProps) {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white">
+    <div
+      className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-slate-50 [--color-primary:#1e293b] [--color-primary-hover:#0f172a] [--color-badge-primary-bg:rgba(30,41,59,0.14)]"
+    >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         <aside
           className={cn(
-            'flex min-h-0 w-full flex-1 flex-col overflow-hidden border-slate-200 lg:h-full lg:w-[min(100%,300px)] lg:flex-none lg:shrink-0 lg:border-r',
+            'flex min-h-0 w-full flex-1 flex-col overflow-hidden border-slate-200 bg-white lg:h-full lg:w-[min(100%,300px)] lg:flex-none lg:shrink-0 lg:border-r',
             mobileThread && 'max-lg:hidden',
           )}
         >
@@ -141,7 +143,7 @@ export function DashboardChatPageView({
 
         <section
           className={cn(
-            'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-slate-200 lg:border-r',
+            'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-slate-200 bg-white lg:border-r',
             !mobileThread && 'max-lg:hidden',
           )}
           aria-label="Nội dung hội thoại"

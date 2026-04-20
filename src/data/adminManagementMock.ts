@@ -170,5 +170,154 @@ export const ADMIN_MANAGEMENT_REPORTS: AdminModerationReport[] = [
     summary: 'Link Google Meet hết hạn trước giờ bắt đầu 15 phút.',
     status: 'dismissed',
     priority: 'low',
+    sessionDispute: {
+      sessionCode: 'SES-2026-0412',
+      sessionAt: '20/04/2026 14:00',
+      menteeName: 'Hoàng Mai',
+      mentorName: 'Trần Hải Đăng',
+      openedByParty: 'learner',
+      openerStatement:
+        'Đúng giờ học nhưng link Meet báo hết hạn, không vào được phòng. Đã chụp màn hình lỗi và gửi qua chat mentor không phản hồi kịp.',
+      counterStatement:
+        'Mentor đã gửi link dự phòng trong chat trước 10 phút; có thể học viên không kiểm tra tin nhắn.',
+      currentPhase: 'closed',
+      stages: [
+        {
+          phase: 'submitted',
+          label: 'Tiếp nhận khiếu nại',
+          description: 'Học viên mở ticket, nền tảng ghi nhận mã buổi học.',
+          done: true,
+          completedAt: '14/04/2026 08:05',
+        },
+        {
+          phase: 'evidence',
+          label: 'Thu thập minh chứng',
+          description: 'Các bên tải ảnh chụp màn hình, log chat, biên bản ngắn.',
+          done: true,
+          completedAt: '14/04/2026 10:00',
+        },
+        {
+          phase: 'admin_review',
+          label: 'Admin đối chiếu',
+          description: 'Đối chiếu lịch sử chat và log hệ thống.',
+          done: true,
+          completedAt: '15/04/2026 09:00',
+        },
+        {
+          phase: 'decision',
+          label: 'Quyết định',
+          description: 'Áp dụng chính sách hoàn / không hoàn theo quy định.',
+          done: true,
+          completedAt: '15/04/2026 11:00',
+        },
+        {
+          phase: 'closed',
+          label: 'Đóng hồ sơ',
+          description: 'Thông báo kết quả cho hai bên.',
+          done: true,
+          completedAt: '15/04/2026 11:30',
+        },
+      ],
+      evidence: [
+        {
+          id: 'ev-5a',
+          party: 'learner',
+          uploadedAt: '14/04/2026 08:20',
+          title: 'Ảnh màn hình Meet hết hạn',
+          detail: 'URL meet.google.com/xxx báo “Link không còn hiệu lực”.',
+          fileLabel: 'screenshot_meet.png',
+        },
+        {
+          id: 'ev-5b',
+          party: 'mentor',
+          uploadedAt: '14/04/2026 09:10',
+          title: 'Export đoạn chat (link dự phòng)',
+          detail: 'Đã gửi link Zoom dự phòng lúc 13:50.',
+          fileLabel: 'chat_export_session0412.txt',
+        },
+      ],
+      adminResolutionNote:
+        'Xác minh: mentor đã gửi link dự phòng trước giờ học. Không áp dụng hoàn tiền; đóng với hướng dẫn hai bên xác nhận kênh liên lạc trước buổi sau.',
+    },
+  },
+  {
+    id: 'r-6',
+    createdAt: '19/04/2026 16:20',
+    reporterName: 'Nguyễn Minh An',
+    reporterId: 'u-1',
+    targetType: 'session',
+    targetLabel: 'Buổi 18/04 — tranh chấp nội dung & thời lượng',
+    category: 'Tranh chấp buổi học',
+    summary:
+      'Học viên cho rằng mentor kết thúc sớm 20 phút; mentor cho rằng đã đủ nội dung theo gói. Đang thu thập minh chứng.',
+    status: 'in_review',
+    priority: 'high',
+    sessionDispute: {
+      sessionCode: 'SES-2026-0418',
+      sessionAt: '18/04/2026 19:00',
+      menteeName: 'Nguyễn Minh An',
+      mentorName: 'Lê Thu Hà',
+      openedByParty: 'learner',
+      openerStatement:
+        'Theo gói 60 phút nhưng buổi chỉ diễn ra ~40 phút, mentor nói “đủ bài” và tắt máy. Yêu cầu hoàn một phần hoặc bù buổi.',
+      counterStatement:
+        'Nội dung buổi là ôn bài tập đã thống nhất trước; học viên xác nhận hết câu hỏi lúc 19:40. Thời gian còn lại không bắt buộc kéo dài nếu đã hoàn thành mục tiêu.',
+      currentPhase: 'evidence',
+      stages: [
+        {
+          phase: 'submitted',
+          label: 'Tiếp nhận khiếu nại',
+          description: 'Ticket mở, khóa tạm phân bổ tiền (demo).',
+          done: true,
+          completedAt: '19/04/2026 16:25',
+        },
+        {
+          phase: 'evidence',
+          label: 'Thu thập minh chứng',
+          description: 'Hai bên tải ghi âm (nếu có), ảnh màn hình thời lượng, chat.',
+          done: false,
+        },
+        {
+          phase: 'admin_review',
+          label: 'Admin đối chiếu',
+          description: 'Đọc biên bản, log nền tảng, liên hệ bổ sung nếu cần.',
+          done: false,
+        },
+        {
+          phase: 'decision',
+          label: 'Quyết định',
+          description: 'Hoàn một phần / bù buổi / bác đơn — ghi rõ lý do.',
+          done: false,
+        },
+        {
+          phase: 'closed',
+          label: 'Đóng hồ sơ',
+          description: 'Thực hiện trên ví & thông báo.',
+          done: false,
+        },
+      ],
+      evidence: [
+        {
+          id: 'ev-6a',
+          party: 'learner',
+          uploadedAt: '19/04/2026 17:00',
+          title: 'Ảnh thời điểm kết thúc cuộc gọi',
+          detail: 'Screenshot Zoom hiển thị “cuộc họp kết thúc” lúc 19:41.',
+          fileLabel: 'zoom_end_1941.png',
+        },
+        {
+          id: 'ev-6b',
+          party: 'mentor',
+          uploadedAt: '19/04/2026 18:30',
+          title: 'Ghi chú buổi (nội bộ)',
+          detail: 'Tóm tắt 6 mục đã ôn, học viên không yêu cầu thêm câu hỏi.',
+          fileLabel: 'session_notes_0418.pdf',
+        },
+      ],
+    },
   },
 ];
+
+export function getAdminModerationReportById(id: string): AdminModerationReport | undefined {
+  return ADMIN_MANAGEMENT_REPORTS.find((r) => r.id === id);
+}

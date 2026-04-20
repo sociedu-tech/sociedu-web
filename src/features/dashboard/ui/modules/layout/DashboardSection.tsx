@@ -9,17 +9,28 @@ export function DashboardSection({
   className,
   action,
 }: {
-  title: string;
+  title?: string;
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
 }) {
+  const showHeader = Boolean(title) || Boolean(action);
+
   return (
     <section className={cn('space-y-4', className)}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-base font-semibold tracking-tight text-slate-900">{title}</h2>
-        {action ? <div className="shrink-0">{action}</div> : null}
-      </div>
+      {showHeader ? (
+        <div
+          className={cn(
+            'flex flex-col gap-2 sm:flex-row sm:items-center',
+            title ? 'sm:justify-between' : 'sm:justify-end',
+          )}
+        >
+          {title ? (
+            <h2 className="text-base font-semibold tracking-tight text-slate-900">{title}</h2>
+          ) : null}
+          {action ? <div className="shrink-0">{action}</div> : null}
+        </div>
+      ) : null}
       {children}
     </section>
   );

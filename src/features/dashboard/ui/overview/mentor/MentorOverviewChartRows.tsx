@@ -67,7 +67,6 @@ export function MentorOverviewChartRows() {
             data={mentorSessionsByWeekSeries}
             name="Buổi học"
             height={280}
-            colorVar="var(--color-chart-line)"
             maxBarSize={40}
             yAllowDecimals={false}
           />

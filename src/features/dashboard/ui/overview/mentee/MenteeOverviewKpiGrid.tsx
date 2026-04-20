@@ -9,38 +9,34 @@ const ITEMS = [
     label: 'Dự án đang làm',
     value: menteeOverviewKpi.inProgress,
     icon: PlayCircle,
-    accent: 'amber' as const,
   },
   {
     label: 'Buổi học (tháng này)',
     value: menteeOverviewKpi.sessionsThisMonth,
     icon: Video,
-    accent: 'indigo' as const,
   },
   {
     label: 'Việc cần xử lý',
     value: menteeOverviewKpi.pendingItems,
     icon: ClipboardList,
-    accent: 'violet' as const,
   },
   {
     label: 'Dự án hoàn thành',
     value: menteeOverviewKpi.completed,
     icon: CheckCircle2,
-    accent: 'emerald' as const,
   },
 ] as const;
 
 export function MenteeOverviewKpiGrid() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {ITEMS.map((item) => (
+      {ITEMS.map((item, i) => (
         <StatsKpiCard
           key={item.label}
           label={item.label}
           value={item.value}
           icon={item.icon}
-          accent={item.accent}
+          tone={i === 0 ? 'featured' : 'default'}
           className="dashboard-stat-tile"
         />
       ))}

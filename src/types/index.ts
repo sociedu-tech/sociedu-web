@@ -110,4 +110,9 @@ export type {
   ModerationTargetType,
   ModerationReportStatus,
   AdminModerationReport,
+  SessionDisputeParty,
+  SessionDisputePhase,
+  SessionDisputeEvidence,
+  SessionDisputeStage,
+  SessionDisputeDetail,
 } from './adminDomain';
