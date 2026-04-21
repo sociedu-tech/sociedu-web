@@ -101,9 +101,9 @@ export const LandingPage = () => {
                     className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent sm:from-black/30"
                     aria-hidden
                   />
-                  <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-marketing-fg-strong shadow-sm ring-1 ring-black/5 sm:left-4 sm:top-4 sm:text-[11px]">
+                  {/* <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-marketing-fg-strong shadow-sm ring-1 ring-black/5 sm:left-4 sm:top-4 sm:text-[11px]">
                     Kèm 1-1 thực tế
-                  </div>
+                  </div> */}
                 </figure>
 
                 <div className="col-span-12 flex flex-col justify-between rounded-2xl border border-marketing-card-border/90 bg-white/95 p-4 shadow-sm backdrop-blur-sm sm:col-span-5 sm:min-h-0">
