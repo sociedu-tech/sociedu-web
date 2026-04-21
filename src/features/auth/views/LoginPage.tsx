@@ -13,6 +13,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useLoginPage } from '@/features/auth/hooks';
+import { MarketingHeroSection } from '@/components/marketing';
 
 export function LoginPage() {
   const {
@@ -28,9 +29,9 @@ export function LoginPage() {
 
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-page">
-        <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
+      <MarketingHeroSection variant="soft" className="flex min-h-screen items-center justify-center border-b-0">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </MarketingHeroSection>
     );
   }
 
@@ -38,8 +39,8 @@ export function LoginPage() {
     'w-full pl-12 pr-4 py-3 bg-white border border-border rounded-[4px] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none font-medium text-sm transition-all';
 
   return (
-    <div className="min-h-screen bg-page flex items-center justify-center p-4">
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[8px] overflow-hidden border border-border">
+    <MarketingHeroSection variant="soft" className="flex min-h-screen flex-col items-center justify-center p-4 border-b-0">
+      <div className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-[8px] border border-border bg-white lg:grid-cols-2">
 
         <div className="hidden lg:flex flex-col justify-between p-10 bg-dark text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-20">
@@ -177,6 +178,6 @@ export function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
+    </MarketingHeroSection>
   );
 }

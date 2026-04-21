@@ -1,4 +1,5 @@
 @import "tailwindcss";
+/* Token màu & theme Tailwind: chỉnh tại `src/styles/theme.css` (:root + @theme). */
 @import "../styles/theme.css";
 
 /*

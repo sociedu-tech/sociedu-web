@@ -1,68 +1,185 @@
-/* Webflow-inspired design tokens. */
+/**
+ * Theme duy nhất cho toàn app (Tailwind v4 @theme).
+ *
+ * Cách dùng:
+ * - Đổi màu toàn cục: sửa giá trị trong `:root` (nhóm “Bảng màu gốc”).
+ * - Utility Tailwind (`bg-primary`, `text-gray`, `border-border`, …) lấy từ `@theme` bên dưới.
+ * - Tránh hardcode `zinc-*` / `slate-*` ở trang mới; ưu tiên token semantic (vd. `bg-marketing-canvas`).
+ */
+
+/* -------------------------------------------------------------------------- */
+/*  Bảng màu gốc — chỉnh tại đây để đổi tone brand / neutral / marketing       */
+/* -------------------------------------------------------------------------- */
+:root {
+  /* Brand */
+  --palette-primary: #146ef5;
+  --palette-primary-hover: #0055d4;
+  --palette-blue-400: #3b89ff;
+  --palette-blue-300: #006acc;
+
+  /* Chữ & viền chính (site) */
+  --palette-ink: #080808;
+  --palette-muted: #5a5a5a;
+  --palette-muted-strong: #222222;
+  --palette-muted-soft: #363636;
+  --palette-line-soft: #ababab;
+  --palette-border: #d8d8d8;
+  --palette-border-hover: #898989;
+
+  /* Nền trang */
+  --palette-page: #ffffff;
+  --palette-surface-muted: #fafafa;
+  --palette-surface-soft: #ffffff;
+
+  /* Phụ / nhấn */
+  --palette-accent-yellow: #ffae13;
+  --palette-feature-navy: #080808;
+  --palette-feature-blue: #146ef5;
+  --palette-secondary-purple: #7a3dff;
+  --palette-secondary-pink: #ed52cb;
+  --palette-secondary-green: #00d722;
+  --palette-secondary-orange: #ff6b00;
+  --palette-secondary-yellow: #ffae13;
+  --palette-secondary-red: #ee1d36;
+  --palette-linkedin: #0a66c2;
+
+  /* Nền nhẹ theo màu */
+  --palette-teal-light: #e0f7fa;
+  --palette-purple-light: #f3e8ff;
+  --palette-blue-light: #e0f2fe;
+  --palette-mint: #d1fae5;
+  --palette-peach: #ffedd5;
+  --palette-pink-light: #fce7f3;
+
+  /* Dashboard & biểu đồ */
+  --palette-dashboard-ink: #0f172a;
+  --palette-chart-1: #0f172a;
+  --palette-chart-2: #146ef5;
+  --palette-chart-3: #334155;
+  --palette-chart-4: #64748b;
+  --palette-chart-5: #94a3b8;
+  --palette-chart-grid: #e2e8f0;
+  --palette-chart-tick: #64748b;
+  --palette-chart-area-stroke: #0f172a;
+  --palette-chart-line: #0f172a;
+
+  /* Thanh cuộn */
+  --palette-scrollbar-track: #f1f5f9;
+  --palette-scrollbar-thumb: #cbd5e1;
+  --palette-scrollbar-thumb-hover: #94a3b8;
+
+  /* Neutral “zinc” — dùng cho marketing / hero (đổi cả scale nếu muốn đổi tone xám) */
+  --palette-zinc-50: #fafafa;
+  --palette-zinc-100: #f4f4f5;
+  --palette-zinc-200: #e4e4e7;
+  --palette-zinc-300: #d4d4d8;
+  --palette-zinc-400: #a1a1aa;
+  --palette-zinc-500: #71717a;
+  --palette-zinc-600: #52525b;
+  --palette-zinc-700: #3f3f46;
+  --palette-zinc-800: #27272a;
+  --palette-zinc-900: #18181b;
+  --palette-zinc-950: #09090b;
+
+  /* Badge primary (nền nhạt) — gắn với brand */
+  --palette-primary-soft: color-mix(in srgb, var(--palette-primary) 12%, transparent);
+
+  /* Legacy Airbnb naming → cùng palette (giữ để không gãy class cũ) */
+  --palette-airbnb-dark: var(--palette-ink);
+  --palette-airbnb-gray: var(--palette-muted);
+  --palette-airbnb-red: var(--palette-primary);
+
+  /* Marketing: shadow bento (đặt 0 0 #0000 nếu muốn flat hoàn toàn) */
+  --palette-shadow-marketing-bento: 0 32px 64px -16px rgb(15 23 42 / 0.45);
+}
 
 @theme {
   --font-sans: var(--font-app), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji";
   --font-mono: var(--font-code), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --color-primary: #146ef5;
-  --color-primary-hover: #0055d4;
-  --color-blue-400: #3b89ff;
-  --color-blue-300: #006acc;
-  --color-dark: #080808;
-  --color-gray: #5a5a5a;
-  --color-gray-800: #222222;
-  --color-gray-700: #363636;
-  --color-gray-300: #ababab;
-  --color-border: #d8d8d8;
-  --color-border-hover: #898989;
+  /* --- Brand & UI (map từ :root) --- */
+  --color-primary: var(--palette-primary);
+  --color-primary-hover: var(--palette-primary-hover);
+  --color-blue-400: var(--palette-blue-400);
+  --color-blue-300: var(--palette-blue-300);
+  --color-dark: var(--palette-ink);
+  --color-gray: var(--palette-muted);
+  --color-gray-800: var(--palette-muted-strong);
+  --color-gray-700: var(--palette-muted-soft);
+  --color-gray-300: var(--palette-line-soft);
+  --color-border: var(--palette-border);
+  --color-border-hover: var(--palette-border-hover);
 
-  --color-badge-primary-bg: rgba(20, 110, 245, 0.1);
+  --color-badge-primary-bg: var(--palette-primary-soft);
 
-  --color-airbnb-dark: #080808;
-  --color-airbnb-gray: #5a5a5a;
-  --color-airbnb-red: #146ef5;
+  --color-airbnb-dark: var(--palette-airbnb-dark);
+  --color-airbnb-gray: var(--palette-airbnb-gray);
+  --color-airbnb-red: var(--palette-airbnb-red);
 
-  --color-page: #ffffff;
-  --color-surface-muted: #fafafa;
-  --color-surface-soft: #ffffff;
+  --color-page: var(--palette-page);
+  --color-surface-muted: var(--palette-surface-muted);
+  --color-surface-soft: var(--palette-surface-soft);
 
-  --color-accent-yellow: #ffae13;
-  --color-feature-navy: #080808;
-  --color-feature-blue: #146ef5;
-  --color-secondary-purple: #7a3dff;
-  --color-secondary-pink: #ed52cb;
-  --color-secondary-green: #00d722;
-  --color-secondary-orange: #ff6b00;
-  --color-secondary-yellow: #ffae13;
-  --color-secondary-red: #ee1d36;
+  --color-accent-yellow: var(--palette-accent-yellow);
+  --color-feature-navy: var(--palette-feature-navy);
+  --color-feature-blue: var(--palette-feature-blue);
+  --color-secondary-purple: var(--palette-secondary-purple);
+  --color-secondary-pink: var(--palette-secondary-pink);
+  --color-secondary-green: var(--palette-secondary-green);
+  --color-secondary-orange: var(--palette-secondary-orange);
+  --color-secondary-yellow: var(--palette-secondary-yellow);
+  --color-secondary-red: var(--palette-secondary-red);
 
-  --color-linkedin: #0a66c2;
+  --color-linkedin: var(--palette-linkedin);
 
-  --color-teal-light: #e0f7fa;
-  --color-purple-light: #f3e8ff;
-  --color-blue-light: #e0f2fe;
-  --color-mint: #d1fae5;
-  --color-peach: #ffedd5;
-  --color-pink-light: #fce7f3;
+  --color-teal-light: var(--palette-teal-light);
+  --color-purple-light: var(--palette-purple-light);
+  --color-blue-light: var(--palette-blue-light);
+  --color-mint: var(--palette-mint);
+  --color-peach: var(--palette-peach);
+  --color-pink-light: var(--palette-pink-light);
 
-  /* Dashboard / biểu đồ: chỉ primary + slate (trùng sidebar slate-900) */
-  --color-dashboard-ink: #0f172a;
-  --color-chart-1: #0f172a;
-  --color-chart-2: #146ef5;
-  --color-chart-3: #334155;
-  --color-chart-4: #64748b;
-  --color-chart-5: #94a3b8;
-  --color-chart-grid: #e2e8f0;
-  --color-chart-tick: #64748b;
-  --color-chart-area-stroke: #0f172a;
-  --color-chart-line: #0f172a;
+  --color-dashboard-ink: var(--palette-dashboard-ink);
+  --color-chart-1: var(--palette-chart-1);
+  --color-chart-2: var(--palette-chart-2);
+  --color-chart-3: var(--palette-chart-3);
+  --color-chart-4: var(--palette-chart-4);
+  --color-chart-5: var(--palette-chart-5);
+  --color-chart-grid: var(--palette-chart-grid);
+  --color-chart-tick: var(--palette-chart-tick);
+  --color-chart-area-stroke: var(--palette-chart-area-stroke);
+  --color-chart-line: var(--palette-chart-line);
 
-  --color-scrollbar-track: #f1f5f9;
-  --color-scrollbar-thumb: #cbd5e1;
-  --color-scrollbar-thumb-hover: #94a3b8;
+  --color-scrollbar-track: var(--palette-scrollbar-track);
+  --color-scrollbar-thumb: var(--palette-scrollbar-thumb);
+  --color-scrollbar-thumb-hover: var(--palette-scrollbar-thumb-hover);
 
-  /* Flat UI — không dùng box-shadow / drop-shadow / text-shadow */
+  /* --- Marketing / landing (semantic — đổi qua scale zinc ở :root) --- */
+  --color-marketing-canvas: var(--palette-zinc-50);
+  --color-marketing-fg: var(--palette-zinc-900);
+  --color-marketing-fg-strong: var(--palette-zinc-800);
+  --color-marketing-fg-muted: var(--palette-zinc-500);
+  --color-marketing-fg-subtle: var(--palette-zinc-400);
+  --color-marketing-body: var(--palette-zinc-600);
+  --color-marketing-border: var(--palette-zinc-200);
+  --color-marketing-border-dashed: var(--palette-zinc-300);
+  --color-marketing-panel: var(--palette-zinc-950);
+  --color-marketing-panel-border: var(--palette-zinc-800);
+  --color-marketing-panel-muted: var(--palette-zinc-600);
+  --color-marketing-chrome: var(--palette-zinc-900);
+  --color-marketing-list: var(--palette-zinc-700);
+  --color-marketing-card-border: var(--palette-zinc-200);
+  --color-marketing-avatar-from: var(--palette-zinc-100);
+  --color-marketing-avatar-to: var(--palette-zinc-200);
+  --color-marketing-avatar-text: var(--palette-zinc-700);
+  --color-marketing-on-panel-soft: var(--palette-zinc-300);
+  --color-marketing-on-panel-muted: var(--palette-zinc-400);
+
+  /* Shadow riêng marketing (tắt bằng cách đặt 0 0 #0000 trong :root) */
+  --shadow-marketing-bento: var(--palette-shadow-marketing-bento);
+
+  /* Flat UI — không dùng box-shadow mặc định */
   --shadow-button-primary: 0 0 #0000;
   --shadow-glass: 0 0 #0000;
   --shadow-search-bar: 0 0 #0000;
