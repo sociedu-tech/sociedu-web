@@ -16,6 +16,7 @@ import {
   UserCog,
   Flag,
   ShieldCheck,
+  GraduationCap,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
@@ -100,6 +101,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
     { href: '/dashboard/sessions', label: 'Buổi học', icon: Video, group: 'Học tập' },
     { href: '/mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
     { href: '/my-reports', label: 'Báo cáo của tôi', icon: FileText, group: 'Học tập' },
+    { href: ROUTES.DASHBOARD.USER.MENTOR_APPLICATION.path, label: 'Đơn apply Mentor', icon: GraduationCap, exact: true, group: 'Tài khoản' },
     ...ACCOUNT_NAV_ITEMS,
   ];
 }
@@ -168,6 +170,7 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard') return 'Trang chủ';
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
   if (normalized === '/dashboard/security') return 'Bảo mật tài khoản';
+  if (normalized === '/dashboard/mentor-application') return 'Đơn apply Mentor';
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
   if (normalized === '/dashboard/projects') return 'Dự án';
   if (normalized === '/dashboard/projects/new') return 'Tạo dự án mới';

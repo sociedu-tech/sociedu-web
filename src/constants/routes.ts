@@ -16,6 +16,7 @@ export const ROUTES = {
     FORGOT_PASSWORD: '/forgot-password',
     MENTORS: '/mentors',
     PRODUCTS: '/products',
+    APPLY_MENTOR: '/apply-mentor',
   },
   DASHBOARD: {
     // ---- SHARED ROUTES ----
@@ -31,6 +32,7 @@ export const ROUTES = {
       PROJECT_NEW: { path: '/dashboard/projects/new', label: 'Tạo dự án mới', roles: [ROLES.USER] },
       PROJECT_PROGRESS: { path: '/dashboard/projects/progress', label: 'Tiến độ dự án', roles: [ROLES.USER] },
       SESSIONS: { path: '/dashboard/sessions', label: 'Buổi học', roles: [ROLES.USER], sidebar: true },
+      MENTOR_APPLICATION: { path: '/dashboard/mentor-application', label: 'Đơn apply Mentor', roles: [ROLES.USER], sidebar: true, icon: 'graduation-cap' },
     },
     // ---- MENTOR ROUTES ----
     MENTOR: {
