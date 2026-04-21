@@ -3,13 +3,18 @@
 import Link from 'next/link';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useVerifyEmailPage } from '@/features/auth/hooks';
+import { MarketingHeroSection } from '@/components/marketing';
 
 export function VerifyEmailPage() {
   const { loading, error } = useVerifyEmailPage();
 
   return (
-    <main className="min-h-screen bg-page flex items-center justify-center p-4">
-      <div className="max-w-lg w-full bg-white rounded-[8px] border border-border p-6">
+    <MarketingHeroSection
+      as="main"
+      variant="soft"
+      className="flex min-h-screen flex-col items-center justify-center p-4 border-b-0"
+    >
+      <div className="w-full max-w-lg rounded-[8px] border border-border bg-white p-6">
         {loading ? (
           <div className="text-center">
             <div className="mx-auto w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -41,6 +46,6 @@ export function VerifyEmailPage() {
           </div>
         )}
       </div>
-    </main>
+    </MarketingHeroSection>
   );
 }

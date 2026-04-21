@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { EMPTY_MENTORS, EMPTY_STATS } from '@/mocks/defaultData';
+import { EMPTY_MENTORS, EMPTY_STATS, SAMPLE_PUBLIC_MENTORS } from '@/mocks/defaultData';
 import type { MentorPackage, User } from '@/types';
 
 const BASE_URL = '/api/v1/mentors';
@@ -131,6 +131,38 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
     asStr(pick(raw, 'joinedDate', 'joined_date', 'createdAt', 'created_at')).trim() ||
     new Date().toISOString();
 
+  const university =
+    asStr(
+      pick(
+        raw,
+        'university',
+        'school',
+        'schoolName',
+        'school_name',
+        'institution',
+        'truong',
+        'tenTruong',
+      ),
+    ).trim() ||
+    asStr(pick(mentorBlock, 'university', 'school', 'schoolName', 'school_name', 'institution')).trim();
+
+  const major =
+    asStr(
+      pick(raw, 'major', 'fieldOfStudy', 'field_of_study', 'nganh', 'chuyenNganh', 'specialization'),
+    ).trim() ||
+    asStr(pick(mentorBlock, 'major', 'fieldOfStudy', 'field_of_study', 'nganh')).trim();
+
+  const year =
+    asNum(pick(raw, 'year', 'graduationYear', 'graduation_year', 'cohortYear', 'cohort_year', 'khoa')) ??
+    asNum(pick(mentorBlock, 'year', 'graduationYear', 'graduation_year', 'cohortYear'));
+
+  const skillsRaw = pick(raw, 'skills', 'skillSet', 'skill_set') ?? pick(mentorBlock, 'skills', 'skillSet');
+  const skills: string[] = Array.isArray(skillsRaw)
+    ? skillsRaw.map((x) => String(x).trim()).filter(Boolean)
+    : typeof skillsRaw === 'string'
+      ? parseExpertise(skillsRaw)
+      : [];
+
   const user: User = {
     id,
     name,
@@ -139,6 +171,10 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
     role,
     joinedDate: joined,
     rating: rating || undefined,
+    ...(university ? { university } : {}),
+    ...(major ? { major } : {}),
+    ...(year !== undefined ? { year } : {}),
+    ...(skills.length > 0 ? { skills } : {}),
     mentorInfo: {
       headline,
       expertise,
@@ -165,14 +201,18 @@ const buildQuery = (params?: MentorListParams): string => {
   return s ? `?${s}` : '';
 };
 
+const devDemoMentors = (): User[] =>
+  process.env.NODE_ENV === 'development' ? SAMPLE_PUBLIC_MENTORS : EMPTY_MENTORS;
+
 const fetchPublicMentors = async (params?: MentorListParams): Promise<User[]> => {
   try {
     const res = await api.get(`${BASE_URL}${buildQuery(params)}`);
     const rows = unwrapList(res.data).map(normalizeMentorUser).filter((u): u is User => u !== null);
-    return rows.length ? rows : EMPTY_MENTORS;
+    if (rows.length > 0) return rows;
+    return devDemoMentors();
   } catch (error) {
     console.error('Failed to fetch mentors, using fallback:', error);
-    return EMPTY_MENTORS;
+    return devDemoMentors();
   }
 };
 
