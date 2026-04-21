@@ -97,22 +97,45 @@ const onRefreshed = (token: string) => {
   refreshSubscribers = [];
 };
 
-const request = async (url: string, options: RequestInit = {}): Promise<ApiEnvelope> => {
+/** Các endpoint KHÔNG được tự động refresh trên 401 (để tránh vòng lặp / che lỗi auth thật). */
+const NO_REFRESH_PATHS = new Set<string>([
+  '/api/v1/auth/login',
+  '/api/v1/auth/refresh',
+  '/api/v1/auth/register',
+  '/api/v1/auth/forgot-password',
+  '/api/v1/auth/reset-password',
+  '/api/v1/auth/verify-email',
+  '/api/v1/auth/resend-verification',
+]);
+
+const shouldTryRefresh = (url: string, status: number): boolean => {
+  if (status !== 401) return false;
+  const path = url.startsWith('http') ? new URL(url).pathname : url.split('?')[0];
+  return !NO_REFRESH_PATHS.has(path);
+};
+
+const request = async (
+  url: string,
+  options: RequestInit = {},
+  extraHeaders?: Record<string, string>,
+): Promise<ApiEnvelope> => {
   let token = getAuthToken();
   const headers = new Headers(options.headers || {});
 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
+  }
+  if (extraHeaders) {
+    for (const [k, v] of Object.entries(extraHeaders)) headers.set(k, v);
   }
 
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
   let response = await fetch(fullUrl, { ...options, headers });
-  
-  if (response.status === 401) {
+
+  if (shouldTryRefresh(url, response.status)) {
     const refreshTokenRecord = getRefreshToken();
     if (refreshTokenRecord) {
       if (!isRefreshing) {
@@ -120,12 +143,13 @@ const request = async (url: string, options: RequestInit = {}): Promise<ApiEnvel
         try {
           const payload = await authService.refresh(refreshTokenRecord);
           token = payload.accessToken ?? '';
-          setAuthToken(token);
           onRefreshed(token);
-        } catch (error) {
+        } catch {
           refreshSubscribers = [];
-          authService.logout();
-          throw new ApiClientError('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.', { status: 401 });
+          await authService.logout();
+          throw new ApiClientError('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.', {
+            status: 401,
+          });
         } finally {
           isRefreshing = false;
         }
@@ -136,13 +160,13 @@ const request = async (url: string, options: RequestInit = {}): Promise<ApiEnvel
         token = getAuthToken();
       }
 
-      // Retry request with new token
       const newHeaders = new Headers(options.headers || {});
-      if (token) {
-        newHeaders.set('Authorization', `Bearer ${token}`);
-      }
+      if (token) newHeaders.set('Authorization', `Bearer ${token}`);
       if (!newHeaders.has('Content-Type') && !(options.body instanceof FormData)) {
         newHeaders.set('Content-Type', 'application/json');
+      }
+      if (extraHeaders) {
+        for (const [k, v] of Object.entries(extraHeaders)) newHeaders.set(k, v);
       }
       response = await fetch(fullUrl, { ...options, headers: newHeaders });
     }
@@ -172,6 +196,13 @@ export const api = {
   patch: (url: string, body: unknown) =>
     request(url, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: (url: string) => request(url, { method: 'DELETE' }),
+
+  /** GET với custom header (ví dụ: X-Refresh-Token). */
+  getWithHeaders: (url: string, extraHeaders?: Record<string, string>) =>
+    request(url, { method: 'GET' }, extraHeaders),
+  /** POST với custom header. */
+  postWithHeaders: (url: string, body: unknown, extraHeaders?: Record<string, string>) =>
+    request(url, { method: 'POST', body: JSON.stringify(body) }, extraHeaders),
 };
 
 /** multipart/form-data (no JSON Content-Type) */

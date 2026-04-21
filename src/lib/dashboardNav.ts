@@ -15,6 +15,7 @@ import {
   UserCheck,
   UserCog,
   Flag,
+  ShieldCheck,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
@@ -30,6 +31,16 @@ export type ShellNavItem = {
   /** Danh sách trang con của mục này (để làm Menu xổ xuống/Accordion) */
   children?: { href: string; label: string; exact?: boolean }[];
 };
+
+const ACCOUNT_NAV_ITEMS: ShellNavItem[] = [
+  {
+    href: ROUTES.DASHBOARD.SHARED.SECURITY.path,
+    label: 'Bảo mật tài khoản',
+    icon: ShieldCheck,
+    exact: true,
+    group: 'Tài khoản',
+  },
+];
 
 export function getShellNavItems(role: string, _userId?: string | number): ShellNavItem[] {
   const r = normalizeRole(role);
@@ -62,6 +73,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
           { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`, label: 'Buổi học & tranh chấp' },
         ],
       },
+      ...ACCOUNT_NAV_ITEMS,
     ];
   }
 
@@ -76,6 +88,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
       { href: '/dashboard/reports', label: 'Chấm báo cáo', icon: FileText, group: 'Công việc' },
       { href: '/dashboard/projects/progress', label: 'Tiến độ dự án', icon: TrendingUp, group: 'Công việc' },
+      ...ACCOUNT_NAV_ITEMS,
     ];
   }
 
@@ -87,6 +100,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
     { href: '/dashboard/sessions', label: 'Buổi học', icon: Video, group: 'Học tập' },
     { href: '/mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
     { href: '/my-reports', label: 'Báo cáo của tôi', icon: FileText, group: 'Học tập' },
+    ...ACCOUNT_NAV_ITEMS,
   ];
 }
 
@@ -153,6 +167,7 @@ export function getDashboardTitle(pathname: string): string {
   const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
   if (normalized === '/dashboard') return 'Trang chủ';
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
+  if (normalized === '/dashboard/security') return 'Bảo mật tài khoản';
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
   if (normalized === '/dashboard/projects') return 'Dự án';
   if (normalized === '/dashboard/projects/new') return 'Tạo dự án mới';

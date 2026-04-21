@@ -1,25 +1,35 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { authService, setRefreshToken, type AuthPayload } from '@/services/authService';
-import { userService } from '@/services/userService';
+import {
+  authService,
+  setRefreshToken,
+  type AuthPayload,
+  type MePayload,
+} from '@/services/authService';
 import { getAuthToken, removeAuthToken } from '@/lib/api';
-import type { User } from '@/types';
 import { ROLES, normalizeRole } from '@/constants/roles';
 
 export interface AuthUser {
-  id: string | number;
+  id: string;
   email: string;
-  roles: string[];
+  emailVerified: boolean;
+  status: string;
+  firstName?: string;
+  lastName?: string;
   fullName: string;
-  /** Optional; set when profile API returns an avatar URL */
+  headline?: string;
   avatarUrl?: string;
+  roles: string[];
+  capabilities: string[];
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  userRole: string; // primary role
+  userRole: string;
+  capabilities: string[];
+  hasCapability: (cap: string) => boolean;
   loading: boolean;
   token: string | null;
   login: (credentials: unknown) => Promise<void>;
@@ -31,45 +41,36 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_META_KEY = 'authMeta';
-
-type AuthMeta = {
-  userId?: string | number;
-  email?: string;
-  roles?: string[];
-};
-
-const saveAuthMeta = (payload: AuthPayload) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(
-    AUTH_META_KEY,
-    JSON.stringify({
-      userId: payload.userId,
-      email: payload.email,
-      roles: payload.roles ?? [],
-    } satisfies AuthMeta),
-  );
-};
-
-const getAuthMeta = (): AuthMeta => {
-  if (typeof window === 'undefined') return {};
-  const raw = localStorage.getItem(AUTH_META_KEY);
-  if (!raw) return {};
-  try {
-    return JSON.parse(raw) as AuthMeta;
-  } catch {
-    return {};
-  }
-};
-
 const clearAuthStorage = () => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem(AUTH_META_KEY);
+    localStorage.removeItem('authMeta');
     localStorage.removeItem('user');
   }
   removeAuthToken();
   setRefreshToken(null);
 };
+
+const buildDisplayName = (me: MePayload): string => {
+  if (me.fullName && me.fullName.trim()) return me.fullName.trim();
+  const first = (me.firstName ?? '').trim();
+  const last = (me.lastName ?? '').trim();
+  const joined = [last, first].filter(Boolean).join(' ').trim();
+  return joined || me.email || 'Người dùng';
+};
+
+const toAuthUser = (me: MePayload): AuthUser => ({
+  id: String(me.userId),
+  email: me.email,
+  emailVerified: !!me.emailVerified,
+  status: me.status,
+  firstName: me.firstName ?? undefined,
+  lastName: me.lastName ?? undefined,
+  fullName: buildDisplayName(me),
+  headline: me.headline ?? undefined,
+  avatarUrl: me.avatarUrl ?? undefined,
+  roles: Array.isArray(me.roles) ? me.roles : [],
+  capabilities: Array.isArray(me.capabilities) ? me.capabilities : [],
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -84,16 +85,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    const me = (await userService.getMe()) as User | null;
-    const meta = getAuthMeta();
-    const resolvedId = me?.id ?? meta.userId ?? '';
-    setUser({
-      id: resolvedId,
-      email: meta.email ?? '',
-      roles: meta.roles ?? [],
-      fullName: me?.name?.trim() ?? '',
-      avatarUrl: me?.avatar,
-    });
+    const me = await authService.getMe();
+    if (!me) {
+      setUser(null);
+      setToken(null);
+      return;
+    }
+
+    setUser(toAuthUser(me));
     setToken(savedToken);
   }, []);
 
@@ -116,10 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const applyAuthPayload = useCallback(
     async (payload: AuthPayload | undefined) => {
-      if (!payload) {
-        return;
-      }
-      saveAuthMeta(payload);
+      if (!payload) return;
       await reloadSession();
     },
     [reloadSession],
@@ -141,12 +137,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const userRole = user?.roles?.[0] ? normalizeRole(user.roles[0]) : ROLES.GUEST;
+  const capabilities = user?.capabilities ?? [];
+  const hasCapability = useCallback(
+    (cap: string) => capabilities.includes(cap),
+    [capabilities],
+  );
 
   const value = useMemo(
     () => ({
       user,
       isAuthenticated: !!user && !!token,
       userRole,
+      capabilities,
+      hasCapability,
       loading,
       token,
       login,
@@ -155,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       setUser,
     }),
-    [user, userRole, loading, token, login, applyAuthPayload, reloadSession, logout],
+    [user, userRole, capabilities, hasCapability, loading, token, login, applyAuthPayload, reloadSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

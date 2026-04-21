@@ -23,6 +23,7 @@ export const ROUTES = {
       HOME: { path: '/dashboard', label: 'Tổng quan', roles: [ROLES.USER, ROLES.MENTOR, ROLES.ADMIN], sidebar: true },
       PROFILE_EDIT: { path: '/dashboard/profile/edit', label: 'Cập nhật hồ sơ', roles: [ROLES.USER, ROLES.MENTOR, ROLES.ADMIN] },
       CHAT: { path: '/dashboard/chat', label: 'Tin nhắn', roles: [ROLES.USER, ROLES.MENTOR, ROLES.ADMIN], sidebar: true, icon: 'message-circle' },
+      SECURITY: { path: '/dashboard/security', label: 'Bảo mật tài khoản', roles: [ROLES.USER, ROLES.MENTOR, ROLES.ADMIN] },
     },
     // ---- USER ROUTES ----
     USER: {
