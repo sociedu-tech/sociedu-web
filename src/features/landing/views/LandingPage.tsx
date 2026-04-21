@@ -34,11 +34,6 @@ export const LandingPage = () => {
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:items-center lg:gap-14 xl:gap-16">
             <div className="min-w-0 lg:max-w-xl xl:max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-marketing-border/90 bg-white/90 px-3.5 py-1.5 text-xs font-medium text-marketing-body shadow-sm backdrop-blur-sm">
-                <span className="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20" />
-                {landingHero.eyebrow}
-              </div>
-
               <h1 className="mt-7 text-balance font-black uppercase tracking-tight text-marketing-fg">
                 <span className="block text-[1.35rem] leading-snug text-marketing-fg-muted sm:text-2xl md:text-[1.75rem]">
                   {landingHero.titleLine1}
