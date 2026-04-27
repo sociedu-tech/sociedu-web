@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Shield, UserCircle, UserPlus, Ban, CheckCircle2 } from 'lucide-react';
-import type { AdminUserRow, UserAccountStatus } from '@/types';
+import type { UserAccountStatus } from '@/types';
 import type { User } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminUsersManagementView } from '@/features/admin/hooks';
@@ -37,9 +37,24 @@ const accountStyles: Record<UserAccountStatus, string> = {
   pending: 'bg-slate-100 text-slate-800 ring-slate-200',
 };
 
-export function AdminUsersManagementView({ initialUsers }: { initialUsers: AdminUserRow[] }) {
-  const { users, roleFilter, setRoleFilter, statusFilter, setStatusFilter, filtered, setStatus, promoteToMentor } =
-    useAdminUsersManagementView(initialUsers);
+export function AdminUsersManagementView() {
+  const {
+    users,
+    loading,
+    error,
+    updatingRoleId,
+    roleFilter,
+    setRoleFilter,
+    statusFilter,
+    setStatusFilter,
+    filtered,
+    setStatus,
+    promoteToMentor,
+  } = useAdminUsersManagementView();
+
+  if (loading) {
+    return <div className="px-6 py-16 text-center text-sm text-slate-500">Đang tải danh sách người dùng...</div>;
+  }
 
   if (users.length === 0) {
     return (
@@ -75,10 +90,11 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
             <option value="pending">Chờ duyệt</option>
           </select>
         </div>
-        <p className="text-xs text-slate-500">
-          Thao tác lưu cục bộ trên trình duyệt (demo). Kết nối API để đồng bộ server.
-        </p>
+        <p className="text-xs text-slate-500">Dữ liệu đồng bộ từ backend admin users API.</p>
       </div>
+      {error ? (
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>
+      ) : null}
 
       <div className="overflow-x-auto rounded-xl border border-slate-100">
         <table className="hidden min-w-[880px] w-full text-left text-sm md:table">
@@ -135,11 +151,12 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
                     {u.role === 'user' && u.accountStatus === 'active' ? (
                       <button
                         type="button"
-                        onClick={() => promoteToMentor(u.id)}
+                        disabled={updatingRoleId === u.id}
+                        onClick={() => void promoteToMentor(u.id)}
                         className={adminBtnPrimary}
                       >
                         <UserPlus className="size-3.5" />
-                        Cấp mentor
+                        {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
                       </button>
                     ) : null}
                     {u.accountStatus !== 'suspended' ? (
@@ -191,10 +208,11 @@ export function AdminUsersManagementView({ initialUsers }: { initialUsers: Admin
               {u.role === 'user' && u.accountStatus === 'active' ? (
                 <button
                   type="button"
-                  onClick={() => promoteToMentor(u.id)}
+                  disabled={updatingRoleId === u.id}
+                  onClick={() => void promoteToMentor(u.id)}
                   className={`${adminBtnPrimary} px-3 py-2`}
                 >
-                  Cấp mentor
+                  {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
                 </button>
               ) : null}
               {u.accountStatus !== 'suspended' ? (

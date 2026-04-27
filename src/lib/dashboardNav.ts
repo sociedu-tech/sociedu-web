@@ -16,7 +16,6 @@ import {
   UserCog,
   Flag,
   ShieldCheck,
-  GraduationCap,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
@@ -57,7 +56,6 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
         group: 'Quản trị',
         children: [
           { href: ROUTES.DASHBOARD.ADMIN.MENTORS.path, label: 'Danh mục', exact: true },
-          { href: ROUTES.DASHBOARD.ADMIN.MENTOR_REQUESTS.path, label: 'Duyệt đăng ký' },
         ]
       },
       { href: ROUTES.DASHBOARD.ADMIN.USERS.path, label: 'Người dùng', icon: Users, group: 'Quản trị' },
@@ -101,7 +99,6 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
     { href: '/dashboard/sessions', label: 'Buổi học', icon: Video, group: 'Học tập' },
     { href: '/mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
     { href: '/my-reports', label: 'Báo cáo của tôi', icon: FileText, group: 'Học tập' },
-    { href: ROUTES.DASHBOARD.USER.MENTOR_APPLICATION.path, label: 'Đơn apply Mentor', icon: GraduationCap, exact: true, group: 'Tài khoản' },
     ...ACCOUNT_NAV_ITEMS,
   ];
 }
@@ -148,7 +145,6 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 
 const TITLE_ENTRIES: [string, string][] = [
   [ROUTES.DASHBOARD.ADMIN.MENTORS.path, 'Quản lý Mentor'],
-  [ROUTES.DASHBOARD.ADMIN.MENTOR_REQUESTS.path, 'Yêu cầu đăng ký Mentor'],
   [ROUTES.DASHBOARD.ADMIN.USERS.path, 'Người dùng'],
   [ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, 'Đặt lịch'],
   [ROUTES.DASHBOARD.ADMIN.REPORTS.path, 'Báo cáo & khiếu nại'],
@@ -170,7 +166,6 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard') return 'Trang chủ';
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
   if (normalized === '/dashboard/security') return 'Bảo mật tài khoản';
-  if (normalized === '/dashboard/mentor-application') return 'Đơn apply Mentor';
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
   if (normalized === '/dashboard/projects') return 'Dự án';
   if (normalized === '/dashboard/projects/new') return 'Tạo dự án mới';

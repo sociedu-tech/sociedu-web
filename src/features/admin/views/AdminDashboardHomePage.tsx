@@ -18,7 +18,7 @@ import { AdminFallbackBanner } from '@/features/admin/ui/AdminFallbackBanner';
 import { ROUTES } from '@/constants/routes';
 
 /**
- * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + hàng chờ duyệt mentor.
+ * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + quản lý người dùng.
  */
 export function AdminDashboardHomePage() {
   const { data, loading, refresh, bannerVariant } = useAdminData();
@@ -28,7 +28,7 @@ export function AdminDashboardHomePage() {
     return <LoadingSpinner label="Đang tải…" />;
   }
 
-  const pendingMentors = data.mentorRequests?.length ?? 0;
+  const totalUsers = data.users?.length ?? 0;
 
   return (
     <div className="space-y-12 pb-4">
@@ -95,13 +95,13 @@ export function AdminDashboardHomePage() {
         </StatsChartCard>
       </section>
 
-      <section className="space-y-5" aria-label="Hàng chờ duyệt mentor">
+      <section className="space-y-5" aria-label="Quan ly nguoi dung">
         <div className="flex justify-end">
           <Link
-            href={ROUTES.DASHBOARD.ADMIN.MENTOR_REQUESTS.path}
+            href={ROUTES.DASHBOARD.ADMIN.USERS.path}
             className="inline-flex shrink-0 items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
-            Mở danh sách đầy đủ
+            Mo quan ly nguoi dung
           </Link>
         </div>
 
@@ -112,14 +112,14 @@ export function AdminDashboardHomePage() {
                 <UserPlus className="size-7 text-primary" strokeWidth={2} />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-600">Đang chờ xử lý</p>
-                <p className="mt-1 text-3xl font-semibold tabular-nums text-slate-900">{pendingMentors}</p>
+                <p className="text-sm font-medium text-slate-600">Nguoi dung trong he thong</p>
+                <p className="mt-1 text-3xl font-semibold tabular-nums text-slate-900">{totalUsers}</p>
               </div>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-slate-500">
-              {pendingMentors === 0
-                ? 'Không có yêu cầu nào trong hàng chờ.'
-                : `Có ${pendingMentors} hồ sơ cần duyệt. Vào trang chi tiết để xem thông tin và thao tác.`}
+              {totalUsers === 0
+                ? 'Chua co du lieu nguoi dung tu API.'
+                : `Co ${totalUsers} tai khoan. Ban co the vao trang nguoi dung de cap nhat role mentor/admin/user.`}
             </p>
           </div>
         </div>
