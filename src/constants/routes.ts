@@ -33,7 +33,6 @@ export const ROUTES = {
       PROJECT_NEW: { path: '/dashboard/projects/new', label: 'Tạo dự án mới', roles: [ROLES.USER] },
       PROJECT_PROGRESS: { path: '/dashboard/projects/progress', label: 'Tiến độ dự án', roles: [ROLES.USER] },
       SESSIONS: { path: '/dashboard/sessions', label: 'Buổi học', roles: [ROLES.USER], sidebar: true },
-      MENTOR_APPLICATION: { path: '/dashboard/mentor-application', label: 'Đơn apply Mentor', roles: [ROLES.USER], sidebar: true, icon: 'graduation-cap' },
     },
     // ---- MENTOR ROUTES ----
     MENTOR: {
@@ -49,7 +48,6 @@ export const ROUTES = {
       OVERVIEW: { path: '/dashboard', label: 'Thống kê', roles: [ROLES.ADMIN], sidebar: true },
       USERS: { path: '/dashboard/users', label: 'Người dùng', roles: [ROLES.ADMIN], sidebar: true },
       MENTORS: { path: '/dashboard/mentors', label: 'Quản lý Mentor', roles: [ROLES.ADMIN], sidebar: true },
-      MENTOR_REQUESTS: { path: '/dashboard/mentors/requests', label: 'Duyệt Mentor', roles: [ROLES.ADMIN], sidebar: true },
       PRODUCT_REQUESTS: { path: '/dashboard/product-requests', label: 'Duyệt Sản phẩm', roles: [ROLES.ADMIN], sidebar: true },
       BOOKINGS: { path: '/dashboard/bookings', label: 'Giao dịch / Booking', roles: [ROLES.ADMIN], sidebar: true },
       REPORTS: { path: '/dashboard/moderation', label: 'Báo cáo & tranh chấp', roles: [ROLES.ADMIN], sidebar: true },

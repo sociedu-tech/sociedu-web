@@ -46,9 +46,11 @@ export function useMentorMarketplace(): MentorMarketplaceViewModel {
     setLoading(true);
     setError(null);
     try {
-      const data = await mentorService.getMentors(q ? { q } : undefined);
+      /** `q` + page/size mặc định trong mentorService — khớp GET /api/v1/mentors */
+      const data = await mentorService.getMentors(q ? { q } : {});
       setMentors(data);
     } catch {
+      setMentors([]);
       setError('Không thể tải danh sách mentor. Vui lòng thử lại.');
     } finally {
       setLoading(false);

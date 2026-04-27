@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { EMPTY_MENTORS, EMPTY_STATS, SAMPLE_PUBLIC_MENTORS } from '@/mocks/defaultData';
+import { EMPTY_STATS } from '@/mocks/defaultData';
 import type { MentorPackage, User } from '@/types';
 
 const BASE_URL = '/api/v1/mentors';
@@ -47,15 +47,27 @@ const mapVerification = (raw: unknown): 'pending' | 'verified' | 'rejected' => {
 };
 
 /**
- * Backend có thể trả thẳng mảng, Spring Page (`content`), hoặc `{ items, data }`.
+ * Backend: `ApiResponse` → `data` là Spring `Page` (`content`), hoặc mảng thẳng / `{ items }`.
+ * Hỗ trợ cả khi vô tình truyền cả envelope (có `data` lồng `content`).
  */
-const unwrapList = (data: unknown): unknown[] => {
-  if (Array.isArray(data)) return data;
-  if (!isRecord(data)) return [];
-  const content = pick(data, 'content', 'items', 'records', 'results');
-  if (Array.isArray(content)) return content;
-  const inner = pick(data, 'data');
-  if (Array.isArray(inner)) return inner;
+const unwrapList = (payload: unknown): unknown[] => {
+  if (Array.isArray(payload)) return payload;
+  if (!isRecord(payload)) return [];
+
+  const fromRecord = (rec: Record<string, unknown>): unknown[] => {
+    const content = pick(rec, 'content', 'items', 'records', 'results');
+    if (Array.isArray(content)) return content;
+    const inner = pick(rec, 'data');
+    if (Array.isArray(inner)) return inner;
+    if (isRecord(inner)) {
+      const nested = pick(inner, 'content', 'items', 'records', 'results');
+      if (Array.isArray(nested)) return nested;
+    }
+    return [];
+  };
+
+  const top = fromRecord(payload);
+  if (top.length > 0) return top;
   return [];
 };
 
@@ -188,32 +200,39 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
   return user;
 };
 
+/** Khớp GET /api/v1/mentors (Spring): q, minBasePrice, maxBasePrice, page, size */
 export type MentorListParams = {
-  /** Tìm theo tên / headline / chuyên môn — cùng endpoint GET /mentors */
+  /** Từ khóa — headline / expertise (backend LIKE) */
   q?: string;
+  minBasePrice?: number;
+  maxBasePrice?: number;
+  page?: number;
+  /** Mặc định lớn vì marketplace còn lọc phía client (tránh chỉ nhận 1 trang 20 bản ghi). */
+  size?: number;
 };
+
+const DEFAULT_MENTOR_LIST_SIZE = 500;
 
 const buildQuery = (params?: MentorListParams): string => {
   const sp = new URLSearchParams();
   const q = params?.q?.trim();
   if (q) sp.set('q', q);
-  const s = sp.toString();
-  return s ? `?${s}` : '';
+  const { minBasePrice, maxBasePrice } = params ?? {};
+  if (minBasePrice != null && Number.isFinite(minBasePrice)) {
+    sp.set('minBasePrice', String(minBasePrice));
+  }
+  if (maxBasePrice != null && Number.isFinite(maxBasePrice)) {
+    sp.set('maxBasePrice', String(maxBasePrice));
+  }
+  sp.set('page', String(params?.page ?? 0));
+  sp.set('size', String(params?.size ?? DEFAULT_MENTOR_LIST_SIZE));
+  return `?${sp.toString()}`;
 };
 
-const devDemoMentors = (): User[] =>
-  process.env.NODE_ENV === 'development' ? SAMPLE_PUBLIC_MENTORS : EMPTY_MENTORS;
-
 const fetchPublicMentors = async (params?: MentorListParams): Promise<User[]> => {
-  try {
-    const res = await api.get(`${BASE_URL}${buildQuery(params)}`);
-    const rows = unwrapList(res.data).map(normalizeMentorUser).filter((u): u is User => u !== null);
-    if (rows.length > 0) return rows;
-    return devDemoMentors();
-  } catch (error) {
-    console.error('Failed to fetch mentors, using fallback:', error);
-    return devDemoMentors();
-  }
+  const res = await api.get(`${BASE_URL}${buildQuery(params)}`);
+  const pageOrList = res.data;
+  return unwrapList(pageOrList).map(normalizeMentorUser).filter((u): u is User => u !== null);
 };
 
 export const mentorService = {

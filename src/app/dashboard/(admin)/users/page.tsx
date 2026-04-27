@@ -2,7 +2,6 @@
 
 import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
 import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
-import { ADMIN_MANAGEMENT_USERS } from '@/data/adminManagementMock';
 import { AdminUsersManagementView } from '@/features/admin/views/AdminUsersManagementView';
 
 export default function AdminUsersPage() {
@@ -15,7 +14,7 @@ export default function AdminUsersPage() {
       />
       <DashboardSurface>
         <div className="p-4 sm:p-6">
-          <AdminUsersManagementView initialUsers={ADMIN_MANAGEMENT_USERS} />
+          <AdminUsersManagementView />
         </div>
       </DashboardSurface>
     </>
