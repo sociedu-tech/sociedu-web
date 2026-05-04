@@ -32,11 +32,13 @@ export const useAdminData = () => {
     }
     setBannerVariant(null);
     try {
-      const mentorRequests = await adminService.getMentorRequests();
+      const users = await adminService.getUsers();
 
       setData({
-        users: [],
-        mentorRequests: mentorRequests as User[],
+        users: users as User[],
+        mentorRequests: users.filter(
+          (u) => u.role === 'mentor' && u.accountStatus === 'pending',
+        ) as User[],
       });
     } catch (_err: unknown) {
       setData(getAdminMockData());
