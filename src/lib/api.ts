@@ -164,14 +164,14 @@ const request = async (url: string, options: RequestInit = {}): Promise<ApiEnvel
 };
 
 export const api = {
-  get: (url: string) => request(url),
-  post: (url: string, body: unknown) =>
-    request(url, { method: 'POST', body: JSON.stringify(body) }),
-  put: (url: string, body: unknown) =>
-    request(url, { method: 'PUT', body: JSON.stringify(body) }),
-  patch: (url: string, body: unknown) =>
-    request(url, { method: 'PATCH', body: JSON.stringify(body) }),
-  delete: (url: string) => request(url, { method: 'DELETE' }),
+  get: <T = unknown>(url: string) => request(url) as Promise<ApiEnvelope<T>>,
+  post: <T = unknown>(url: string, body: unknown) =>
+    request(url, { method: 'POST', body: JSON.stringify(body) }) as Promise<ApiEnvelope<T>>,
+  put: <T = unknown>(url: string, body: unknown) =>
+    request(url, { method: 'PUT', body: JSON.stringify(body) }) as Promise<ApiEnvelope<T>>,
+  patch: <T = unknown>(url: string, body: unknown) =>
+    request(url, { method: 'PATCH', body: JSON.stringify(body) }) as Promise<ApiEnvelope<T>>,
+  delete: <T = unknown>(url: string) => request(url, { method: 'DELETE' }) as Promise<ApiEnvelope<T>>,
 };
 
 /** multipart/form-data (no JSON Content-Type) */
