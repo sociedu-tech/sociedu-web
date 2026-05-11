@@ -1,10 +1,6 @@
-/**
- * Booking flow UI types — extend from existing backend types in @/types/booking
- */
-
 export interface AvailableSlot {
-  startTime: string; // ISO datetime
-  endTime: string;   // ISO datetime
+  startTime: string;
+  endTime: string;
   available: boolean;
 }
 
@@ -19,13 +15,29 @@ export interface CreateDraftBookingRequest {
   mentorId: string;
   packageId: string;
   versionId: string;
-  scheduledAt: string; // ISO datetime of the selected slot
+  scheduledAt: string;
   timezone: string;
 }
 
 export interface DraftBookingResponse {
   draftBookingId: string;
-  expiresAt: string; // ISO datetime — khi nào slot hold hết hạn
+  expiresAt: string;
+}
+
+export interface CheckoutBookingRequest {
+  servicePackageVersionId: string;
+  orderInfo?: string;
+}
+
+export interface CheckoutBookingResponse {
+  id: string;
+  buyerId: string;
+  serviceId: string;
+  status: 'pending_payment' | 'paid' | 'failed' | 'canceled' | 'refunded' | string;
+  totalAmount: number;
+  paidAt?: string;
+  createdAt: string;
+  paymentUrl?: string;
 }
 
 export interface ConfirmBookingRequest {
@@ -47,13 +59,17 @@ export interface PaymentSessionResponse {
 }
 
 export interface PaymentVerifyResponse {
-  success: boolean;
-  bookingId: string;
-  status: 'PAYMENT_SUCCESS' | 'PAYMENT_FAILED';
+  id: string;
+  orderId: string;
+  provider: string;
+  transactionRef: string;
+  amount: number;
+  status: 'pending' | 'success' | 'failed' | 'PENDING' | 'SUCCESS' | 'FAILED' | string;
+  createdAt: string;
+  paymentUrl?: string;
   message?: string;
 }
 
-/** Booking intent — lưu lại khi user chưa login */
 export interface PendingBookingIntent {
   mentorId: string;
   packageId?: string;

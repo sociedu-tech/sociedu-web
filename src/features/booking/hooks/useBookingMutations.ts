@@ -46,6 +46,11 @@ export function useConfirmBooking() {
   });
 }
 
+export const useCheckoutBooking = () =>
+  useMutation({
+    mutationFn: bookingFlowApi.checkout,
+  });
+
 export const useCancelDraft = () =>
   useMutation({
     mutationFn: (draftId: string) => bookingFlowApi.cancelDraft(draftId),

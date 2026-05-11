@@ -27,7 +27,7 @@ export function PackageSelectionStep() {
     if (mentorId) {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookingAvailabilityRoot(mentorId) });
     }
-    transitionTo('SELECTING_SLOT');
+    transitionTo('FILLING_DETAILS');
   };
 
   if (isLoading) return <PackageSkeleton />;

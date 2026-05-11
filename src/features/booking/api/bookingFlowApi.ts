@@ -1,6 +1,8 @@
 import { api } from '@/lib/api';
 import type {
   AvailabilityResponse,
+  CheckoutBookingRequest,
+  CheckoutBookingResponse,
   ConfirmBookingRequest,
   ConfirmBookingResponse,
   CreateDraftBookingRequest,
@@ -11,6 +13,7 @@ import type {
 
 const BOOKINGS_BASE = '/api/v1/bookings';
 const PAYMENTS_BASE = '/api/v1/payments';
+const ORDERS_BASE = '/api/v1/orders';
 
 export const bookingFlowApi = {
   getAvailability: async (
@@ -41,6 +44,11 @@ export const bookingFlowApi = {
 
   cancelDraft: async (draftId: string): Promise<void> => {
     await api.delete(`${BOOKINGS_BASE}/draft/${draftId}`);
+  },
+
+  checkout: async (data: CheckoutBookingRequest): Promise<CheckoutBookingResponse> => {
+    const res = await api.post<CheckoutBookingResponse>(`${ORDERS_BASE}/checkout`, data);
+    return res.data!;
   },
 
   createPaymentSession: async (bookingId: string): Promise<PaymentSessionResponse> => {

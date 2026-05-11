@@ -10,6 +10,8 @@ import { OrderSummaryPanel } from './OrderSummaryPanel';
 import { StepPlaceholder } from './steps/StepPlaceholder';
 import { PackageSelectionStep } from './steps/PackageSelectionStep';
 import { ScheduleSelectionStep } from './steps/ScheduleSelectionStep';
+import { BookingDetailsStep } from './steps/BookingDetailsStep';
+import { BookingResultStep } from './steps/BookingResultStep';
 import {
   getStepFromState,
   canTransition,
@@ -107,7 +109,7 @@ export function BookingFlowShell({ mentorName }: BookingFlowShellProps) {
   const isFirstStep = currentStep <= 1;
   const isLastStep = currentStep >= TOTAL_STEPS;
   const isResultStep = ['PAYMENT_PENDING', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'EXPIRED'].includes(flowState);
-  const usesStepOwnedNavigation = flowState === 'SELECTING_PACKAGE' || flowState === 'SELECTING_SLOT';
+  const usesStepOwnedNavigation = ['SELECTING_PACKAGE', 'SELECTING_SLOT', 'FILLING_DETAILS', 'SUBMITTING'].includes(flowState);
 
   const renderStep = () => {
     switch (flowState) {
@@ -115,6 +117,15 @@ export function BookingFlowShell({ mentorName }: BookingFlowShellProps) {
         return <PackageSelectionStep />;
       case 'SELECTING_SLOT':
         return <ScheduleSelectionStep />;
+      case 'FILLING_DETAILS':
+      case 'SUBMITTING':
+        return <BookingDetailsStep />;
+      case 'PAYMENT_PENDING':
+      case 'PAYMENT_SUCCESS':
+      case 'PAYMENT_FAILED':
+      case 'EXPIRED':
+      case 'ERROR':
+        return <BookingResultStep flowState={flowState} />;
       default:
         return <StepPlaceholder flowState={flowState} />;
     }
