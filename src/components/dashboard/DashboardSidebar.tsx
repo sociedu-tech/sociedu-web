@@ -62,7 +62,7 @@ export function DashboardSidebar({
     <>
       <div className="relative flex h-[4.25rem] shrink-0 items-center border-b border-slate-200 bg-white px-3">
         <Link
-          href="/dashboard"
+          href="/"
           onClick={handleNav}
           className={cn(
             'flex min-w-0 flex-1 items-center gap-3 rounded-xl py-1.5 transition-colors hover:bg-slate-50',
