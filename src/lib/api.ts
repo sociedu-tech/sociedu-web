@@ -1,25 +1,37 @@
 /**
  * HTTP client for Spring Boot `ApiResponse`: { code, message, data }.
- * Uses Bearer token from localStorage (client-only).
  */
 
+const ACCESS_TOKEN_KEY = 'access_token';
+const TOKEN_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
+
+const getCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
+const setCookie = (name: string, value: string, maxAgeSeconds: number) => {
+  if (typeof document === 'undefined') return;
+  const secure = window.location.protocol === 'https:' ? '; secure' : '';
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=strict${secure}`;
+};
+
+const deleteCookie = (name: string) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict`;
+};
+
 export const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  // Fallback to localStorage if cookie is somehow missing but local storage is there
-  const matches = document.cookie.match(new RegExp('(^| )access_token=([^;]+)'));
-  return matches ? decodeURIComponent(matches[2]) : localStorage.getItem('token');
+  return getCookie(ACCESS_TOKEN_KEY);
 };
 
 export const setAuthToken = (token: string) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('token', token);
-  document.cookie = `access_token=${encodeURIComponent(token)}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
+  setCookie(ACCESS_TOKEN_KEY, token, TOKEN_MAX_AGE_SECONDS);
 };
 
 export const removeAuthToken = () => {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('token');
-  document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  deleteCookie(ACCESS_TOKEN_KEY);
 };
 
 export const API_BASE_URL =
