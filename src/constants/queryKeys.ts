@@ -11,4 +11,7 @@ export const QUERY_KEYS = {
   bookingsBuyer: ['bookings', 'buyer'] as const,
   bookingsMentor: ['bookings', 'mentor'] as const,
   bookingDetail: (id: string) => ['booking', id] as const,
+  bookingPackages: (mentorId: string) => ['booking-packages', mentorId] as const,
+  bookingAvailabilityRoot: (mentorId: string) => ['availability', mentorId] as const,
+  bookingAvailability: (mentorId: string, date: string) => ['availability', mentorId, date] as const,
 };

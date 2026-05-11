@@ -1,8 +1,11 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Camera, CheckCircle2, MapPin, Info, Calendar, Linkedin, Github, Globe } from 'lucide-react';
 import type { User as UserType } from '@/types';
+import { BookingFlowShell, useBookingStore } from '@/features/booking';
 
 interface ProfileHeaderProps {
   user: UserType;
@@ -11,7 +14,14 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHeaderProps) => {
+  const openBooking = useBookingStore((s) => s.open);
+
+  const handleConnectClick = () => {
+    openBooking(user.id);
+  };
+
   return (
+    <>
     <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
       <div className="p-6 sm:p-8">
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center md:items-start text-center md:text-left">
@@ -74,7 +84,11 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
                 </Link>
               ) : (
                 <>
-                  <button className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all">
+                  <button
+                    id="booking-connect-btn"
+                    onClick={handleConnectClick}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all"
+                  >
                     Kết nối
                   </button>
                   <button className="w-full sm:w-auto px-6 py-2.5 border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all">
@@ -107,5 +121,9 @@ export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHea
         </div>
       </div>
     </div>
+
+    {/* Booking Flow Modal */}
+    <BookingFlowShell mentorName={user.name} />
+    </>
   );
 };

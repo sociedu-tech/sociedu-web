@@ -33,6 +33,8 @@ export interface ServicePackage {
   versions?: ServicePackageVersion[];
 }
 
+export type MentorPackage = ServicePackage;
+
 // -- Request DTOs --
 
 export interface PackageQueryParams {
