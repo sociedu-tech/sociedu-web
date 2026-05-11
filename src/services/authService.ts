@@ -38,20 +38,36 @@ export type SessionPayload = {
   current?: boolean;
 };
 
-const REFRESH_TOKEN_KEY = 'refreshToken';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+const REFRESH_TOKEN_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+
+const getCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
+const setCookie = (name: string, value: string, maxAgeSeconds: number) => {
+  if (typeof window === 'undefined') return;
+  const secure = window.location.protocol === 'https:' ? '; secure' : '';
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=strict${secure}`;
+};
+
+const deleteCookie = (name: string) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict`;
+};
 
 export const getRefreshToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
+  return getCookie(REFRESH_TOKEN_KEY);
 };
 
 export const setRefreshToken = (refreshToken: string | null) => {
-  if (typeof window === 'undefined') return;
   if (refreshToken) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    setCookie(REFRESH_TOKEN_KEY, refreshToken, REFRESH_TOKEN_MAX_AGE_SECONDS);
     return;
   }
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  deleteCookie(REFRESH_TOKEN_KEY);
 };
 
 const persistAuthTokens = (data?: AuthPayload) => {

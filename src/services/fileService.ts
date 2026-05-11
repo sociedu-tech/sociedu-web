@@ -1,4 +1,5 @@
 import { api, postMultipart } from '@/lib/api';
+import { optimizeImageForUpload } from '@/lib/imageOptimizer';
 
 const BASE = '/api/v1/files';
 
@@ -11,8 +12,9 @@ export type FileUploadOptions = {
 
 export const fileService = {
   upload: async (file: File, options: FileUploadOptions = {}) => {
+    const uploadFile = await optimizeImageForUpload(file);
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', uploadFile, uploadFile.name);
     const params = new URLSearchParams();
     if (options.folder != null) params.set('folder', options.folder);
     if (options.visibility != null) params.set('visibility', options.visibility);

@@ -196,7 +196,6 @@ export function DashboardSidebar({
                     width={40}
                     height={40}
                     className="size-full object-cover"
-                    unoptimized
                   />
                 ) : (
                   <User className="size-4 text-slate-500" strokeWidth={2} />
@@ -220,7 +219,6 @@ export function DashboardSidebar({
                   width={40}
                   height={40}
                   className="size-full object-cover"
-                  unoptimized
                 />
               ) : (
                 <User className="size-[18px] text-slate-500" strokeWidth={2} />
