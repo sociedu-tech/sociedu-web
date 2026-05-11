@@ -41,15 +41,24 @@ export const ProfileStats = ({ user, userProducts }: ProfileStatsProps) => {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-bold text-airbnb-gray tracking-widest mb-4">Gói dịch vụ</h3>
           <div className="space-y-4">
-            {user.mentorInfo.packages.map(pkg => (
-              <div key={pkg.id} className="p-3 border border-gray-100 rounded-xl hover:border-blue-200 transition-colors">
-                <p className="font-bold text-airbnb-dark text-sm">{pkg.title}</p>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-xs text-airbnb-gray">{pkg.duration}</span>
-                  <span className="text-sm font-bold text-blue-600">{pkg.price.toLocaleString()}đ</span>
-                </div>
-              </div>
-            ))}
+            {user.mentorInfo.packages
+              .filter(pkg => pkg.isActive && !pkg.isArchived)
+              .map(pkg => {
+                const displayVersion = pkg.versions?.find(v => v.isDefault && v.isActive) 
+                                    ?? pkg.versions?.find(v => v.isActive);
+                                    
+                if (!displayVersion) return null; // Fallback: Don't show if no active version
+                
+                return (
+                  <div key={pkg.id} className="p-3 border border-gray-100 rounded-xl hover:border-blue-200 transition-colors">
+                    <p className="font-bold text-airbnb-dark text-sm">{pkg.name}</p>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs text-airbnb-gray">{displayVersion.durationInMinutes} phút</span>
+                      <span className="text-sm font-bold text-blue-600">{displayVersion.price.toLocaleString()}đ</span>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}

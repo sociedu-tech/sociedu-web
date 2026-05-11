@@ -1,4 +1,5 @@
 import type { AppRole } from '@/constants/roles';
+import type { ServicePackage } from './servicePackage';
 
 export interface User {
   id: string;
@@ -51,16 +52,8 @@ export interface User {
     rating: number;
     sessionsCompleted: number;
     verificationStatus: 'pending' | 'verified' | 'rejected';
-    packages?: MentorPackage[];
+    packages?: ServicePackage[];
   };
-}
-
-export interface MentorPackage {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  duration: string;
 }
 
 export interface Review {
