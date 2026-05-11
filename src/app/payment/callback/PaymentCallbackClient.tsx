@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useVerifyPayment } from '@/features/booking/hooks/useBookingMutations';
-import { isSuccessfulPaymentStatus } from '@/features/booking/services/checkoutService';
+import {
+  isFailedPaymentStatus,
+  isSuccessfulPaymentStatus,
+} from '@/features/booking/services/checkoutService';
 
 export function PaymentCallbackClient() {
   const searchParams = useSearchParams();
@@ -20,7 +23,7 @@ export function PaymentCallbackClient() {
 
   const data = verifyPayment.data;
   const isSuccess = isSuccessfulPaymentStatus(data?.status);
-  const isFailed = verifyPayment.isError || data?.status?.toLowerCase() === 'failed';
+  const isFailed = verifyPayment.isError || isFailedPaymentStatus(data?.status);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">

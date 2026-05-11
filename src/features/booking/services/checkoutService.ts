@@ -15,3 +15,7 @@ export function buildCheckoutOrderInfo(packageName: string | undefined, details:
 export function isSuccessfulPaymentStatus(status: string | undefined) {
   return status?.toLowerCase() === 'success';
 }
+
+export function isFailedPaymentStatus(status: string | undefined) {
+  return status?.toLowerCase() === 'failed';
+}

@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { isApiClientError } from '@/lib/api';
 import type {
   AvailabilityResponse,
   CheckoutBookingRequest,
@@ -14,6 +15,12 @@ import type {
 const BOOKINGS_BASE = '/api/v1/bookings';
 const PAYMENTS_BASE = '/api/v1/payments';
 const ORDERS_BASE = '/api/v1/orders';
+
+function parseOrderIdFromTxnRef(txnRef: string | undefined) {
+  if (!txnRef) return undefined;
+  const separatorIndex = txnRef.indexOf('_');
+  return separatorIndex > 0 ? txnRef.slice(0, separatorIndex) : undefined;
+}
 
 export const bookingFlowApi = {
   getAvailability: async (
@@ -61,7 +68,21 @@ export const bookingFlowApi = {
 
   verifyPayment: async (params: Record<string, string>): Promise<PaymentVerifyResponse> => {
     const qs = new URLSearchParams(params).toString();
-    const res = await api.get<PaymentVerifyResponse>(`${PAYMENTS_BASE}/vnpay/return?${qs}`);
-    return res.data!;
+    try {
+      const res = await api.get<PaymentVerifyResponse>(`${PAYMENTS_BASE}/vnpay/return?${qs}`);
+      return res.data!;
+    } catch (error) {
+      const orderId = parseOrderIdFromTxnRef(params.vnp_TxnRef);
+      if (
+        orderId &&
+        isApiClientError(error) &&
+        error.status === 409 &&
+        error.errorType === 'PAYMENT_ALREADY_PROCESSED'
+      ) {
+        const res = await api.get<PaymentVerifyResponse>(`${PAYMENTS_BASE}/order/${orderId}`);
+        return res.data!;
+      }
+      throw error;
+    }
   },
 };
