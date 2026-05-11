@@ -143,7 +143,6 @@ export function UserAvatarMenu({
               width={40}
               height={40}
               className="size-full object-cover"
-              unoptimized
             />
           ) : (
             <User className={variant === 'dashboard' ? 'size-[18px] text-gray-400' : 'size-[18px]'} strokeWidth={2} />
