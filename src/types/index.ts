@@ -8,6 +8,7 @@ export interface User {
   role: AppRole;
   coverImage?: string;
   bio?: string;
+  location?: string;
   joinedDate: string;
   rating?: number;
   totalSales?: number;
@@ -16,6 +17,12 @@ export interface User {
   major?: string;
   year?: number;
   gpa?: number;
+  educations?: {
+    university: string;
+    major?: string;
+    year?: number;
+    gpa?: string;
+  }[];
   experience?: {
     company: string;
     role: string;

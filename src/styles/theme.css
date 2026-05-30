@@ -11,11 +11,11 @@
 /*  Bảng màu gốc — chỉnh tại đây để đổi tone brand / neutral / marketing       */
 /* -------------------------------------------------------------------------- */
 :root {
-  /* Brand */
-  --palette-primary: #146ef5;
-  --palette-primary-hover: #0055d4;
-  --palette-blue-400: #3b89ff;
-  --palette-blue-300: #006acc;
+  /* Brand — xanh đậm hơn nhẹ so với bản trước */
+  --palette-primary: #1157c9;
+  --palette-primary-hover: #0046a8;
+  --palette-blue-400: #3578e8;
+  --palette-blue-300: #0059b8;
 
   /* Chữ & viền chính (site) */
   --palette-ink: #080808;
@@ -34,7 +34,7 @@
   /* Phụ / nhấn */
   --palette-accent-yellow: #ffae13;
   --palette-feature-navy: #080808;
-  --palette-feature-blue: #146ef5;
+  --palette-feature-blue: var(--palette-primary);
   --palette-secondary-purple: #7a3dff;
   --palette-secondary-pink: #ed52cb;
   --palette-secondary-green: #00d722;
@@ -52,16 +52,16 @@
   --palette-pink-light: #fce7f3;
 
   /* Dashboard & biểu đồ */
-  --palette-dashboard-ink: #0f172a;
-  --palette-chart-1: #0f172a;
-  --palette-chart-2: #146ef5;
+  --palette-dashboard-ink: #0c1220;
+  --palette-chart-1: #0c1220;
+  --palette-chart-2: var(--palette-primary);
   --palette-chart-3: #334155;
   --palette-chart-4: #64748b;
   --palette-chart-5: #94a3b8;
   --palette-chart-grid: #e2e8f0;
   --palette-chart-tick: #64748b;
-  --palette-chart-area-stroke: #0f172a;
-  --palette-chart-line: #0f172a;
+  --palette-chart-area-stroke: var(--palette-dashboard-ink);
+  --palette-chart-line: var(--palette-dashboard-ink);
 
   /* Thanh cuộn */
   --palette-scrollbar-track: #f1f5f9;

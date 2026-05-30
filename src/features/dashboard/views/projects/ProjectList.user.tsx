@@ -3,17 +3,25 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FolderOpen } from 'lucide-react';
-import { MenteeIncomingOffers } from '@/features/dashboard/views/projects/MenteeIncomingOffers';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
+import { useDashboardProgressReports } from '@/features/dashboard/hooks/useDashboardProgressReports';
+import { DataPagination } from '@/components/ui/DataPagination';
 
-/** Học viên: dự án / gói đang tham gia (placeholder — nối API sau). */
 export function ProjectListUser() {
   const searchParams = useSearchParams();
   const justCreated = searchParams.get('created') === '1';
+  const { projectRows, loading, error, refresh, page, size, total, totalPages, setPage, setSize } =
+    useDashboardProgressReports('mentee');
 
-  const rows = [
-    { id: 'demo-1', name: 'Đồ án tốt nghiệp — Review', mentor: 'Nguyễn A', status: 'Đang làm' },
-  ];
+  if (loading) {
+    return <LoadingSpinner label="Đang tải dự án…" />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={refresh} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -22,11 +30,9 @@ export function ProjectListUser() {
           className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
           role="status"
         >
-          Dự án đã được tạo. Bạn có thể mời mentor từ gợi ý hoặc tìm thêm trong mục Tìm Mentor.
+          Báo cáo tiến độ đã được tạo. Mentor sẽ phản hồi khi xem xét.
         </div>
       ) : null}
-
-      <MenteeIncomingOffers />
 
       <DashboardTableCard>
         <table className="w-full text-left text-sm">
@@ -39,7 +45,7 @@ export function ProjectListUser() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-800">
-            {rows.map((row) => (
+            {projectRows.map((row) => (
               <tr key={row.id} className="bg-white hover:bg-slate-50/80">
                 <td className="px-4 py-3 font-medium">{row.name}</td>
                 <td className="hidden px-4 py-3 text-slate-600 sm:table-cell">{row.mentor}</td>
@@ -56,12 +62,21 @@ export function ProjectListUser() {
           </tbody>
         </table>
       </DashboardTableCard>
-      {rows.length === 0 && (
+      {projectRows.length === 0 && !loading && (
         <div className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200/90 bg-white p-10 text-center text-slate-500 shadow-sm">
           <FolderOpen className="size-10 text-slate-300" strokeWidth={1.5} />
-          <p>Chưa có dự án nào.</p>
+          <p>Chưa có báo cáo / dự án nào.</p>
         </div>
       )}
+      <DataPagination
+        page={page}
+        size={size}
+        total={total}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onSizeChange={setSize}
+        disabled={loading}
+      />
     </div>
   );
 }

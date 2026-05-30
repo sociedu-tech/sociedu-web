@@ -7,6 +7,7 @@ import type { AdminModerationReport, ModerationReportStatus, ModerationTargetTyp
 import { cn } from '@/lib/utils';
 import { useAdminModerationReportsView, type AdminReportSegment } from '@/features/admin/hooks';
 import { adminSelect } from '@/features/admin/ui/adminClasses';
+import { DataPagination } from '@/components/ui/DataPagination';
 import { listSlugForReport, moderationDetailPath } from '@/lib/moderationDetailRoutes';
 
 const TARGET_LABEL: Record<ModerationTargetType, string> = {
@@ -36,12 +37,12 @@ function priorityClass(p: AdminModerationReport['priority']) {
 }
 
 type Props = {
-  initialReports: AdminModerationReport[];
   segment: AdminReportSegment;
 };
 
-export function AdminModerationReportsView({ initialReports, segment }: Props) {
-  const { filtered, setStatus } = useAdminModerationReportsView(initialReports, segment);
+export function AdminModerationReportsView({ segment }: Props) {
+  const { filtered, setStatus, loading, page, size, total, totalPages, setPage, setSize } =
+    useAdminModerationReportsView(segment);
 
   return (
     <div className="space-y-5">
@@ -131,6 +132,19 @@ export function AdminModerationReportsView({ initialReports, segment }: Props) {
           ))
         )}
       </div>
+
+      {loading ? (
+        <p className="text-center text-sm text-slate-500">Đang tải…</p>
+      ) : (
+        <DataPagination
+          page={page}
+          size={size}
+          total={total}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          onSizeChange={setSize}
+        />
+      )}
     </div>
   );
 }

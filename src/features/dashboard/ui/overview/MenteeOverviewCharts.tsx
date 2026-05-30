@@ -1,18 +1,34 @@
 'use client';
 
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MenteeNextSessionBanner } from '@/features/dashboard/ui/overview/mentee/MenteeNextSessionBanner';
 import { MenteeOverviewKpiGrid } from '@/features/dashboard/ui/overview/mentee/MenteeOverviewKpiGrid';
 import { MenteeOverviewChartGrids } from '@/features/dashboard/ui/overview/mentee/MenteeOverviewChartGrids';
 import { MenteeOverviewProgressSection } from '@/features/dashboard/ui/overview/mentee/MenteeOverviewProgressSection';
+import { useMenteeDashboardOverview } from '@/features/dashboard/hooks/useMenteeDashboardOverview';
 
-/** Tổng quan học viên — ghép từ các khối nhỏ trong `overview/mentee/`. */
+/** Tổng quan học viên — dữ liệu từ bookings & báo cáo tiến độ. */
 export function MenteeOverviewCharts() {
+  const data = useMenteeDashboardOverview();
+
+  if (data.loading) {
+    return <LoadingSpinner label="Đang tải tổng quan…" />;
+  }
+
+  if (data.error) {
+    return <ErrorMessage message={data.error} />;
+  }
+
   return (
     <div className="space-y-6">
-      <MenteeNextSessionBanner />
-      <MenteeOverviewKpiGrid />
-      <MenteeOverviewChartGrids />
-      <MenteeOverviewProgressSection />
+      <MenteeNextSessionBanner nextSession={data.nextSession} />
+      <MenteeOverviewKpiGrid kpi={data.kpi} />
+      <MenteeOverviewChartGrids
+        sessionsSeries={data.sessionsSeries}
+        reportsSeries={data.reportsSeries}
+      />
+      <MenteeOverviewProgressSection progressBars={data.progressBars} />
     </div>
   );
 }

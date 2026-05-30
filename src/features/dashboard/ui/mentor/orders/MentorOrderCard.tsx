@@ -8,10 +8,9 @@ import {
   Eye,
   MessageSquare,
   MoreVertical,
-  AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MentorOrderRow } from '@/data/mentorOrdersMock';
+import type { MentorOrderRow } from '@/features/dashboard/hooks/useMentorOrders';
 
 type Props = { order: MentorOrderRow };
 
@@ -41,11 +40,6 @@ export function MentorOrderCard({ order }: Props) {
           <div>
             <div className="mb-1 flex items-center gap-2">
               <span className="text-xs font-semibold tracking-wider text-slate-500">{order.id}</span>
-              {order.urgency === 'Cao' ? (
-                <span className="flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-600">
-                  <AlertCircle size={10} /> Khẩn cấp
-                </span>
-              ) : null}
             </div>
             <h3 className="text-base font-semibold text-slate-900">{order.package}</h3>
             <p className="text-sm text-slate-500">

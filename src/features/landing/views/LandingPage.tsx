@@ -158,7 +158,7 @@ export const LandingPage = () => {
                 className={cn(
                   'grid min-h-[140px] items-center gap-6 rounded-2xl px-6 py-8 md:grid-cols-[160px_1fr]',
                   block.variant === 'light' && 'border border-border bg-white text-[#1f2a6b]',
-                  block.variant === 'dark' && 'bg-[#0f172a] text-white',
+                  block.variant === 'dark' && 'bg-dashboard-ink text-white',
                   block.variant === 'accent' && 'bg-primary text-white'
                 )}
               >
@@ -226,7 +226,7 @@ export const LandingPage = () => {
       {/* Tính năng */}
       <section
         id="features"
-        className={cn('border-y border-border bg-[#0b1220] py-14 text-white md:py-20', SECTION_SCROLL_MARGIN)}
+        className={cn('border-y border-border bg-dashboard-ink py-14 text-white md:py-20', SECTION_SCROLL_MARGIN)}
       >
         <Container>
           <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:items-start">

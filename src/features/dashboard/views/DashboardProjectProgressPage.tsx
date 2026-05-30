@@ -4,30 +4,35 @@ import React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useDashboardProjectProgressPage } from '@/features/dashboard/hooks';
-import type { ProjectProgressStatus } from '@/data/dashboardProjectProgressMock';
-
-function statusLabel(s: ProjectProgressStatus) {
-  if (s === 'doing') return 'Đang làm';
-  if (s === 'done') return 'Hoàn thành';
-  return 'Tạm dừng';
-}
+import type { ProjectProgressStatus } from '@/features/dashboard/hooks/useDashboardProjectProgressPage';
 
 function statusClass(s: ProjectProgressStatus) {
-  if (s === 'doing') return 'bg-primary/[0.1] text-primary';
-  if (s === 'done') return 'bg-emerald-50 text-emerald-800';
-  return 'bg-slate-100 text-slate-600';
+  if (s === 'reviewed') return 'bg-emerald-50 text-emerald-800';
+  if (s === 'rejected') return 'bg-red-50 text-red-700';
+  return 'bg-primary/[0.1] text-primary';
 }
 
 export function DashboardProjectProgressPage() {
-  const { filter, setFilter, rows, cpHeader, filters } = useDashboardProjectProgressPage();
+  const { filter, setFilter, rows, cpHeader, filters, loading, error, refresh } =
+    useDashboardProjectProgressPage();
+
+  if (loading) {
+    return <LoadingSpinner label="Đang tải tiến độ…" />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={refresh} />;
+  }
 
   return (
     <div className="space-y-6 pb-2">
       <DashboardViewHeader
         title="Tiến độ dự án"
-        description="Theo dõi phần trăm hoàn thành và trạng thái từng dự án."
+        description="Theo dõi báo cáo tiến độ và phản hồi từ mentor."
         layout="compact"
         action={
           <Link
@@ -88,8 +93,13 @@ export function DashboardProjectProgressPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={cn('inline-flex rounded-md px-2 py-0.5 text-xs font-medium', statusClass(row.status))}>
-                      {statusLabel(row.status)}
+                    <span
+                      className={cn(
+                        'inline-flex rounded-md px-2 py-0.5 text-xs font-medium',
+                        statusClass(row.status),
+                      )}
+                    >
+                      {row.statusLabel}
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-slate-500">{row.updatedAt}</td>
@@ -107,7 +117,7 @@ export function DashboardProjectProgressPage() {
           </table>
         </div>
         {rows.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-slate-500">Không có dự án phù hợp bộ lọc.</p>
+          <p className="px-4 py-8 text-center text-sm text-slate-500">Không có báo cáo phù hợp bộ lọc.</p>
         ) : null}
       </DashboardSurface>
     </div>

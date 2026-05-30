@@ -2,32 +2,18 @@
 
 import { CheckCircle2, ClipboardList, PlayCircle, Video } from 'lucide-react';
 import { StatsKpiCard } from '@/features/dashboard/ui/stats';
-import { menteeOverviewKpi } from '@/data/menteeOverviewMock';
+import type { MenteeOverviewData } from '@/features/dashboard/hooks/useMenteeDashboardOverview';
 
-const ITEMS = [
-  {
-    label: 'Dự án đang làm',
-    value: menteeOverviewKpi.inProgress,
-    icon: PlayCircle,
-  },
-  {
-    label: 'Buổi học (tháng này)',
-    value: menteeOverviewKpi.sessionsThisMonth,
-    icon: Video,
-  },
-  {
-    label: 'Việc cần xử lý',
-    value: menteeOverviewKpi.pendingItems,
-    icon: ClipboardList,
-  },
-  {
-    label: 'Dự án hoàn thành',
-    value: menteeOverviewKpi.completed,
-    icon: CheckCircle2,
-  },
-] as const;
+type Props = { kpi: MenteeOverviewData['kpi'] };
 
-export function MenteeOverviewKpiGrid() {
+export function MenteeOverviewKpiGrid({ kpi }: Props) {
+  const ITEMS = [
+    { label: 'Báo cáo tiến độ', value: kpi.activeProjects, icon: PlayCircle },
+    { label: 'Buổi sắp tới', value: kpi.upcomingSessions, icon: Video },
+    { label: 'Đã nộp báo cáo', value: kpi.reportsSubmitted, icon: ClipboardList },
+    { label: 'Hoàn thành (%)', value: `${kpi.completionPct}%`, icon: CheckCircle2 },
+  ] as const;
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {ITEMS.map((item, i) => (

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
-import { getAdminModerationReportById } from '@/data/adminManagementMock';
 import { adminBtnGhost, adminSelect } from '@/features/admin/ui/adminClasses';
 import { DisputeProcessStepper } from '@/features/admin/ui/DisputeProcessStepper';
 import { SessionDisputePanel } from '@/features/admin/ui/SessionDisputePanel';
@@ -16,6 +15,7 @@ import {
   type ModerationListSlug,
 } from '@/lib/moderationDetailRoutes';
 import { useSessionDisputeAdjudication } from '@/features/admin/hooks/useSessionDisputeAdjudication';
+import { adminModerationService } from '@/services/adminModerationService';
 
 const REPORT_STATUS: { value: ModerationReportStatus; label: string }[] = [
   { value: 'open', label: 'Mới' },
@@ -123,7 +123,11 @@ function ModerationReportDetailInner({
             <select
               id="detail-report-status"
               value={merged.status}
-              onChange={(e) => setStatus(e.target.value as ModerationReportStatus)}
+              onChange={(e) => {
+                const next = e.target.value as ModerationReportStatus;
+                setStatus(next);
+                void adminModerationService.resolve(initial.id, { status: next }).catch(() => undefined);
+              }}
               className={adminSelect}
             >
               {REPORT_STATUS.map((s) => (
@@ -172,18 +176,53 @@ function ModerationReportDetailInner({
 export function AdminModerationReportDetailView({ listSlug }: Props) {
   const params = useParams();
   const id = typeof params?.reportId === 'string' ? params.reportId : '';
-  const initial = getAdminModerationReportById(id);
+  const [report, setReport] = useState<AdminModerationReport | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!initial) {
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const row = await adminModerationService.getById(id);
+        if (!cancelled) setReport(row);
+      } catch (err: unknown) {
+        if (!cancelled) {
+          setReport(null);
+          setError(err instanceof Error ? err.message : 'Không tải được báo cáo.');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-sm text-slate-500">Đang tải báo cáo…</p>;
+  }
+
+  if (error || !report) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-600">
-        <p>Không tìm thấy báo cáo.</p>
-        <Link href="/dashboard/moderation" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
+        <p>{error ?? 'Không tìm thấy báo cáo.'}</p>
+        <Link
+          href={listHref(listSlug)}
+          className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+        >
           Về danh sách
         </Link>
       </div>
     );
   }
 
-  return <ModerationReportDetailInner initial={initial} listSlug={listSlug} />;
+  return <ModerationReportDetailInner initial={report} listSlug={listSlug} />;
 }

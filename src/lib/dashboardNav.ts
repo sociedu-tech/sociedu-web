@@ -11,7 +11,6 @@ import {
   Video,
   MessageCircle,
   TrendingUp,
-  Sparkles,
   UserCheck,
   UserCog,
   Flag,
@@ -81,7 +80,6 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: '/dashboard', label: 'Trang chủ', icon: Home, exact: true, group: 'Chính' },
       { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Chính' },
       { href: '/dashboard/packages', label: 'Dịch vụ', icon: Package, group: 'Công việc' },
-      { href: '/dashboard/opportunities', label: 'Cơ hội dự án', icon: Sparkles, group: 'Công việc' },
       { href: '/dashboard/schedule', label: 'Lịch dạy', icon: Calendar, group: 'Công việc' },
       { href: '/dashboard/mentees', label: 'Học viên', icon: Users, group: 'Công việc' },
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
@@ -154,7 +152,6 @@ const TITLE_ENTRIES: [string, string][] = [
   ['/dashboard/packages', 'Gói dịch vụ'],
   ['/dashboard/schedule', 'Lịch dạy'],
   ['/dashboard/mentees', 'Học viên'],
-  ['/dashboard/opportunities', 'Cơ hội dự án'],
   ['/dashboard/orders', 'Đơn hàng'],
   ['/dashboard/reports', 'Chấm báo cáo'],
 ];

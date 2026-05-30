@@ -67,7 +67,7 @@ export function useChatSocket() {
       (frame: IMessage) => {
         try {
           const parsed = JSON.parse(frame.body) as Omit<ChatSocketMessage, 'conversationId'>;
-          handler({ ...parsed, conversationId });
+          handler({ ...parsed, conversationId } as ChatSocketMessage);
         } catch {
           // Ignore malformed payload so stream stays alive.
         }

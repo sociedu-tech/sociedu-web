@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { User } from '@/types';
 import { adminService } from '@/services/adminService';
-import { ADMIN_PREVIEW_DATA_ENABLED, getAdminMockData } from '@/data/adminMockData';
+import { mentorRequestService, type MentorRequest } from '@/services/mentorRequestService';
 
 const EMPTY_ADMIN_DATA: {
   users: User[];
@@ -11,55 +11,78 @@ const EMPTY_ADMIN_DATA: {
   mentorRequests: [],
 };
 
-export type AdminDataBannerVariant = 'preview' | 'offline' | null;
+export type AdminDataBannerVariant = 'offline' | null;
+
+const mentorRequestToUser = (req: MentorRequest): User => {
+  const name =
+    req.applicant?.fullName?.trim() ||
+    [req.applicant?.lastName, req.applicant?.firstName].filter(Boolean).join(' ').trim() ||
+    req.applicant?.email ||
+    'Ứng viên';
+  return {
+    id: req.userId || req.id,
+    name,
+    email: req.applicant?.email ?? '',
+    avatar: `https://i.pravatar.cc/300?u=${encodeURIComponent(req.userId || req.id)}`,
+    role: 'mentor',
+    joinedDate: req.createdAt
+      ? new Date(req.createdAt).toLocaleDateString('vi-VN')
+      : '—',
+    mentorInfo: {
+      headline: req.headline,
+      expertise: req.expertise ?? [],
+      price: req.hourlyRate ?? 0,
+      rating: 0,
+      sessionsCompleted: 0,
+      verificationStatus: 'pending',
+    },
+  };
+};
 
 export const useAdminData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [bannerVariant, setBannerVariant] = useState<AdminDataBannerVariant>(
-    ADMIN_PREVIEW_DATA_ENABLED ? 'preview' : null,
-  );
+  const [bannerVariant, setBannerVariant] = useState<AdminDataBannerVariant>(null);
   const [data, setData] = useState(EMPTY_ADMIN_DATA);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    if (ADMIN_PREVIEW_DATA_ENABLED) {
-      setData(getAdminMockData());
-      setBannerVariant('preview');
-      setLoading(false);
-      return;
-    }
     setBannerVariant(null);
     try {
-      const mentorRequests = await adminService.getMentorRequests();
+      const [users, mentorPage] = await Promise.all([
+        adminService.getUsers(),
+        mentorRequestService.adminList({ size: 100 }).catch(() => ({
+          items: [] as MentorRequest[],
+          page: 0,
+          size: 100,
+          total: 0,
+          totalPages: 0,
+        })),
+      ]);
 
       setData({
-        users: [],
-        mentorRequests: mentorRequests as User[],
+        users,
+        mentorRequests: mentorPage.items
+          .filter((r) => r.status === 'SUBMITTED' || r.status === 'UNDER_REVIEW')
+          .map(mentorRequestToUser),
       });
-    } catch (_err: unknown) {
-      setData(getAdminMockData());
+    } catch (err: unknown) {
+      setData(EMPTY_ADMIN_DATA);
       setBannerVariant('offline');
+      setError(err instanceof Error ? err.message : 'Không tải được dữ liệu quản trị.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
   const approveMentor = async (id: string) => {
-    if (ADMIN_PREVIEW_DATA_ENABLED) {
-      setData((prev) => ({
-        ...prev,
-        mentorRequests: prev.mentorRequests.filter((u) => u.id !== id),
-      }));
-      return;
-    }
     try {
-      await adminService.approveMentor(id);
+      await mentorRequestService.adminApprove(id);
       await fetchData();
     } catch (err: unknown) {
       const m = err instanceof Error ? err.message : 'Lỗi khi duyệt mentor';

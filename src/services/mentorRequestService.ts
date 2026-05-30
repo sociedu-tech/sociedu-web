@@ -1,4 +1,6 @@
 import { api } from '@/lib/api';
+import { normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
+export type { PagePayload } from '@/lib/apiUtils';
 
 /** DTO matching BE MentorRequestResponse. */
 export type MentorRequestStatus = 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
@@ -62,15 +64,6 @@ export type AdminMentorRequestListParams = {
   size?: number;
 };
 
-export type PagePayload<T> = {
-  items: T[];
-  page: number;
-  size: number;
-  total: number;
-  totalPages: number;
-  sort?: string | null;
-};
-
 const USER_BASE = '/api/v1/mentor-requests';
 const ADMIN_BASE = '/api/v1/admin/mentor-requests';
 
@@ -109,15 +102,7 @@ export const mentorRequestService = {
     params?: AdminMentorRequestListParams,
   ): Promise<PagePayload<MentorRequest>> => {
     const res = await api.get(`${ADMIN_BASE}${buildQuery(params)}`);
-    return (
-      (res.data as PagePayload<MentorRequest> | undefined) ?? {
-        items: [],
-        page: 0,
-        size: params?.size ?? 20,
-        total: 0,
-        totalPages: 0,
-      }
-    );
+    return normalizePagePayload<MentorRequest>(res.data, params?.size ?? 20);
   },
 
   adminGet: async (id: string): Promise<MentorRequest> => {

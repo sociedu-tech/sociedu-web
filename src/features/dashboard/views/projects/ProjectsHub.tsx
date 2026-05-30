@@ -18,7 +18,7 @@ export function ProjectsHub() {
       ? {
           eyebrow: 'Quản trị' as const,
           title: 'Dự án trên hệ thống',
-          description: 'Giám sát tiến độ và cặp học viên — mentor (dữ liệu mẫu).',
+          description: 'Giám sát báo cáo tiến độ trên hệ thống.',
         }
       : r === ROLES.MENTOR
         ? {
