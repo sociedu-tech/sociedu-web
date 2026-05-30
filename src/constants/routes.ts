@@ -41,7 +41,6 @@ export const ROUTES = {
       MENTEES: { path: '/dashboard/mentees', label: 'Học viên', roles: [ROLES.MENTOR], sidebar: true },
       ORDERS: { path: '/dashboard/orders', label: 'Đơn hàng', roles: [ROLES.MENTOR], sidebar: true },
       REPORTS: { path: '/dashboard/reports', label: 'Chấm báo cáo', roles: [ROLES.MENTOR], sidebar: true },
-      OPPORTUNITIES: { path: '/dashboard/opportunities', label: 'Cơ hội dự án', roles: [ROLES.MENTOR], sidebar: true },
     },
     // ---- ADMIN ROUTES ----
     ADMIN: {

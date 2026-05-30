@@ -7,6 +7,7 @@ export { fileService } from './fileService';
 export { mentorService } from './mentorService';
 export { orderService } from './orderService';
 export { paymentService } from './paymentService';
+export { payoutService } from './payoutService';
 export { reportService } from './reportService';
 export type {
   ProgressReport,

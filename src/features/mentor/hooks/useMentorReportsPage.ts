@@ -1,29 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { reportService, type ProgressReport, type ReviewReportRequest } from '@/services/reportService';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useMentorReportsPage() {
-  const [reports, setReports] = useState<ProgressReport[]>([]);
-  const [loading, setLoading] = useState(true);
+  const paginated = usePaginatedList<ProgressReport>({
+    fetchPage: useCallback((page, size) => reportService.getAssignedReports(page, size), []),
+  });
+
   const [selectedReport, setSelectedReport] = useState<ProgressReport | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
   const [reviewStatus, setReviewStatus] = useState<'REVIEWED' | 'REJECTED'>('REVIEWED');
   const [reviewing, setReviewing] = useState(false);
-
-  const fetchReports = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await reportService.getAssignedReports();
-      setReports(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchReports();
-  }, [fetchReports]);
 
   const handleReview = async () => {
     if (!selectedReport || !feedbackText.trim()) return;
@@ -34,7 +21,7 @@ export function useMentorReportsPage() {
         mentorFeedback: feedbackText,
       };
       await reportService.reviewReport(selectedReport.id, payload);
-      await fetchReports();
+      await paginated.refresh();
       setSelectedReport(null);
       setFeedbackText('');
     } catch (err) {
@@ -45,8 +32,14 @@ export function useMentorReportsPage() {
   };
 
   return {
-    reports,
-    loading,
+    reports: paginated.items,
+    loading: paginated.loading,
+    page: paginated.page,
+    size: paginated.size,
+    total: paginated.total,
+    totalPages: paginated.totalPages,
+    setPage: paginated.setPage,
+    setSize: paginated.setSize,
     selectedReport,
     setSelectedReport,
     feedbackText,

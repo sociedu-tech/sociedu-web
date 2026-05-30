@@ -2,136 +2,151 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  AlertTriangle,
-  Share2
-} from 'lucide-react';
+import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { ReportModal } from '@/components/ReportModal';
-import { AnimatePresence } from 'motion/react';
-
 import { useUserProfilePage } from '@/features/user/hooks';
-
-// Sub-components
 import { ProfileHeader } from '@/features/user/ui/profile/ProfileHeader';
 import { ProfileAboutTab } from '@/features/user/ui/profile/ProfileAboutTab';
 import { ProfileExperienceTab } from '@/features/user/ui/profile/ProfileExperienceTab';
-import { ProfileActivityTab } from '@/features/user/ui/profile/ProfileActivityTab';
-import { ProfileRecommendations } from '@/features/user/ui/profile/ProfileRecommendations';
-import { ProfileProjects } from '@/features/user/ui/profile/ProfileProjects';
-import { ProfileStats } from '@/features/user/ui/profile/ProfileStats';
-import { ProfileContactModal } from '@/features/user/ui/profile/ProfileContactModal';
+import { ProfileServicesSection } from '@/features/user/ui/profile/ProfileServicesSection';
+import { ProfileReviewsSection } from '@/features/user/ui/profile/ProfileReviewsSection';
+import { ProfileSidebar } from '@/features/user/ui/profile/ProfileSidebar';
+import { ProfileVerificationBanner } from '@/features/user/ui/profile/ProfileVerificationBanner';
+import { isMentorVerified } from '@/features/user/ui/profile/profileVerification';
 
 export function UserProfilePage() {
   const {
     id,
     user,
+    isMentor,
+    packages,
+    reviews,
+    ratingSummary,
     loading,
     error,
     refetch,
     isReportModalOpen,
     setIsReportModalOpen,
-    isContactModalOpen,
-    setIsContactModalOpen,
     activeTab,
     setActiveTab,
-    userProducts,
     isOwnProfile,
-    handleContactClick,
+    handleConnect,
+    handleMessage,
   } = useUserProfilePage();
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-page">
-      <LoadingSpinner size={48} label="Đang tải hồ sơ..." />
-    </div>
-  );
-
-  if (error || !user) return (
-    <div className="max-w-xl mx-auto py-20 px-4">
-      <ErrorMessage
-        message={error || "Người dùng không tồn tại"}
-        onRetry={refetch}
-      />
-      <div className="mt-8 text-center">
-        <Link href="/" className="text-airbnb-red font-bold hover:underline">Quay lại trang chủ</Link>
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
+        <LoadingSpinner size={48} label="Đang tải hồ sơ..." />
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-20">
+        <ErrorMessage message={error || 'Người dùng không tồn tại'} onRetry={refetch} />
+        <div className="mt-8 text-center">
+          <Link href="/mentors" className="text-sm font-semibold text-indigo-600 hover:underline">
+            Quay lại danh sách mentor
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const mentorVerified = isMentor && isMentorVerified(user);
+  const showFullMentorContent = !isMentor || isOwnProfile || mentorVerified;
+
+  const tabs = [
+    { id: 'about' as const, label: 'Giới thiệu' },
+    { id: 'experience' as const, label: 'Kinh nghiệm' },
+    ...(isMentor && showFullMentorContent
+      ? [{ id: 'reviews' as const, label: 'Đánh giá' }]
+      : []),
+  ];
 
   return (
-    <div className="min-h-screen bg-page pb-12">
-      <div className="max-w-7xl mx-auto px-0 sm:px-4 pt-0 sm:pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="min-h-screen bg-slate-50 pb-16">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">
+        <ProfileHeader
+          user={user}
+          isOwnProfile={isOwnProfile}
+          isMentor={isMentor}
+          ratingSummary={ratingSummary}
+          onConnect={handleConnect}
+          onMessage={handleMessage}
+        />
 
-          {/* Main Content */}
-          <div className="lg:col-span-9 space-y-6">
+        {isMentor ? (
+          <ProfileVerificationBanner
+            user={user}
+            isMentor={isMentor}
+            isOwnProfile={isOwnProfile}
+          />
+        ) : null}
 
-            <ProfileHeader
-              user={user}
-              isOwnProfile={isOwnProfile}
-              onContactClick={handleContactClick}
-            />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            {isMentor && showFullMentorContent ? (
+              <ProfileServicesSection
+                mentorId={id}
+                packages={packages}
+                isOwnProfile={isOwnProfile}
+                mentorVerified={mentorVerified}
+              />
+            ) : null}
 
-            {/* Tabs Navigation */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="flex border-b border-gray-100">
-                {(['about', 'experience', 'activity'] as const).map((tab) => (
+            <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
+              <div className="flex border-b border-slate-100">
+                {tabs.map((tab) => (
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "px-5 py-3 text-sm font-bold transition-all border-b-2",
-                      activeTab === tab ? "border-blue-600 text-blue-600" : "border-transparent text-airbnb-gray hover:text-airbnb-dark"
+                      'px-5 py-3.5 text-sm font-semibold transition border-b-2 -mb-px',
+                      activeTab === tab.id
+                        ? 'border-indigo-600 text-indigo-700'
+                        : 'border-transparent text-slate-500 hover:text-slate-800',
                     )}
                   >
-                    {tab === 'about' ? 'Giới thiệu' : tab === 'experience' ? 'Kinh nghiệm & Học vấn' : 'Hoạt động'}
+                    {tab.label}
                   </button>
                 ))}
               </div>
-
-              <div className="p-5">
+              <div className="p-5 sm:p-6">
                 <AnimatePresence mode="wait">
                   {activeTab === 'about' && <ProfileAboutTab user={user} />}
                   {activeTab === 'experience' && <ProfileExperienceTab user={user} />}
-                  {activeTab === 'activity' && <ProfileActivityTab />}
+                  {activeTab === 'reviews' && isMentor && showFullMentorContent ? (
+                    <ProfileReviewsSection
+                      reviews={reviews}
+                      ratingAvg={ratingSummary.ratingAvg}
+                      ratingCount={ratingSummary.ratingCount}
+                    />
+                  ) : null}
                 </AnimatePresence>
               </div>
             </div>
-
-            <ProfileRecommendations user={user} isOwnProfile={isOwnProfile} />
-            <ProfileProjects user={user} />
-
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="sticky top-24 space-y-6">
-              <ProfileStats user={user} userProducts={userProducts} />
-
-              {/* Actions */}
-              <div className="space-y-2">
-                <button className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-dark transition-colors bg-white border border-gray-200 rounded-xl">
-                  <Share2 size={16} /> Chia sẻ hồ sơ
-                </button>
-                <button
-                  onClick={() => setIsReportModalOpen(true)}
-                  className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-bold text-airbnb-gray hover:text-airbnb-red transition-colors bg-white border border-gray-200 rounded-xl"
-                >
-                  <AlertTriangle size={16} /> Báo cáo vi phạm
-                </button>
-              </div>
-            </div>
+          <div className="lg:col-span-4">
+            <ProfileSidebar
+              user={user}
+              isMentor={isMentor}
+              isOwnProfile={isOwnProfile}
+              mentorId={id}
+              ratingSummary={ratingSummary}
+              onConnect={handleConnect}
+              onReport={() => setIsReportModalOpen(true)}
+            />
           </div>
         </div>
       </div>
-
-      <ProfileContactModal
-        isOpen={isContactModalOpen}
-        onClose={() => setIsContactModalOpen(false)}
-        user={user}
-      />
 
       <ReportModal
         isOpen={isReportModalOpen}
@@ -141,4 +156,4 @@ export function UserProfilePage() {
       />
     </div>
   );
-};
+}

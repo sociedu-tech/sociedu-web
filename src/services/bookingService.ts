@@ -1,20 +1,24 @@
 import { api } from '@/lib/api';
+import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 
 const BASE = '/api/v1/bookings';
 
 export const bookingService = {
-  listAsBuyer: async () => {
-    const res = await api.get(`${BASE}/me/buyer`);
-    return res.data;
+  listAsBuyer: async (page = 0, size = 20): Promise<PagePayload<unknown>> => {
+    const res = await api.get(`${BASE}/me/buyer${buildPageQuery({ page, size })}`);
+    return normalizePagePayload(res.data, size);
   },
-  listAsMentor: async () => {
-    const res = await api.get(`${BASE}/me/mentor`);
-    return res.data;
+
+  listAsMentor: async (page = 0, size = 20): Promise<PagePayload<unknown>> => {
+    const res = await api.get(`${BASE}/me/mentor${buildPageQuery({ page, size })}`);
+    return normalizePagePayload(res.data, size);
   },
+
   getById: async (id: number | string) => {
     const res = await api.get(`${BASE}/${id}`);
     return res.data;
   },
+
   updateSession: async (
     bookingId: number | string,
     sessionId: number | string,
@@ -23,6 +27,7 @@ export const bookingService = {
     const res = await api.patch(`${BASE}/${bookingId}/sessions/${sessionId}`, body);
     return res.data;
   },
+
   addSessionEvidence: async (
     bookingId: number | string,
     sessionId: number | string,

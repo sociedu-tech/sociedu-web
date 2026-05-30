@@ -3,70 +3,45 @@
 import {
   StatsBarChart,
   StatsChartCard,
-  StatsAreaChart,
-  StatsDonutChart,
   StatsLineChart,
 } from '@/features/dashboard/ui/stats';
-import {
-  menteeAvgProgressSeries,
-  menteeReportDonutData,
-  menteeSessionsByMonthSeries,
-  menteeStatusDonutData,
-  menteeWeeklySessionsSeries,
-  menteeWeeklyTasksSeries,
-} from '@/data/menteeOverviewMock';
+import type { StatsSeriesPoint } from '@/features/dashboard/ui/stats';
 
-export function MenteeOverviewChartGrids() {
+type Props = {
+  sessionsSeries: StatsSeriesPoint[];
+  reportsSeries: StatsSeriesPoint[];
+};
+
+function EmptyChart({ label }: { label: string }) {
   return (
-    <>
-      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <StatsChartCard title="Trạng thái dự án">
-          <StatsDonutChart data={menteeStatusDonutData} height={220} />
-        </StatsChartCard>
+    <p className="flex h-[220px] items-center justify-center text-sm text-slate-500">{label}</p>
+  );
+}
 
-        <StatsChartCard title="Mục tiêu đã hoàn thành (theo tuần)">
-          <StatsAreaChart data={menteeWeeklyTasksSeries} name="Mục tiêu" height={240} />
-        </StatsChartCard>
+export function MenteeOverviewChartGrids({ sessionsSeries, reportsSeries }: Props) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <StatsChartCard title="Buổi học">
+        {sessionsSeries.some((p) => p.value > 0) ? (
+          <StatsBarChart data={sessionsSeries} name="Buổi" height={240} yAllowDecimals={false} maxBarSize={48} />
+        ) : (
+          <EmptyChart label="Chưa có buổi học từ booking." />
+        )}
+      </StatsChartCard>
 
-        <StatsChartCard title="Buổi học theo tuần">
+      <StatsChartCard title="Báo cáo tiến độ">
+        {reportsSeries.some((p) => p.value > 0) ? (
           <StatsLineChart
-            data={menteeWeeklySessionsSeries}
-            name="Buổi học"
+            data={reportsSeries}
+            name="Báo cáo"
             height={240}
             yAllowDecimals={false}
-            dotRadius={3}
+            dotRadius={4}
           />
-        </StatsChartCard>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <StatsChartCard title="Buổi học theo tháng">
-          <StatsBarChart
-            data={menteeSessionsByMonthSeries}
-            name="Buổi"
-            height={240}
-            yAllowDecimals={false}
-            maxBarSize={36}
-          />
-        </StatsChartCard>
-
-        <StatsChartCard title="Báo cáo & nhiệm vụ">
-          <StatsDonutChart data={menteeReportDonutData} height={220} />
-        </StatsChartCard>
-
-        <StatsChartCard title="Tiến độ trung bình dự án">
-          <StatsLineChart
-            data={menteeAvgProgressSeries}
-            name="Tiến độ TB"
-            height={240}
-            yDomain={[0, 100]}
-            yTickFormatter={(v) => `${v}%`}
-            yAllowDecimals={false}
-            dotRadius={3}
-            formatTooltipValue={(v) => `${v}%`}
-          />
-        </StatsChartCard>
-      </div>
-    </>
+        ) : (
+          <EmptyChart label="Chưa có báo cáo tiến độ." />
+        )}
+      </StatsChartCard>
+    </div>
   );
 }

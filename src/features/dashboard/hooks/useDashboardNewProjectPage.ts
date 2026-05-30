@@ -3,12 +3,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { mentorService } from '@/services/mentorService';
+import { reportService } from '@/services/reportService';
 import type { User } from '@/types';
 import {
-  NEW_PROJECT_DEMO_MENTORS,
   NEW_PROJECT_DURATION_OPTIONS,
   NEW_PROJECT_TOPIC_TAGS,
-} from '@/data/dashboardNewProjectMock';
+} from '@/features/dashboard/constants/newProjectForm';
 
 function scoreMentor(mentor: User, selectedTags: Set<string>, textBlob: string): number {
   const info = mentor.mentorInfo;
@@ -51,13 +51,14 @@ export function useDashboardNewProjectPage() {
       try {
         const data = await mentorService.getAll();
         if (!cancelled) {
-          const withMentorInfo = data.filter((m) => m.mentorInfo?.expertise?.length);
-          setMentors(withMentorInfo.length > 0 ? withMentorInfo : NEW_PROJECT_DEMO_MENTORS);
+          setMentors(data.filter((m) => m.mentorInfo?.expertise?.length));
         }
-      } catch {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setMentors(NEW_PROJECT_DEMO_MENTORS);
-          setMentorsError('Không tải được danh sách mentor từ máy chủ. Đang hiển thị gợi ý mẫu.');
+          setMentors([]);
+          setMentorsError(
+            err instanceof Error ? err.message : 'Không tải được danh sách mentor từ máy chủ.',
+          );
         }
       } finally {
         if (!cancelled) setMentorsLoading(false);
@@ -102,12 +103,32 @@ export function useDashboardNewProjectPage() {
       setSubmitError('Vui lòng nhập tên dự án.');
       return;
     }
+
+    const mentorId = topSuggestions[0]?.mentor.id;
+    if (!mentorId) {
+      setSubmitError('Chưa có mentor phù hợp. Hãy mở rộng tag hoặc tìm mentor trước.');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await new Promise((r) => setTimeout(r, 700));
+      const content = [
+        description.trim(),
+        goals.trim() ? `Mục tiêu: ${goals.trim()}` : '',
+        `Thời lượng dự kiến: ${duration} tuần`,
+        selectedTags.size > 0 ? `Lĩnh vực: ${[...selectedTags].join(', ')}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n');
+
+      await reportService.submitReport({
+        mentorId,
+        title: t,
+        content: content || t,
+      });
       router.push('/dashboard/projects?created=1');
-    } catch {
-      setSubmitError('Không thể lưu. Vui lòng thử lại.');
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Không thể lưu. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }

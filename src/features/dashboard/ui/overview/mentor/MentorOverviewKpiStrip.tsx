@@ -2,35 +2,22 @@
 
 import { FolderOpen, Star, Users, Video } from 'lucide-react';
 import { StatsKpiCard } from '@/features/dashboard/ui/stats';
-import { mentorOverviewKpi } from '@/data/mentorOverviewMock';
+import type { MentorOverviewData } from '@/features/dashboard/hooks/useMentorDashboardOverview';
 
-const ITEMS = [
-  {
-    label: 'Học viên đang hoạt động',
-    value: mentorOverviewKpi.activeMentees,
-    icon: Users,
-  },
-  {
-    label: 'Dự án đang hướng dẫn',
-    value: mentorOverviewKpi.activeProjects,
-    icon: FolderOpen,
-  },
-  {
-    label: 'Buổi học (tháng này)',
-    value: mentorOverviewKpi.sessionsThisMonth,
-    icon: Video,
-  },
-  {
-    label: 'Đánh giá trung bình',
-    value: `${mentorOverviewKpi.avgRating}/5`,
-    icon: Star,
-  },
-] as const;
+type Props = {
+  hideKpiStrip?: boolean;
+  kpi: MentorOverviewData['kpi'];
+};
 
-type Props = { hideKpiStrip?: boolean };
-
-export function MentorOverviewKpiStrip({ hideKpiStrip = false }: Props) {
+export function MentorOverviewKpiStrip({ hideKpiStrip = false, kpi }: Props) {
   if (hideKpiStrip) return null;
+
+  const ITEMS = [
+    { label: 'Học viên đang hoạt động', value: kpi.activeMentees, icon: Users },
+    { label: 'Báo cáo tiến độ', value: kpi.activeProjects, icon: FolderOpen },
+    { label: 'Buổi học (tháng này)', value: kpi.sessionsThisMonth, icon: Video },
+    { label: 'Đánh giá trung bình', value: `${kpi.avgRating}`, icon: Star },
+  ] as const;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

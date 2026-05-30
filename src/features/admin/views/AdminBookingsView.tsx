@@ -6,6 +6,7 @@ import type { AdminBookingRow, BookingStatus } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminBookingsView } from '@/features/admin/hooks';
 import { adminSelect } from '@/features/admin/ui/adminClasses';
+import { DataPagination } from '@/components/ui/DataPagination';
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
   { value: 'pending_payment', label: 'Chờ thanh toán' },
@@ -41,8 +42,20 @@ function statusLabel(s: BookingStatus) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.label ?? s;
 }
 
-export function AdminBookingsView({ initialRows }: { initialRows: AdminBookingRow[] }) {
-  const { statusFilter, setStatusFilter, filtered, updateStatus } = useAdminBookingsView(initialRows);
+export function AdminBookingsView() {
+  const {
+    statusFilter,
+    setStatusFilter,
+    filtered,
+    updateStatus,
+    loading,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
+  } = useAdminBookingsView();
 
   return (
     <div className="space-y-5">
@@ -120,6 +133,19 @@ export function AdminBookingsView({ initialRows }: { initialRows: AdminBookingRo
           </tbody>
         </table>
       </div>
+
+      {loading ? (
+        <p className="text-center text-sm text-slate-500">Đang tải…</p>
+      ) : (
+        <DataPagination
+          page={page}
+          size={size}
+          total={total}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          onSizeChange={setSize}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { EMPTY_STATS } from '@/mocks/defaultData';
+import { normalizePagePayload, unwrapPage, DEFAULT_PAGE_SIZE, type PagePayload } from '@/lib/apiUtils';
 import type { MentorPackage, User } from '@/types';
 
 const BASE_URL = '/api/v1/mentors';
@@ -213,6 +213,38 @@ export type MentorListParams = {
 
 const DEFAULT_MENTOR_LIST_SIZE = 500;
 
+type ServicePackageVersionDto = {
+  price?: number | string;
+  duration?: number;
+  isDefault?: boolean;
+};
+
+type ServicePackageDto = {
+  id?: string;
+  name?: string;
+  description?: string;
+  versions?: ServicePackageVersionDto[];
+};
+
+const mapServicePackageToMentorPackage = (raw: Record<string, unknown>): MentorPackage => {
+  const pkg = raw as ServicePackageDto;
+  const ver =
+    pkg.versions?.find((v) => v.isDefault) ?? pkg.versions?.[0];
+  const price =
+    typeof ver?.price === 'number'
+      ? ver.price
+      : typeof ver?.price === 'string'
+        ? Number(ver.price) || 0
+        : 0;
+  return {
+    id: String(pkg.id ?? ''),
+    title: String(pkg.name ?? 'Gói dịch vụ'),
+    description: String(pkg.description ?? ''),
+    price,
+    duration: ver?.duration ? `${ver.duration} phút` : '—',
+  };
+};
+
 const buildQuery = (params?: MentorListParams): string => {
   const sp = new URLSearchParams();
   const q = params?.q?.trim();
@@ -229,10 +261,17 @@ const buildQuery = (params?: MentorListParams): string => {
   return `?${sp.toString()}`;
 };
 
+const fetchPublicMentorsPage = async (params?: MentorListParams): Promise<PagePayload<User>> => {
+  const size = params?.size ?? DEFAULT_PAGE_SIZE;
+  const res = await api.get(`${BASE_URL}${buildQuery({ ...params, size })}`);
+  const page = normalizePagePayload<unknown>(res.data, size);
+  const items = page.items.map(normalizeMentorUser).filter((u): u is User => u !== null);
+  return { ...page, items };
+};
+
 const fetchPublicMentors = async (params?: MentorListParams): Promise<User[]> => {
-  const res = await api.get(`${BASE_URL}${buildQuery(params)}`);
-  const pageOrList = res.data;
-  return unwrapList(pageOrList).map(normalizeMentorUser).filter((u): u is User => u !== null);
+  const page = await fetchPublicMentorsPage(params);
+  return page.items;
 };
 
 export const mentorService = {
@@ -242,9 +281,10 @@ export const mentorService = {
    * GET /api/v1/mentors?q=...
    */
   getMentors: fetchPublicMentors,
+  listPage: fetchPublicMentorsPage,
 
   /** Giữ alias cho code cũ — tương đương `getMentors()` */
-  getAll: (): Promise<User[]> => fetchPublicMentors(),
+  getAll: (): Promise<User[]> => fetchPublicMentors({ page: 0, size: 100 }),
 
   getProfile: async (id: number | string): Promise<User | null> => {
     try {
@@ -281,22 +321,18 @@ export const mentorService = {
     return res.data;
   },
   getStats: async () => {
-    try {
-      const res = await api.get(`${BASE_URL}/me/stats`);
-      return res.data || EMPTY_STATS;
-    } catch (error) {
-      console.error('Failed to fetch stats, using fallback:', error);
-      return EMPTY_STATS;
-    }
+    const res = await api.get(`${BASE_URL}/me/stats`);
+    return res.data ?? {};
   },
   getWithdrawals: async () => {
-    try {
-      const res = await api.get(`${BASE_URL}/me/withdrawals`);
-      return res.data || [];
-    } catch (error) {
-      console.error('Failed to fetch withdrawals, using fallback:', error);
-      return [];
-    }
+    const res = await api.get(`${BASE_URL}/me/withdrawals`);
+    const list = res.data;
+    return Array.isArray(list) ? list : [];
+  },
+  getMyPackages: async (): Promise<MentorPackage[]> => {
+    const res = await api.get(`${BASE_URL}/me/packages?size=100`);
+    const { items } = unwrapPage<Record<string, unknown>>(res.data);
+    return items.map(mapServicePackageToMentorPackage);
   },
   savePackagesForMentor: async (id: string, packages: any[]) => {
     const res = await api.put(`${BASE_URL}/me/packages`, { packages });

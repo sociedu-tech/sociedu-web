@@ -16,11 +16,14 @@ import {
 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { DataPagination } from '@/components/ui/DataPagination';
 import { MarketingHeroSection } from '@/components/marketing';
 import { Container } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { MentorMarketplaceViewModel } from '@/features/mentor/marketplace/mentorMarketplace.types';
 import { SORT_OPTIONS, formatMentorPrice, type SortKey } from '@/features/mentor/marketplace/mentorMarketplace.constants';
+import { ProfileVerificationBadge } from '@/features/user/ui/profile/ProfileVerificationBadge';
+import { getMentorVerificationStatus } from '@/features/user/ui/profile/profileVerification';
 
 const SUGGESTED_SEARCHES = ['Đồ án web', 'NCKH', 'BTL', 'Phỏng vấn thực tập', 'Machine learning'];
 
@@ -367,6 +370,12 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
     activeFilterCount,
     clearFilters,
     retry,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
   } = vm;
 
   return (
@@ -572,7 +581,8 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
               <ul className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 {filtered.map((mentor) => {
                   const info = mentor.mentorInfo!;
-                  const verified = info.verificationStatus === 'verified';
+                  const verificationStatus = getMentorVerificationStatus(mentor);
+                  const verified = verificationStatus === 'verified';
                   return (
                     <li key={mentor.id}>
                       <article
@@ -600,14 +610,14 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <h3 className="truncate text-base font-bold text-marketing-fg-strong transition-colors group-hover:text-primary">
-                                {mentor.name}
-                              </h3>
-                              {verified && (
-                                <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-label="Đã xác thực" />
-                              )}
-                            </div>
+                            <ProfileVerificationBadge
+                              status={verificationStatus}
+                              size="sm"
+                              className="mb-2"
+                            />
+                            <h3 className="truncate text-base font-bold text-marketing-fg-strong transition-colors group-hover:text-primary">
+                              {mentor.name}
+                            </h3>
                             <p className="mt-0.5 line-clamp-2 text-xs font-medium leading-snug text-marketing-body">
                               {info.headline || 'Mentor Mentoree'}
                             </p>
@@ -663,6 +673,18 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
                 })}
               </ul>
             )}
+            {!loading && !error && filtered.length > 0 ? (
+              <DataPagination
+                className="mt-6"
+                page={page}
+                size={size}
+                total={total}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                onSizeChange={setSize}
+                disabled={loading}
+              />
+            ) : null}
           </section>
         </div>
 

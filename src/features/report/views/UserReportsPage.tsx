@@ -4,12 +4,19 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { DataPagination } from '@/components/ui/DataPagination';
 import { useUserReportsPage } from '@/features/report/hooks';
 
 export const UserReportsPage = () => {
   const {
     reports,
     loading,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
     isModalOpen,
     setIsModalOpen,
     submitting,
@@ -77,7 +84,8 @@ export const UserReportsPage = () => {
                         )}
                       </div>
                       <p className="text-sm font-medium text-gray-500 mb-4 flex items-center gap-2">
-                         Gửi cho Mentor: <span className="font-bold text-dark">{report.mentorName}</span> • Nộp lúc: {new Date(report.createdAt).toLocaleDateString()}
+                         Gửi cho Mentor: <span className="font-bold text-dark">{report.mentorName}</span> • Nộp lúc:{' '}
+                         {report.createdAt ? new Date(report.createdAt).toLocaleDateString('vi-VN') : '—'}
                       </p>
                       <div className="text-gray-700 whitespace-pre-wrap text-sm border-l-2 border-gray-200 pl-4 py-1">
                         {report.content}
@@ -106,6 +114,16 @@ export const UserReportsPage = () => {
               ))}
             </div>
           )}
+          <DataPagination
+            className="border-t border-gray-100 p-4"
+            page={page}
+            size={size}
+            total={total}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onSizeChange={setSize}
+            disabled={loading}
+          />
         </div>
 
       </div>

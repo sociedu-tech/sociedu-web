@@ -62,15 +62,13 @@ const mapExperienceRow = (row: unknown): ExperienceRow | null => {
   };
 };
 
-const firstEducationFields = (
-  educations: unknown[],
-): Pick<User, 'university' | 'major' | 'year' | 'gpa'> => {
-  const row = educations[0];
-  if (!isRecord(row)) return {};
+const mapEducationRow = (row: unknown): NonNullable<User['educations']>[number] | null => {
+  if (!isRecord(row)) return null;
   const uniObj = pick(row, 'university');
-  const uni =
+  const university =
     asStr(pick(row, 'universityName', 'university_name')) ||
     (isRecord(uniObj) ? asStr(pick(uniObj, 'name')) : '');
+  if (!university) return null;
   const majorObj = pick(row, 'fieldOfStudy', 'major');
   const major =
     asStr(pick(row, 'majorName', 'major_name', 'degree')) ||
@@ -78,10 +76,26 @@ const firstEducationFields = (
   const end = pick(row, 'endDate', 'end_date');
   const yearNum =
     typeof end === 'string' && /^\d{4}/.test(end) ? Number(end.slice(0, 4)) : undefined;
+  const gpa = asStr(pick(row, 'gpa', 'grade')).trim();
   return {
-    university: uni || undefined,
+    university,
     major: major || undefined,
     year: Number.isFinite(yearNum) ? yearNum : undefined,
+    gpa: gpa || undefined,
+  };
+};
+
+const firstEducationFields = (
+  educations: unknown[],
+): Pick<User, 'university' | 'major' | 'year' | 'gpa'> => {
+  const mapped = educations.map(mapEducationRow).filter((x): x is NonNullable<typeof x> => x !== null);
+  const first = mapped[0];
+  if (!first) return {};
+  return {
+    university: first.university,
+    major: first.major,
+    year: first.year,
+    gpa: first.gpa ? Number(first.gpa) : undefined,
   };
 };
 
@@ -145,10 +159,15 @@ const mapBundleToUser = (bundle: NonNullable<ReturnType<typeof parseProfileBundl
   if (!userId) return null;
 
   const headline = asStr(pick(profile, 'headline')).trim();
+  const eduList = bundle.educations
+    .map(mapEducationRow)
+    .filter((x): x is NonNullable<ReturnType<typeof mapEducationRow>> => x !== null);
   const edu = firstEducationFields(bundle.educations);
   const experiences = bundle.experiences
     .map(mapExperienceRow)
     .filter((x): x is NonNullable<typeof x> => x !== null);
+
+  const location = asStr(pick(profile, 'location')).trim();
 
   const user: User = {
     id: userId,
@@ -157,6 +176,7 @@ const mapBundleToUser = (bundle: NonNullable<ReturnType<typeof parseProfileBundl
     avatar: avatarUrlFor(userId, pick(profile, 'avatarFileId', 'avatar_file_id')),
     role: 'user',
     bio: asStr(pick(profile, 'bio')).trim() || undefined,
+    location: location || undefined,
     joinedDate: formatJoined(pick(profile, 'createdAt', 'created_at')),
     experience: experiences.length ? experiences : undefined,
     skills: mapLanguagesToSkills(bundle.languages).length
@@ -165,6 +185,7 @@ const mapBundleToUser = (bundle: NonNullable<ReturnType<typeof parseProfileBundl
     achievements: mapCertificatesToAchievements(bundle.certificates).length
       ? mapCertificatesToAchievements(bundle.certificates)
       : undefined,
+    educations: eduList.length ? eduList : undefined,
     ...edu,
   };
 
@@ -195,9 +216,9 @@ export const userService = {
       const bundle = parseProfileBundle(res.data);
       if (!bundle) return null;
       return mapBundleToUser(bundle);
-    } catch (error) {
-      console.error(`Failed to fetch user profile ${id}, using null fallback:`, error);
-      return null;
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Không tải được hồ sơ';
+      throw new Error(msg);
     }
   },
   updateProfile: async (id: string | number, profileData: any) => {

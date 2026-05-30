@@ -39,4 +39,10 @@ export type MentorMarketplaceViewModel = {
   clearFilters: () => void;
   activeFilterCount: number;
   retry: () => void;
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+  setPage: (page: number) => void;
+  setSize: (size: number) => void;
 };

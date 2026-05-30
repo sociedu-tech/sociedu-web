@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { UserPlus, Activity, CalendarCheck, GraduationCap, Users } from 'lucide-react';
-import { useAdminData, useAdminDashboardHomePage } from '@/features/admin/hooks';
+import { useAdminDashboardHomePage } from '@/features/admin/hooks';
 import {
   StatsTimeRangeFilter,
   StatsKpiCard,
@@ -14,31 +14,20 @@ import {
   StatsDonutChart,
 } from '@/features/dashboard/ui/stats';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { AdminFallbackBanner } from '@/features/admin/ui/AdminFallbackBanner';
 import { ROUTES } from '@/constants/routes';
 
 /**
  * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + quản lý người dùng.
  */
 export function AdminDashboardHomePage() {
-  const { data, loading, refresh, bannerVariant } = useAdminData();
-  const { range, setRange, analytics } = useAdminDashboardHomePage();
+  const { range, setRange, analytics, totalUsers, loaded } = useAdminDashboardHomePage();
 
-  if (loading) {
+  if (!loaded) {
     return <LoadingSpinner label="Đang tải…" />;
   }
 
-  const totalUsers = data.users?.length ?? 0;
-
   return (
     <div className="space-y-12 pb-4">
-      {bannerVariant ? (
-        <AdminFallbackBanner
-          variant={bannerVariant}
-          onRetry={bannerVariant === 'offline' ? refresh : undefined}
-        />
-      ) : null}
-
       <section className="space-y-6" aria-label="Chỉ số chính">
         <div className="flex justify-end">
           <StatsTimeRangeFilter value={range} onChange={setRange} />
@@ -90,7 +79,7 @@ export function AdminDashboardHomePage() {
           </StatsChartCard>
         </div>
 
-        <StatsChartCard title="Cơ cấu booking" subtitle="Phân bổ theo loại hình (minh họa)">
+        <StatsChartCard title="Cơ cấu người dùng" subtitle="Theo vai trò trong hệ thống">
           <StatsDonutChart data={analytics.bookingMix} />
         </StatsChartCard>
       </section>

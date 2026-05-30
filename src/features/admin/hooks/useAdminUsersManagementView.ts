@@ -1,69 +1,66 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+'use client';
+
+import { useCallback, useState } from 'react';
 import type { AdminUserRow, UserAccountStatus } from '@/types';
 import { adminService } from '@/services/adminService';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useAdminUsersManagementView() {
-  const [users, setUsers] = useState<AdminUserRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [localStatus, setLocalStatus] = useState<Record<string, UserAccountStatus>>({});
 
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const rows = await adminService.getUsers();
-      setUsers(rows);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Không thể tải danh sách người dùng.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const paginated = usePaginatedList<AdminUserRow>({
+    fetchPage: useCallback(
+      (page, size) =>
+        adminService.listUsers({
+          page,
+          size,
+          role: roleFilter === 'all' ? undefined : roleFilter,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+        }),
+      [roleFilter, statusFilter],
+    ),
+    resetKey: `${roleFilter}-${statusFilter}`,
+  });
 
-  useEffect(() => {
-    void fetchUsers();
-  }, [fetchUsers]);
-
-  const filtered = useMemo(() => {
-    return users.filter((u) => {
-      if (roleFilter !== 'all' && u.role !== roleFilter) return false;
-      if (statusFilter !== 'all' && u.accountStatus !== statusFilter) return false;
-      return true;
-    });
-  }, [users, roleFilter, statusFilter]);
-
-  const setStatus = (id: string, accountStatus: UserAccountStatus) => {
-    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, accountStatus } : u)));
-  };
+  const users = paginated.items.map((u) =>
+    localStatus[u.id] ? { ...u, accountStatus: localStatus[u.id] } : u,
+  );
 
   const promoteToMentor = async (id: string) => {
     setUpdatingRoleId(id);
-    setError(null);
     try {
-      const updated = await adminService.updateUserRole(id, 'mentor');
-      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updated } : u)));
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Không thể cấp quyền mentor.');
+      await adminService.updateUserRole(id, 'mentor');
+      await paginated.refresh();
     } finally {
       setUpdatingRoleId(null);
     }
   };
 
+  const setStatus = (id: string, accountStatus: UserAccountStatus) => {
+    setLocalStatus((prev) => ({ ...prev, [id]: accountStatus }));
+  };
+
   return {
     users,
-    loading,
-    error,
+    loading: paginated.loading,
+    error: paginated.error,
     updatingRoleId,
     roleFilter,
     setRoleFilter,
     statusFilter,
     setStatusFilter,
-    filtered,
+    filtered: users,
     setStatus,
     promoteToMentor,
-    refresh: fetchUsers,
+    page: paginated.page,
+    size: paginated.size,
+    total: paginated.total,
+    totalPages: paginated.totalPages,
+    setPage: paginated.setPage,
+    setSize: paginated.setSize,
+    refresh: paginated.refresh,
   };
 }

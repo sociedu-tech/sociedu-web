@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 
 const BASE_URL = '/api/v1/orders';
 
@@ -13,9 +14,9 @@ export const orderService = {
     const res = await api.post(`${BASE_URL}/checkout`, orderData);
     return res.data;
   },
-  getMyOrders: async () => {
-    const res = await api.get(`${BASE_URL}/me`);
-    return res.data;
+  getMyOrders: async (page = 0, size = 20): Promise<PagePayload<unknown>> => {
+    const res = await api.get(`${BASE_URL}/me${buildPageQuery({ page, size })}`);
+    return normalizePagePayload(res.data, size);
   },
   getOrderById: async (id: number | string) => {
     const res = await api.get(`${BASE_URL}/${id}`);

@@ -16,7 +16,7 @@ export function SessionsHub() {
       ? {
           eyebrow: 'Quản trị' as const,
           title: 'Buổi học trên hệ thống',
-          description: 'Giám sát lịch 1-1 và buổi nhóm (dữ liệu mẫu — nối API sau).',
+          description: 'Giám sát lịch 1-1 và buổi nhóm trên hệ thống.',
         }
       : r === ROLES.MENTOR
         ? {
