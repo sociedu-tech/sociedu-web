@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Award } from 'lucide-react';
+import { Award, Sparkles } from 'lucide-react';
 import type { User as UserType } from '@/types';
 
 interface ProfileAboutTabProps {
@@ -8,47 +8,60 @@ interface ProfileAboutTabProps {
 }
 
 export const ProfileAboutTab = ({ user }: ProfileAboutTabProps) => {
-  return (
-    <motion.div 
-      key="about"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="space-y-6"
-    >
-      <div>
-        <h2 className="text-xl font-bold text-airbnb-dark mb-4">Mô tả bản thân</h2>
-        <p className="text-airbnb-dark leading-relaxed whitespace-pre-line">
-          {user.bio || "Chưa có thông tin giới thiệu."}
-        </p>
-      </div>
+  const hasSkills = user.skills && user.skills.length > 0;
+  const hasAchievements = user.achievements && user.achievements.length > 0;
 
-      {user.skills && user.skills.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold text-airbnb-dark mb-4">Kỹ năng nổi bật</h2>
-          <div className="flex flex-wrap gap-2">
-            {user.skills.map((skill, i) => (
-              <span key={i} className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-bold border border-blue-100">
+  return (
+    <motion.div
+      key="about"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.2 }}
+      className="space-y-8"
+    >
+      <section>
+        <h2 className="flex items-center gap-2 text-lg font-bold text-marketing-fg">
+          <Sparkles className="size-5 text-indigo-600" aria-hidden />
+          Mô tả bản thân
+        </h2>
+        <p className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-marketing-body">
+          {user.bio?.trim() || 'Chưa có thông tin giới thiệu.'}
+        </p>
+      </section>
+
+      {hasSkills ? (
+        <section>
+          <h2 className="text-lg font-bold text-marketing-fg">Kỹ năng nổi bật</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {user.skills!.map((skill, i) => (
+              <span
+                key={i}
+                className="rounded-xl border border-indigo-100 bg-indigo-50/80 px-3.5 py-2 text-sm font-semibold text-indigo-900"
+              >
                 {skill}
               </span>
             ))}
           </div>
-        </div>
-      )}
+        </section>
+      ) : null}
 
-      {user.achievements && user.achievements.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold text-airbnb-dark mb-4">Thành tựu</h2>
-          <div className="space-y-3">
-            {user.achievements.map((achievement, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl border border-yellow-100">
-                <Award className="text-yellow-600" size={20} />
-                <span className="text-sm font-bold text-yellow-800">{achievement}</span>
-              </div>
+      {hasAchievements ? (
+        <section>
+          <h2 className="text-lg font-bold text-marketing-fg">Thành tựu</h2>
+          <ul className="mt-4 space-y-3">
+            {user.achievements!.map((achievement, i) => (
+              <li
+                key={i}
+                className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/60 px-4 py-3"
+              >
+                <Award className="size-5 shrink-0 text-amber-600" aria-hidden />
+                <span className="text-sm font-semibold text-amber-950">{achievement}</span>
+              </li>
             ))}
-          </div>
-        </div>
-      )}
+          </ul>
+        </section>
+      ) : null}
     </motion.div>
   );
 };

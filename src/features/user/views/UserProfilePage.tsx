@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { AnimatePresence } from 'motion/react';
-import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { ReportModal } from '@/components/ReportModal';
@@ -15,6 +14,7 @@ import { ProfileServicesSection } from '@/features/user/ui/profile/ProfileServic
 import { ProfileReviewsSection } from '@/features/user/ui/profile/ProfileReviewsSection';
 import { ProfileSidebar } from '@/features/user/ui/profile/ProfileSidebar';
 import { ProfileVerificationBanner } from '@/features/user/ui/profile/ProfileVerificationBanner';
+import { ProfileTabNav, type ProfileTabId } from '@/features/user/ui/profile/ProfileTabNav';
 import { isMentorVerified } from '@/features/user/ui/profile/profileVerification';
 
 export function UserProfilePage() {
@@ -39,7 +39,7 @@ export function UserProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
+      <div className="flex min-h-[60vh] items-center justify-center bg-marketing-canvas">
         <LoadingSpinner size={48} label="Đang tải hồ sơ..." />
       </div>
     );
@@ -50,7 +50,10 @@ export function UserProfilePage() {
       <div className="mx-auto max-w-xl px-4 py-20">
         <ErrorMessage message={error || 'Người dùng không tồn tại'} onRetry={refetch} />
         <div className="mt-8 text-center">
-          <Link href="/mentors" className="text-sm font-semibold text-indigo-600 hover:underline">
+          <Link
+            href="/mentors"
+            className="text-sm font-semibold text-indigo-600 hover:underline"
+          >
             Quay lại danh sách mentor
           </Link>
         </div>
@@ -61,26 +64,24 @@ export function UserProfilePage() {
   const mentorVerified = isMentor && isMentorVerified(user);
   const showFullMentorContent = !isMentor || isOwnProfile || mentorVerified;
 
-  const tabs = [
-    { id: 'about' as const, label: 'Giới thiệu' },
-    { id: 'experience' as const, label: 'Kinh nghiệm' },
-    ...(isMentor && showFullMentorContent
-      ? [{ id: 'reviews' as const, label: 'Đánh giá' }]
-      : []),
+  const tabs: { id: ProfileTabId; label: string }[] = [
+    { id: 'about', label: 'Giới thiệu' },
+    { id: 'experience', label: 'Kinh nghiệm' },
+    ...(isMentor && showFullMentorContent ? [{ id: 'reviews' as const, label: 'Đánh giá' }] : []),
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">
-        <ProfileHeader
-          user={user}
-          isOwnProfile={isOwnProfile}
-          isMentor={isMentor}
-          ratingSummary={ratingSummary}
-          onConnect={handleConnect}
-          onMessage={handleMessage}
-        />
+    <div className="min-h-screen bg-marketing-canvas pb-20">
+      <ProfileHeader
+        user={user}
+        isOwnProfile={isOwnProfile}
+        isMentor={isMentor}
+        ratingSummary={ratingSummary}
+        onConnect={handleConnect}
+        onMessage={handleMessage}
+      />
 
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:space-y-8 lg:py-8 lg:px-8">
         {isMentor ? (
           <ProfileVerificationBanner
             user={user}
@@ -89,8 +90,8 @@ export function UserProfilePage() {
           />
         ) : null}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          <div className="space-y-6 lg:col-span-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+          <div className="order-2 space-y-6 lg:order-1 lg:col-span-8">
             {isMentor && showFullMentorContent ? (
               <ProfileServicesSection
                 mentorId={id}
@@ -100,25 +101,15 @@ export function UserProfilePage() {
               />
             ) : null}
 
-            <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
-              <div className="flex border-b border-slate-100">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      'px-5 py-3.5 text-sm font-semibold transition border-b-2 -mb-px',
-                      activeTab === tab.id
-                        ? 'border-indigo-600 text-indigo-700'
-                        : 'border-transparent text-slate-500 hover:text-slate-800',
-                    )}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <div className="p-5 sm:p-6">
+            <div className="space-y-4">
+              <ProfileTabNav
+                tabs={tabs}
+                activeTab={activeTab}
+                onChange={setActiveTab}
+                className="lg:sticky lg:top-20 lg:z-10"
+              />
+
+              <div className="rounded-2xl border border-marketing-card-border bg-white p-5 shadow-sm sm:p-7">
                 <AnimatePresence mode="wait">
                   {activeTab === 'about' && <ProfileAboutTab user={user} />}
                   {activeTab === 'experience' && <ProfileExperienceTab user={user} />}
@@ -134,7 +125,7 @@ export function UserProfilePage() {
             </div>
           </div>
 
-          <div className="lg:col-span-4">
+          <div className="order-1 lg:order-2 lg:col-span-4">
             <ProfileSidebar
               user={user}
               isMentor={isMentor}

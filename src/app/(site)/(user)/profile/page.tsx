@@ -1,19 +1,27 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/context/AuthContext';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
-function ProfileWelcome() {
-  const { userRole } = useAuth();
+function ProfileRedirect() {
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (isAuthenticated && user?.id != null) {
+      router.replace(`/profile/${user.id}`);
+      return;
+    }
+    router.replace('/mentors');
+  }, [isLoading, isAuthenticated, user?.id, router]);
+
   return (
-    <div className='max-w-7xl mx-auto px-4 py-20 text-center'>
-      <h2 className='text-2xl font-bold text-airbnb-dark'>
-        Chào mừng bạn quay trở lại!
-      </h2>
-      <p className='text-airbnb-gray mt-2'>
-        Bạn đang đăng nhập với vai trò{' '}
-        <span className='font-bold text-airbnb-red'>{userRole}</span>.
-      </p>
+    <div className="flex min-h-[50vh] items-center justify-center bg-marketing-canvas">
+      <LoadingSpinner size={40} label="Đang chuyển hướng..." />
     </div>
   );
 }
@@ -21,7 +29,7 @@ function ProfileWelcome() {
 export default function ProfileIndexPage() {
   return (
     <ProtectedRoute>
-      <ProfileWelcome />
+      <ProfileRedirect />
     </ProtectedRoute>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Clock, Layers, ArrowRight } from 'lucide-react';
+import { Clock, Layers, ArrowRight, Package } from 'lucide-react';
 import type { MentorPackageForBooking } from '@/services/profileService';
 
 type Props = {
@@ -20,12 +20,10 @@ export function ProfileServicesSection({
 }: Props) {
   if (packages.length === 0) {
     return (
-      <section className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-8 text-center">
-        <Layers className="mx-auto size-10 text-slate-300" />
-        <p className="mt-3 text-sm font-medium text-slate-600">
-          {isOwnProfile
-            ? 'Bạn chưa tạo gói dịch vụ nào.'
-            : 'Mentor chưa đăng gói dịch vụ.'}
+      <section className="rounded-2xl border border-dashed border-marketing-border-dashed bg-white p-8 text-center shadow-sm">
+        <Layers className="mx-auto size-10 text-marketing-fg-subtle" aria-hidden />
+        <p className="mt-3 text-sm font-medium text-marketing-fg-muted">
+          {isOwnProfile ? 'Bạn chưa tạo gói dịch vụ nào.' : 'Mentor chưa đăng gói dịch vụ.'}
         </p>
         {isOwnProfile ? (
           <Link
@@ -40,13 +38,18 @@ export function ProfileServicesSection({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
+    <section className="rounded-2xl border border-marketing-card-border bg-white p-5 shadow-sm sm:p-6">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900">Gói dịch vụ</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Chọn gói phù hợp — thanh toán an toàn qua VNPay sau khi đặt.
-          </p>
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
+            <Package className="size-5" aria-hidden />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-marketing-fg">Gói dịch vụ</h2>
+            <p className="mt-1 text-sm text-marketing-fg-muted">
+              Chọn gói phù hợp — thanh toán an toàn qua VNPay sau khi đặt.
+            </p>
+          </div>
         </div>
         {!isOwnProfile && !compact ? (
           <Link
@@ -54,7 +57,7 @@ export function ProfileServicesSection({
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
           >
             Xem tất cả & đặt lịch
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4" aria-hidden />
           </Link>
         ) : null}
       </div>
@@ -63,17 +66,17 @@ export function ProfileServicesSection({
         {packages.map((pkg) => (
           <li
             key={pkg.versionId}
-            className="flex flex-col rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition hover:border-indigo-200 hover:bg-white hover:shadow-sm"
+            className="group flex flex-col rounded-2xl border border-marketing-border bg-marketing-canvas/50 p-4 transition hover:border-indigo-200 hover:bg-white hover:shadow-md"
           >
-            <h3 className="font-semibold text-slate-900">{pkg.title}</h3>
+            <h3 className="font-bold text-marketing-fg group-hover:text-indigo-800">{pkg.title}</h3>
             {pkg.description ? (
-              <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600">
+              <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-marketing-body">
                 {pkg.description}
               </p>
             ) : null}
-            <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-3">
-              <span className="inline-flex items-center gap-1 text-xs text-slate-500">
-                <Clock className="size-3.5" />
+            <div className="mt-4 flex items-center justify-between gap-2 border-t border-marketing-border pt-3">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-marketing-fg-muted">
+                <Clock className="size-3.5" aria-hidden />
                 {pkg.duration}
               </span>
               <span className="text-base font-bold text-indigo-700">
@@ -83,7 +86,7 @@ export function ProfileServicesSection({
             {!isOwnProfile && mentorVerified ? (
               <Link
                 href={`/profile/${mentorId}/book?package=${encodeURIComponent(pkg.packageId)}`}
-                className="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
               >
                 Chọn gói này
               </Link>
