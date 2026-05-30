@@ -45,21 +45,29 @@ export const ProfileExperienceTab = ({ user }: ProfileExperienceTabProps) => {
         <h2 className="text-xl font-bold text-airbnb-dark mb-6 flex items-center gap-2">
           <GraduationCap size={24} className="text-blue-600" /> Học vấn
         </h2>
-        <div className="flex gap-4">
-          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <GraduationCap className="text-airbnb-gray" size={24} />
-          </div>
-          <div>
-            <h3 className="font-bold text-airbnb-dark">{user.university || "Chưa cập nhật trường học"}</h3>
-            <p className="text-sm text-airbnb-dark">{user.major || "Chưa cập nhật ngành học"}</p>
-            {user.year && <p className="text-xs text-airbnb-gray mt-1">Năm {user.year}</p>}
-            {user.gpa && (
-              <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-bold rounded">
-                GPA: {user.gpa}/4.0
+        {user.educations && user.educations.length > 0 ? (
+          <div className="space-y-6">
+            {user.educations.map((edu, i) => (
+              <div key={i} className="flex gap-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <GraduationCap className="text-airbnb-gray" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-airbnb-dark">{edu.university}</h3>
+                  {edu.major ? <p className="text-sm text-airbnb-dark">{edu.major}</p> : null}
+                  {edu.year ? <p className="text-xs text-airbnb-gray mt-1">Năm {edu.year}</p> : null}
+                  {edu.gpa ? (
+                    <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-xs font-bold rounded">
+                      GPA: {edu.gpa}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            )}
+            ))}
           </div>
-        </div>
+        ) : (
+          <p className="text-airbnb-gray italic">Chưa có thông tin học vấn.</p>
+        )}
       </div>
     </motion.div>
   );

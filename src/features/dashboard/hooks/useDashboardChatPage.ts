@@ -101,13 +101,21 @@ export function useDashboardChatPage() {
     [activeId],
   );
 
+  const [convPage, setConvPage] = useState(0);
+  const [convSize, setConvSize] = useState(20);
+  const [convTotal, setConvTotal] = useState(0);
+  const [convTotalPages, setConvTotalPages] = useState(0);
+
   useEffect(() => {
     let activeRequest = true;
     const loadConversations = async () => {
       setLoading(true);
       try {
-        const items = await chatService.listConversations();
+        const page = await chatService.listConversations(convPage, convSize);
+        const items = page.items;
         if (!activeRequest) return;
+        setConvTotal(page.total);
+        setConvTotalPages(page.totalPages);
         const mapped: Conversation[] = items.map((c) => ({
           id: c.id,
           name: conversationTitle(c),
@@ -133,7 +141,7 @@ export function useDashboardChatPage() {
     return () => {
       activeRequest = false;
     };
-  }, [conversationRole, conversationTitle, formatTime, toast]);
+  }, [conversationRole, conversationTitle, formatTime, toast, convPage, convSize]);
 
   useEffect(() => {
     if (!activeId || loadedMessagesRef.current.has(activeId)) {
@@ -142,9 +150,9 @@ export function useDashboardChatPage() {
     let cancelled = false;
     const loadMessages = async () => {
       try {
-        const msgs = await chatService.listMessages(activeId);
+        const page = await chatService.listMessages(activeId, 0, 50);
         if (cancelled) return;
-        const uiMessages = msgs.map(toUiMessage);
+        const uiMessages = [...page.items].reverse().map(toUiMessage);
         setConversations((prev) =>
           prev.map((c) =>
             c.id === activeId
@@ -238,5 +246,11 @@ export function useDashboardChatPage() {
     openThread,
     createConversation,
     send,
+    convPage,
+    setConvPage,
+    convSize,
+    setConvSize,
+    convTotal,
+    convTotalPages,
   };
 }

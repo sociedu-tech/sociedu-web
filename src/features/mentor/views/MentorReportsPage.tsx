@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, CheckCircle, Clock, X, MessageSquare } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { DataPagination } from '@/components/ui/DataPagination';
 import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useMentorReportsPage } from '@/features/mentor/hooks';
 
@@ -11,6 +12,12 @@ export const MentorReportsPage = () => {
   const {
     reports,
     loading,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
     selectedReport,
     setSelectedReport,
     feedbackText,
@@ -86,7 +93,9 @@ export const MentorReportsPage = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 text-gray-500 text-sm">
-                    {new Date(report.createdAt).toLocaleDateString('vi-VN')}
+                    {report.createdAt
+                      ? new Date(report.createdAt).toLocaleDateString('vi-VN')
+                      : '—'}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
@@ -101,6 +110,16 @@ export const MentorReportsPage = () => {
             </tbody>
           </table>
         )}
+        <DataPagination
+          className="border-t border-gray-100 p-4"
+          page={page}
+          size={size}
+          total={total}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          onSizeChange={setSize}
+          disabled={loading}
+        />
       </DashboardSurface>
 
       {/* Review Modal */}

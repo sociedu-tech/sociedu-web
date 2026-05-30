@@ -10,7 +10,7 @@ export const MentorSchedulePage = () => {
       <DashboardViewHeader
         eyebrow="Mentor"
         title="Lịch trình & buổi học"
-        description="Lịch tháng, buổi sắp tới và khung giờ rảnh — đồng bộ với học viên sau khi nối API."
+        description="Buổi học từ booking của bạn với học viên."
         layout="compact"
       />
       <MentorSchedule />

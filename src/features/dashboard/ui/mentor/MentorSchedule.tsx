@@ -4,14 +4,29 @@ import React from 'react';
 import Image from 'next/image';
 import { Calendar as CalendarIcon, Clock, Video, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { useDashboardBookings } from '@/features/dashboard/hooks/useDashboardBookings';
 
 export const MentorSchedule = () => {
-  const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
-  const sessions = [
-    { id: 1, mentee: 'Nguyễn Văn A', time: '09:00 - 10:30', date: 'Hôm nay', type: 'Video Call', status: 'Sắp diễn ra' },
-    { id: 2, mentee: 'Trần Thị B', time: '14:00 - 15:00', date: 'Hôm nay', type: 'Video Call', status: 'Sắp diễn ra' },
-    { id: 3, mentee: 'Lê Văn C', time: '10:00 - 11:30', date: 'Ngày mai', type: 'Chat', status: 'Đã xác nhận' },
-  ];
+  const { rows, loading, error, refresh } = useDashboardBookings('mentor');
+
+  if (loading) {
+    return <LoadingSpinner label="Đang tải lịch…" />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={refresh} />;
+  }
+
+  const sessions = rows.map((row) => ({
+    id: row.id,
+    mentee: row.counterparty,
+    time: row.when,
+    date: row.when,
+    type: 'Video Call',
+    status: row.status,
+  }));
 
   return (
     <div className="space-y-6">
@@ -21,7 +36,7 @@ export const MentorSchedule = () => {
             <button type="button" className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100">
               <ChevronLeft size={16} />
             </button>
-            <span className="px-2 text-sm font-medium text-slate-900">Tháng 4, 2026</span>
+            <span className="px-2 text-sm font-medium text-slate-900">Lịch buổi học</span>
             <button type="button" className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100">
               <ChevronRight size={16} />
             </button>
@@ -35,82 +50,48 @@ export const MentorSchedule = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Calendar Grid */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-base font-semibold text-dark flex items-center gap-2">
-              <CalendarIcon size={18} className="text-gray-400" /> Lịch tháng
-            </h3>
-          </div>
-          <div className="grid grid-cols-7 gap-2">
-            {days.map(day => (
-              <div key={day} className="text-center text-xs font-semibold text-gray-500 tracking-wide pb-2">
-                {day}
-              </div>
-            ))}
-            {Array.from({ length: 30 }).map((_, i) => {
-              const day = i + 1;
-              const isToday = day === 15; // Set 15 as an arbitrary today for view
-              const hasSession = [1, 2, 15, 18, 25].includes(day);
-
-              return (
-                <div key={i} className={cn(
-                  "aspect-square rounded-xl flex flex-col items-center justify-center relative border transition-all cursor-pointer m-1",
-                  isToday ? "bg-primary border-primary text-white" : "bg-white border-gray-100 hover:border-primary/50 hover:bg-primary/5 text-dark",
-                  hasSession && !isToday && "after:content-[''] after:absolute after:bottom-1.5 after:w-1.5 after:h-1.5 after:bg-orange-400 after:rounded-full"
-                )}>
-                  <span className="font-medium text-sm">{day}</span>
-                </div>
-              );
-            })}
-          </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-2xl border border-gray-200 bg-white p-6">
+          <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-dark">
+            <CalendarIcon className="text-gray-400" size={18} /> Buổi học từ booking
+          </h3>
+          {sessions.length === 0 ? (
+            <p className="text-sm text-slate-500">Chưa có buổi học nào.</p>
+          ) : (
+            <ul className="space-y-3">
+              {sessions.map((s) => (
+                <li
+                  key={s.id}
+                  className="flex items-center justify-between rounded-xl border border-slate-100 p-4 hover:bg-slate-50"
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">{s.mentee}</p>
+                    <p className="text-sm text-slate-600">{s.time}</p>
+                  </div>
+                  <span className="badge-primary text-xs">{s.status}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* Upcoming Sessions List */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-gray-200">
-            <h3 className="font-semibold text-dark text-base">Buổi học sắp tới</h3>
-            <span className="px-2.5 py-1 bg-orange-50 text-orange-600 rounded-md text-xs font-bold">3 buổi</span>
-          </div>
-
-          <div className="space-y-3">
-            {sessions.map(session => (
-              <div key={session.id} className="bg-white p-4 rounded-2xl border border-gray-200 hover:border-primary/30 transition-colors group">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full border border-gray-200 overflow-hidden">
-                      <Image src={`https://i.pravatar.cc/100?u=${session.mentee}`} alt={session.mentee} className="w-full h-full object-cover" width={40} height={40} unoptimized />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-dark text-sm">{session.mentee}</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">{session.date}</p>
-                    </div>
-                  </div>
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-100 transition-colors">
-                    <Video size={16} />
-                  </div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-5">
+            <h4 className="mb-3 text-sm font-semibold text-dark">Sắp tới</h4>
+            {sessions.slice(0, 4).map((session) => (
+              <div key={session.id} className="mb-3 flex gap-3 border-b border-slate-50 pb-3 last:mb-0 last:border-0">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Video size={16} />
                 </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
-                    <Clock size={14} className="text-gray-400" />
-                    {session.time}
-                  </div>
-                  <span className={cn(
-                    "px-2 py-1 rounded-md text-[10px] font-medium",
-                    session.status === 'Sắp diễn ra' ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
-                  )}>
-                    {session.status}
-                  </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-900">{session.mentee}</p>
+                  <p className="flex items-center gap-1 text-xs text-slate-500">
+                    <Clock size={12} /> {session.time}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-
-          <button className="w-full py-3 bg-gray-50 text-gray-600 border border-dashed border-gray-300 rounded-xl font-medium text-sm hover:bg-gray-100 transition-colors mt-2">
-            Xem tất cả lịch học
-          </button>
         </div>
       </div>
     </div>

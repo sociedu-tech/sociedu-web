@@ -39,18 +39,29 @@ export function useMentorMarketplace(): MentorMarketplaceViewModel {
   const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [sortBy, setSortBy] = useState<SortKey>('popular');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(20);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const debouncedQuery = useDebouncedValue(searchTerm.trim(), searchTerm.trim() ? 400 : 0);
 
-  const fetchMentors = useCallback(async (q: string) => {
+  const fetchMentors = useCallback(async (q: string, pageIndex: number, pageSize: number) => {
     setLoading(true);
     setError(null);
     try {
-      /** `q` + page/size mặc định trong mentorService — khớp GET /api/v1/mentors */
-      const data = await mentorService.getMentors(q ? { q } : {});
-      setMentors(data);
+      const result = await mentorService.listPage({
+        ...(q ? { q } : {}),
+        page: pageIndex,
+        size: pageSize,
+      });
+      setMentors(result.items);
+      setTotal(result.total);
+      setTotalPages(result.totalPages);
     } catch {
       setMentors([]);
+      setTotal(0);
+      setTotalPages(0);
       setError('Không thể tải danh sách mentor. Vui lòng thử lại.');
     } finally {
       setLoading(false);
@@ -58,8 +69,12 @@ export function useMentorMarketplace(): MentorMarketplaceViewModel {
   }, []);
 
   useEffect(() => {
-    void fetchMentors(debouncedQuery);
-  }, [debouncedQuery, fetchMentors]);
+    setPage(0);
+  }, [debouncedQuery, size]);
+
+  useEffect(() => {
+    void fetchMentors(debouncedQuery, page, size);
+  }, [debouncedQuery, page, size, fetchMentors]);
 
   const allCategories = useMemo(() => {
     const set = new Set<string>();
@@ -197,12 +212,27 @@ export function useMentorMarketplace(): MentorMarketplaceViewModel {
     (maxPrice < (priceBounds.max || 1000) ? 1 : 0);
 
   const retry = useCallback(() => {
-    void fetchMentors(debouncedQuery);
-  }, [fetchMentors, debouncedQuery]);
+    void fetchMentors(debouncedQuery, page, size);
+  }, [fetchMentors, debouncedQuery, page, size]);
+
+  const setPageSafe = useCallback((next: number) => {
+    setPage(Math.max(0, next));
+  }, []);
+
+  const setSizeSafe = useCallback((next: number) => {
+    setSize(next);
+    setPage(0);
+  }, []);
 
   return {
     loading,
     error,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage: setPageSafe,
+    setSize: setSizeSafe,
     searchTerm,
     setSearchTerm,
     selectedCategories,

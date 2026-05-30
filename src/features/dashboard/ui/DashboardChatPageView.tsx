@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DataPagination } from '@/components/ui/DataPagination';
 import type { ChatAttachment, Conversation } from '@/features/dashboard/chat/types';
 import { initials } from '@/features/dashboard/chat/utils';
 
@@ -38,6 +39,13 @@ export type DashboardChatPageViewProps = {
   openThread: (id: string) => void;
   createConversation: () => void;
   send: () => void;
+  convPage?: number;
+  convSize?: number;
+  convTotal?: number;
+  convTotalPages?: number;
+  onConvPageChange?: (page: number) => void;
+  onConvSizeChange?: (size: number) => void;
+  convLoading?: boolean;
 };
 
 export function DashboardChatPageView({
@@ -58,10 +66,17 @@ export function DashboardChatPageView({
   openThread,
   createConversation,
   send,
+  convPage = 0,
+  convSize = 20,
+  convTotal = 0,
+  convTotalPages = 0,
+  onConvPageChange,
+  onConvSizeChange,
+  convLoading = false,
 }: DashboardChatPageViewProps) {
   return (
     <div
-      className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-slate-50 [--color-primary:#1e293b] [--color-primary-hover:#0f172a] [--color-badge-primary-bg:rgba(30,41,59,0.14)]"
+      className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-slate-50 [--color-primary:#172033] [--color-primary-hover:#0c1220] [--color-badge-primary-bg:rgba(23,32,51,0.14)]"
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         <aside
@@ -139,6 +154,18 @@ export function DashboardChatPageView({
               );
             })}
           </ul>
+          {onConvPageChange && onConvSizeChange ? (
+            <DataPagination
+              className="shrink-0 border-t border-slate-200 p-2"
+              page={convPage}
+              size={convSize}
+              total={convTotal}
+              totalPages={convTotalPages}
+              onPageChange={onConvPageChange}
+              onSizeChange={onConvSizeChange}
+              disabled={convLoading}
+            />
+          ) : null}
         </aside>
 
         <section

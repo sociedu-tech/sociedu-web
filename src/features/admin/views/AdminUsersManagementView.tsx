@@ -8,6 +8,7 @@ import type { User } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminUsersManagementView } from '@/features/admin/hooks';
 import { adminSelect, adminBtnPrimary, adminBtnGhost } from '@/features/admin/ui/adminClasses';
+import { DataPagination } from '@/components/ui/DataPagination';
 
 function roleLabel(role: User['role']) {
   switch (role) {
@@ -50,13 +51,19 @@ export function AdminUsersManagementView() {
     filtered,
     setStatus,
     promoteToMentor,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
   } = useAdminUsersManagementView();
 
   if (loading) {
     return <div className="px-6 py-16 text-center text-sm text-slate-500">Đang tải danh sách người dùng...</div>;
   }
 
-  if (users.length === 0) {
+  if (!loading && total === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-20 text-center">
         <UserCircle className="size-12 text-slate-300" strokeWidth={1.25} />
@@ -232,6 +239,16 @@ export function AdminUsersManagementView() {
           </div>
         ))}
       </div>
+
+      <DataPagination
+        page={page}
+        size={size}
+        total={total}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onSizeChange={setSize}
+        disabled={loading}
+      />
     </div>
   );
 }

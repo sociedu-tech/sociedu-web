@@ -1,111 +1,162 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Camera, CheckCircle2, MapPin, Info, Calendar, Linkedin, Github, Globe } from 'lucide-react';
+import {
+  Calendar,
+  MapPin,
+  MessageCircle,
+  Pencil,
+  Star,
+  UserPlus,
+} from 'lucide-react';
 import type { User as UserType } from '@/types';
+import type { ProfileRatingSummary } from '@/services/profileService';
+import { getMentorVerificationStatus, isMentorVerified, verificationCopy } from './profileVerification';
+import { ProfileVerificationBadge } from './ProfileVerificationBadge';
 
 interface ProfileHeaderProps {
   user: UserType;
   isOwnProfile: boolean;
-  onContactClick: () => void;
+  isMentor: boolean;
+  ratingSummary: ProfileRatingSummary;
+  onConnect: () => void;
+  onMessage: () => void;
 }
 
-export const ProfileHeader = ({ user, isOwnProfile, onContactClick }: ProfileHeaderProps) => {
-  return (
-    <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-      <div className="p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center md:items-start text-center md:text-left">
-          <div className="relative group">
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100">
-              <Image 
-                src={user.avatar} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                alt={user.name}
-                width={160}
-                height={160}
-                unoptimized
-              />
-            </div>
-            {isOwnProfile && (
-              <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl text-blue-600 hover:bg-blue-50 transition-all border border-gray-100">
-                <Camera size={18} />
-              </button>
-            )}
-          </div>
-          
-          <div className="flex-1 space-y-4 w-full">
-            <div className="space-y-1">
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3">
-                <h1 className="text-2xl sm:text-3xl font-black text-airbnb-dark tracking-tight">{user.name}</h1>
-                {user.role === 'mentor' && user.mentorInfo?.verificationStatus === 'verified' && (
-                  <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black tracking-widest border border-blue-100">
-                    <CheckCircle2 size={12} /> Verified
-                  </div>
-                )}
-              </div>
-              <p className="text-base sm:text-lg font-medium text-airbnb-dark/80 leading-tight">
-                {user.mentorInfo?.headline?.trim() ||
-                  (user.major && user.university
-                    ? `${user.major} @ ${user.university}`
-                    : user.role === 'mentor'
-                      ? 'Mentor'
-                      : 'Thành viên Mentoree')}
-              </p>
-            </div>
+export function ProfileHeader({
+  user,
+  isOwnProfile,
+  isMentor,
+  ratingSummary,
+  onConnect,
+  onMessage,
+}: ProfileHeaderProps) {
+  const verified = isMentor && isMentorVerified(user);
+  const verificationStatus = isMentor ? getMentorVerificationStatus(user) : null;
+  const expertise = user.mentorInfo?.expertise ?? [];
+  const canBook = isMentor && (isOwnProfile || verified);
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-airbnb-gray font-medium">
-              <span className="flex items-center gap-1.5"><MapPin size={16} className="text-blue-500" /> Hà Nội, Việt Nam</span>
-              <button 
-                onClick={onContactClick}
-                className="text-blue-600 font-bold hover:text-blue-700 transition-colors flex items-center gap-1.5"
-              >
-                <Info size={16} /> Thông tin liên hệ
-              </button>
-              <span className="flex items-center gap-1.5"><Calendar size={16} className="text-blue-500" /> Tham gia {user.joinedDate}</span>
-            </div>
-            
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
-              {isOwnProfile ? (
-                <Link
-                  href="/edit-profile"
-                  className="w-full sm:w-auto px-6 py-2.5 bg-airbnb-dark text-white rounded-2xl font-bold hover:bg-black transition-all text-center"
-                >
-                  Chỉnh sửa hồ sơ
-                </Link>
-              ) : (
-                <>
-                  <button className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all">
-                    Kết nối
-                  </button>
-                  <button className="w-full sm:w-auto px-6 py-2.5 border-2 border-gray-100 text-airbnb-dark rounded-2xl font-bold hover:bg-gray-50 transition-all">
-                    Nhắn tin
-                  </button>
-                </>
-              )}
-              
-              <div className="h-10 w-px bg-gray-100 mx-2 hidden lg:block" />
-              
-              <div className="flex items-center justify-center gap-3 w-full sm:w-auto">
-                {user.socialLinks?.linkedin && (
-                  <a href={user.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-airbnb-gray hover:text-linkedin hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100">
-                    <Linkedin size={18} />
-                  </a>
-                )}
-                {user.socialLinks?.github && (
-                  <a href={user.socialLinks.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-airbnb-gray hover:text-black hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
-                    <Github size={18} />
-                  </a>
-                )}
-                {user.socialLinks?.website && (
-                  <a href={user.socialLinks.website} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-airbnb-gray hover:text-blue-500 hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100">
-                    <Globe size={18} />
-                  </a>
-                )}
+  return (
+    <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
+      <div className="h-28 bg-linear-to-r from-slate-900 via-slate-800 to-indigo-900 sm:h-36" />
+      <div className="relative px-5 pb-6 sm:px-8">
+        <div className="-mt-14 flex flex-col gap-5 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="relative mx-auto sm:mx-0">
+              <div className="size-28 overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-md sm:size-32">
+                <Image
+                  src={user.avatar}
+                  alt={user.name}
+                  width={128}
+                  height={128}
+                  className="size-full object-cover"
+                  unoptimized
+                />
               </div>
             </div>
+            <div className="text-center sm:pb-1 sm:text-left">
+              <div className="flex flex-col items-center gap-2 sm:items-start">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                  {user.name}
+                </h1>
+                {isMentor && verificationStatus ? (
+                  <ProfileVerificationBadge status={verificationStatus} size="md" />
+                ) : null}
+              </div>
+
+              {isMentor && verificationStatus && verificationStatus !== 'verified' ? (
+                <p className="mt-2 text-sm font-medium text-amber-800">
+                  {verificationCopy[verificationStatus].description}
+                </p>
+              ) : (
+                <p className="mt-1 max-w-xl text-sm text-slate-600 sm:text-base">
+                  {user.mentorInfo?.headline?.trim() ||
+                    (user.major && user.university
+                      ? `${user.major} · ${user.university}`
+                      : isMentor
+                        ? 'Mentor Mentoree'
+                        : 'Thành viên Mentoree')}
+                </p>
+              )}
+
+              {verified || !isMentor ? (
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate-500 sm:justify-start">
+                  {user.location ? (
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="size-4 text-indigo-500" />
+                      {user.location}
+                    </span>
+                  ) : null}
+                  <span className="inline-flex items-center gap-1.5">
+                    <Calendar className="size-4 text-indigo-500" />
+                    Tham gia {user.joinedDate}
+                  </span>
+                  {isMentor && ratingSummary.ratingCount > 0 ? (
+                    <span className="inline-flex items-center gap-1 font-semibold text-slate-800">
+                      <Star className="size-4 fill-amber-400 text-amber-400" />
+                      {ratingSummary.ratingAvg.toFixed(1)} ({ratingSummary.ratingCount} đánh giá)
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {verified && expertise.length > 0 ? (
+                <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+                  {expertise.slice(0, 6).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-800 ring-1 ring-indigo-100"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              {verified && user.mentorInfo?.headline?.trim() ? (
+                <p className="mt-3 max-w-xl text-sm text-slate-600">{user.mentorInfo.headline}</p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 sm:min-w-[200px]">
+            {isOwnProfile ? (
+              <Link
+                href="/dashboard/profile/edit"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                <Pencil className="size-4" />
+                Chỉnh sửa hồ sơ
+              </Link>
+            ) : (
+              <>
+                {canBook ? (
+                  <button
+                    type="button"
+                    onClick={onConnect}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+                  >
+                    <UserPlus className="size-4" />
+                    Đặt lịch / Kết nối
+                  </button>
+                ) : isMentor ? (
+                  <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs font-medium text-amber-900">
+                    Chỉ đặt lịch khi mentor đã xác thực
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={onMessage}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                >
+                  <MessageCircle className="size-4" />
+                  Nhắn tin
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
-};
+}

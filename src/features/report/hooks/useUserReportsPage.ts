@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { reportService, type ProgressReport } from '@/services/reportService';
+import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useUserReportsPage() {
-  const [reports, setReports] = useState<ProgressReport[]>([]);
-  const [loading, setLoading] = useState(true);
+  const paginated = usePaginatedList<ProgressReport>({
+    fetchPage: useCallback((page, size) => reportService.getMyReports(page, size), []),
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [mentorId, setMentorId] = useState('');
@@ -11,22 +14,6 @@ export function useUserReportsPage() {
   const [content, setContent] = useState('');
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const fetchReports = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await reportService.getMyReports();
-      setReports(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchReports();
-  }, [fetchReports]);
 
   const resetForm = useCallback(() => {
     setMentorId('');
@@ -47,14 +34,14 @@ export function useUserReportsPage() {
     setError(null);
     try {
       await reportService.submitReport({
-        mentorId: parseInt(mentorId, 10),
+        mentorId,
         title,
         content,
         attachmentUrl,
       });
       setIsModalOpen(false);
       resetForm();
-      await fetchReports();
+      await paginated.refresh();
     } catch (err: unknown) {
       const m = err as { message?: string };
       setError(m?.message || 'Có lỗi xảy ra khi nộp báo cáo');
@@ -64,8 +51,14 @@ export function useUserReportsPage() {
   };
 
   return {
-    reports,
-    loading,
+    reports: paginated.items,
+    loading: paginated.loading,
+    page: paginated.page,
+    size: paginated.size,
+    total: paginated.total,
+    totalPages: paginated.totalPages,
+    setPage: paginated.setPage,
+    setSize: paginated.setSize,
     isModalOpen,
     setIsModalOpen,
     submitting,

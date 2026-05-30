@@ -7,81 +7,125 @@ import {
   StatsGroupedBarChart,
   StatsLineChart,
 } from '@/features/dashboard/ui/stats';
-import {
-  mentorMenteeGrowthSeries,
-  mentorProjectByStatusSeries,
-  mentorProjectMonthlyGrouped,
-  mentorRevenueByWeekSeries,
-  mentorRevenueGrowthSeries,
-  mentorSessionsByWeekSeries,
-} from '@/data/mentorOverviewMock';
+import type { MentorOverviewData } from '@/features/dashboard/hooks/useMentorDashboardOverview';
+import type { StatsSeriesPoint } from '@/features/dashboard/ui/stats';
 
-export function MentorOverviewChartRows() {
+type Props = { data: MentorOverviewData };
+
+function EmptyChart({ label }: { label: string }) {
+  return (
+    <p className="flex h-[260px] items-center justify-center text-sm text-slate-500">{label}</p>
+  );
+}
+
+export function MentorOverviewChartRows({ data }: Props) {
+  const revenueByWeekSeries: StatsSeriesPoint[] = data.revenueByWeek.map((r) => ({
+    label: r.t,
+    value: r.revenueM,
+  }));
+  const sessionsByWeekSeries: StatsSeriesPoint[] = data.revenueByWeek.map((r) => ({
+    label: r.t,
+    value: r.sessions,
+  }));
+  const projectByStatusSeries: StatsSeriesPoint[] = data.projectByStatus.map((r) => ({
+    label: r.status,
+    value: r.count,
+  }));
+  const projectMonthlyGrouped = data.projectMonthly.map((r) => ({
+    label: r.thang,
+    moMoi: r.moMoi,
+    hoanThanh: r.hoanThanh,
+  }));
+
   return (
     <>
       <div className="grid gap-6 lg:grid-cols-3">
         <StatsChartCard title="Tăng trưởng doanh thu" subtitle="Theo tháng (trđ)">
-          <StatsAreaChart
-            data={mentorRevenueGrowthSeries}
-            name="Doanh thu"
-            height={260}
-            formatTooltipValue={(v) => `${v} trđ`}
-          />
+          {data.revenueGrowthSeries.length > 0 ? (
+            <StatsAreaChart
+              data={data.revenueGrowthSeries}
+              name="Doanh thu"
+              height={260}
+              formatTooltipValue={(v) => `${v} trđ`}
+            />
+          ) : (
+            <EmptyChart label="Chưa có dữ liệu doanh thu." />
+          )}
         </StatsChartCard>
 
-        <StatsChartCard title="Tăng trưởng học viên">
-          <StatsLineChart
-            data={mentorMenteeGrowthSeries}
-            name="Học viên"
-            height={260}
-            yAllowDecimals={false}
-            dotRadius={4}
-          />
+        <StatsChartCard title="Học viên">
+          {data.menteeGrowthSeries.length > 0 ? (
+            <StatsLineChart
+              data={data.menteeGrowthSeries}
+              name="Học viên"
+              height={260}
+              yAllowDecimals={false}
+              dotRadius={4}
+            />
+          ) : (
+            <EmptyChart label="Chưa có học viên từ booking." />
+          )}
         </StatsChartCard>
 
-        <StatsChartCard title="Dự án theo tháng">
-          <StatsGroupedBarChart
-            data={mentorProjectMonthlyGrouped}
-            xKey="label"
-            series={[
-              { dataKey: 'moMoi', name: 'Mở mới', colorVar: 'var(--color-chart-1)' },
-              { dataKey: 'hoanThanh', name: 'Hoàn thành', colorVar: 'var(--color-chart-2)' },
-            ]}
-            height={260}
-          />
+        <StatsChartCard title="Báo cáo theo tháng">
+          {projectMonthlyGrouped.length > 0 ? (
+            <StatsGroupedBarChart
+              data={projectMonthlyGrouped}
+              xKey="label"
+              series={[
+                { dataKey: 'moMoi', name: 'Tổng', colorVar: 'var(--color-chart-1)' },
+                { dataKey: 'hoanThanh', name: 'Đã phản hồi', colorVar: 'var(--color-chart-2)' },
+              ]}
+              height={260}
+            />
+          ) : (
+            <EmptyChart label="Chưa có báo cáo tiến độ." />
+          )}
         </StatsChartCard>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <StatsChartCard title="Doanh thu theo tuần" subtitle="Đơn vị: trđ">
-          <StatsAreaChart
-            data={mentorRevenueByWeekSeries}
-            name="Doanh thu"
-            height={280}
-            formatTooltipValue={(v) => `${v} trđ`}
-          />
+        <StatsChartCard title="Doanh thu theo tuần" subtitle="Ước tính từ tổng (trđ)">
+          {revenueByWeekSeries.length > 0 ? (
+            <StatsAreaChart
+              data={revenueByWeekSeries}
+              name="Doanh thu"
+              height={280}
+              formatTooltipValue={(v) => `${v} trđ`}
+            />
+          ) : (
+            <EmptyChart label="Chưa có dữ liệu." />
+          )}
         </StatsChartCard>
 
         <StatsChartCard title="Buổi học theo tuần">
-          <StatsBarChart
-            data={mentorSessionsByWeekSeries}
-            name="Buổi học"
-            height={280}
-            maxBarSize={40}
-            yAllowDecimals={false}
-          />
+          {sessionsByWeekSeries.length > 0 ? (
+            <StatsBarChart
+              data={sessionsByWeekSeries}
+              name="Buổi học"
+              height={280}
+              maxBarSize={40}
+              yAllowDecimals={false}
+            />
+          ) : (
+            <EmptyChart label="Chưa có buổi học." />
+          )}
         </StatsChartCard>
 
-        <StatsChartCard title="Dự án theo trạng thái">
-          <StatsBarChart
-            data={mentorProjectByStatusSeries}
-            name="Số dự án"
-            height={280}
-            xTickAngle={-12}
-            xAxisHeight={56}
-            tickFontSize={10}
-            yAllowDecimals={false}
-          />
+        <StatsChartCard title="Hoạt động theo trạng thái">
+          {projectByStatusSeries.length > 0 ? (
+            <StatsBarChart
+              data={projectByStatusSeries}
+              name="Số lượng"
+              height={280}
+              xTickAngle={-12}
+              xAxisHeight={56}
+              tickFontSize={10}
+              yAllowDecimals={false}
+            />
+          ) : (
+            <EmptyChart label="Chưa có dữ liệu." />
+          )}
         </StatsChartCard>
       </div>
     </>

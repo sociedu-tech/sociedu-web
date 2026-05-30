@@ -11,36 +11,19 @@ type Props = {
   className?: string;
 };
 
-export function AdminFallbackBanner({ variant, onRetry, className }: Props) {
-  const isPreview = variant === 'preview';
-
+export function AdminFallbackBanner({ onRetry, className }: Props) {
   return (
     <div
       className={cn(
-        'mb-6 flex flex-col gap-3 rounded-xl px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between',
-        isPreview
-          ? 'border border-sky-200/90 bg-sky-50/90 text-sky-950'
-          : 'border border-amber-200/90 bg-amber-50/90 text-amber-950',
+        'mb-6 flex flex-col gap-3 rounded-xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 sm:flex-row sm:items-center sm:justify-between',
         className,
       )}
       role="status"
     >
       <p className="leading-relaxed">
-        {isPreview ? (
-          <>
-            Đang hiển thị <strong>dữ liệu mẫu</strong> để xem trước giao diện. Đặt{' '}
-            <code className="rounded bg-white/80 px-1.5 py-0.5 font-mono text-[11px]">
-              NEXT_PUBLIC_ADMIN_PREVIEW_DATA=false
-            </code>{' '}
-            khi nối API thật.
-          </>
-        ) : (
-          <>
-            Không tải được dữ liệu từ máy chủ. Đang hiển thị dữ liệu mẫu để bạn vẫn xem được giao diện.
-          </>
-        )}
+        Không tải được dữ liệu từ máy chủ. Kiểm tra API backend và đăng nhập lại với tài khoản admin.
       </p>
-      {!isPreview && onRetry ? (
+      {onRetry ? (
         <button
           type="button"
           onClick={onRetry}

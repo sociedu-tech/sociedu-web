@@ -3,9 +3,23 @@
 import { AdminMentorRequests } from '@/features/admin/ui/AdminMentorRequests';
 import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
 import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
-import { useAdminData } from '@/features/admin/hooks';
+import { useAdminMentorRequestsPage } from '@/features/admin/hooks/useAdminMentorRequestsPage';
+import { DataPagination } from '@/components/ui/DataPagination';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+
 export default function AdminMentorRequestsPage() {
-  const { data, approveMentor } = useAdminData();
+  const {
+    requests,
+    loading,
+    approveMentor,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
+  } = useAdminMentorRequestsPage();
+
   return (
     <>
       <DashboardViewHeader
@@ -14,7 +28,24 @@ export default function AdminMentorRequestsPage() {
         layout="compact"
       />
       <DashboardSurface>
-        <AdminMentorRequests requests={data.mentorRequests} onApprove={approveMentor} />
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <LoadingSpinner label="Đang tải…" />
+          </div>
+        ) : (
+          <>
+            <AdminMentorRequests requests={requests} onApprove={approveMentor} />
+            <DataPagination
+              page={page}
+              size={size}
+              total={total}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              onSizeChange={setSize}
+              disabled={loading}
+            />
+          </>
+        )}
       </DashboardSurface>
     </>
   );
