@@ -10,15 +10,15 @@ import {
   USER_PROGRAM,
   programDetailPath,
 } from '@/features/dashboard/lib/programLabels';
-import { useGoogleOAuthReturnNotice } from '@/features/dashboard/hooks/useGoogleOAuthReturnNotice';
+import { GoogleOAuthReturnNotice } from '@/features/dashboard/ui/GoogleOAuthReturnNotice';
 
 export function MentoringHub() {
-  useGoogleOAuthReturnNotice();
   const { userRole } = useAuth();
   const role = normalizeRole(userRole);
 
   return (
     <AuthRoleGate>
+      <GoogleOAuthReturnNotice />
       {role === ROLES.ADMIN ? (
         <AdminServicePackagesList pageLayout />
       ) : role === ROLES.MENTOR ? (
