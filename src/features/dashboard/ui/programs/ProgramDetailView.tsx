@@ -679,7 +679,7 @@ export function ProgramDetailView({
             <button
               type="button"
               onClick={() => setCreateReqOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-650 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
             >
               <Plus className="size-3.5" />
               Tạo yêu cầu báo cáo

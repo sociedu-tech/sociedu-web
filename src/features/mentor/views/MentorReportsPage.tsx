@@ -193,7 +193,7 @@ export const MentorReportsPage = () => {
                                 setReviewFeedback(req.mentorFeedback || '');
                                 setReviewReportOpen(true);
                               }}
-                              className="px-4 py-2 text-sm font-bold text-indigo-650 hover:bg-indigo-50 border border-indigo-200/50 rounded-lg transition-colors"
+                              className="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 border border-indigo-200/50 rounded-lg transition-colors"
                             >
                               Chấm bài
                             </button>
