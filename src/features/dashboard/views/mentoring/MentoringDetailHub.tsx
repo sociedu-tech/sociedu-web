@@ -14,9 +14,7 @@ export function MentoringDetailHub() {
   return (
     <AuthRoleGate>
       {role === ROLES.ADMIN ? (
-        <div className="p-4 sm:p-6">
-          <AdminProgramDetailPage />
-        </div>
+        <AdminProgramDetailPage />
       ) : role === ROLES.MENTOR ? (
         <MentorTeachingDetailPage />
       ) : (

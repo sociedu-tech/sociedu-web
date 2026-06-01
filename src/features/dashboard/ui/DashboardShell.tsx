@@ -88,8 +88,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         >
           <div
             className={cn(
-              'flex min-h-0 w-full flex-1 flex-col',
-              lockMainScroll ? 'h-full px-0 py-0' : 'min-h-full px-4 py-8 sm:px-6 lg:px-8',
+              'w-full',
+              lockMainScroll
+                ? 'flex min-h-0 w-full flex-1 flex-col h-full px-0 py-0'
+                : 'min-h-full px-4 py-8 sm:px-6 lg:px-8',
             )}
           >
             {children}
