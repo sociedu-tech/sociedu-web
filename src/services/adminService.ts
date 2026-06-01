@@ -91,26 +91,29 @@ export const adminService = {
     liveSessions: number;
     pendingMentorRequests: number;
     openReports: number;
+    pendingPayouts: number;
   }> => {
     const res = await api.get(`${BASE_URL}/stats`);
-    return (
-      (res.data as {
-        totalUsers: number;
-        totalMentors: number;
-        totalLearners: number;
-        totalBookings: number;
-        liveSessions: number;
-        pendingMentorRequests: number;
-        openReports: number;
-      }) ?? {
-        totalUsers: 0,
-        totalMentors: 0,
-        totalLearners: 0,
-        totalBookings: 0,
-        liveSessions: 0,
-        pendingMentorRequests: 0,
-        openReports: 0,
-      }
-    );
+    const data = res.data as {
+      totalUsers?: number;
+      totalMentors?: number;
+      totalLearners?: number;
+      totalBookings?: number;
+      liveSessions?: number;
+      pendingMentorRequests?: number;
+      openReports?: number;
+      pendingPayouts?: number;
+    } | null;
+
+    return {
+      totalUsers: data?.totalUsers ?? 0,
+      totalMentors: data?.totalMentors ?? 0,
+      totalLearners: data?.totalLearners ?? 0,
+      totalBookings: data?.totalBookings ?? 0,
+      liveSessions: data?.liveSessions ?? 0,
+      pendingMentorRequests: data?.pendingMentorRequests ?? 0,
+      openReports: data?.openReports ?? 0,
+      pendingPayouts: data?.pendingPayouts ?? 0,
+    };
   },
 };

@@ -26,7 +26,7 @@ export function DashboardTabs({
       role="tablist"
       aria-label="Chuyển tab"
       className={cn(
-        'flex w-full gap-1 overflow-x-auto rounded-xl border border-slate-200/90 bg-white p-1 shadow-sm sm:inline-flex sm:w-auto',
+        'flex w-full gap-1 overflow-x-auto rounded-xl border border-dashboard-border bg-dashboard-canvas p-1 shadow-[var(--shadow-dashboard-card)] sm:inline-flex sm:w-auto',
         className,
       )}
     >
@@ -43,8 +43,8 @@ export function DashboardTabs({
             className={cn(
               'inline-flex min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:flex-initial',
               active
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                ? 'bg-primary text-white shadow-[var(--shadow-dashboard-card)]'
+                : 'text-dashboard-muted hover:bg-dashboard-surface hover:text-dashboard-ink',
             )}
           >
             {Icon ? <Icon className="size-4 shrink-0" strokeWidth={2} aria-hidden /> : null}

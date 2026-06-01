@@ -22,8 +22,19 @@ type Props = {
 };
 
 export function ProgramList({ perspective, labels, detailPath, pageLayout = false, eyebrow }: Props) {
-  const { items, loading, error, refresh, page, size, total, totalPages, setPage, setSize } =
-    useProgramBookings(perspective);
+  const {
+    items,
+    loading,
+    initialLoading,
+    error,
+    refresh,
+    page,
+    size,
+    total,
+    totalPages,
+    setPage,
+    setSize,
+  } = useProgramBookings(perspective);
   const [filter, setFilter] = useState<ProgramFilter>('all');
 
   const filteredItems = useMemo(() => filterProgramItems(items, filter), [items, filter]);
@@ -40,7 +51,7 @@ export function ProgramList({ perspective, labels, detailPath, pageLayout = fals
     [items],
   );
 
-  if (loading && items.length === 0) {
+  if (pageLayout ? initialLoading : loading && items.length === 0) {
     return <PageLoadingState label={`Đang tải ${labels.nav.toLowerCase()}…`} variant="cards" />;
   }
 

@@ -1,10 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Bell, CheckCheck, Loader2 } from 'lucide-react';
 import { useNotificationInbox } from '@/hooks/useNotificationInbox';
-import { useAuth } from '@/context/AuthContext';
-import { resolveNotificationUrl } from '@/lib/notificationRouter';
+import { useNotificationNavigation } from '@/hooks/useNotificationNavigation';
 import { NotificationTypeIcon, notificationRelativeTime } from '@/lib/notificationUi';
 import { bookingStatusLabel, bookingStatusBadgeClass } from '@/lib/bookingNotificationUi';
 import { cn } from '@/lib/utils';
@@ -12,18 +10,14 @@ import type { NotificationItem } from '@/services/notificationService';
 
 
 export function NotificationBell() {
-  const router = useRouter();
   const { items, unreadCount, loading, open, setOpen, markRead, markAllRead } = useNotificationInbox();
-  const { userRole } = useAuth();
+  const { navigateFromNotification } = useNotificationNavigation();
 
   const handleItemClick = (item: NotificationItem) => {
-    if (!item.isRead) void markRead(item.id);
-
-    const url = resolveNotificationUrl(item, userRole);
-    if (url) {
-      setOpen(false);
-      router.push(url);
-    }
+    void navigateFromNotification(item, {
+      markRead,
+      onClose: () => setOpen(false),
+    });
   };
 
   return (

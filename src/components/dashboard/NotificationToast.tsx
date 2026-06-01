@@ -1,13 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import type { NotificationItem } from '@/services/notificationService';
-import { resolveNotificationUrl } from '@/lib/notificationRouter';
+import { useNotificationNavigation } from '@/hooks/useNotificationNavigation';
 import { isActionNotification } from '@/lib/notificationFilter';
 import { NotificationTypeIcon } from '@/lib/notificationUi';
-import { useAuth } from '@/context/AuthContext';
 
 interface ToastEntry {
   id: string;
@@ -20,8 +18,7 @@ const EXIT_ANIMATION_MS = 400;
 const MAX_TOASTS = 4;
 
 export function NotificationToastContainer() {
-  const router = useRouter();
-  const { userRole } = useAuth();
+  const { navigateFromNotification } = useNotificationNavigation();
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -68,13 +65,10 @@ export function NotificationToastContainer() {
 
   const handleClick = useCallback(
     (entry: ToastEntry) => {
-      const url = resolveNotificationUrl(entry.item, userRole);
       dismiss(entry.id);
-      if (url) {
-        router.push(url);
-      }
+      void navigateFromNotification(entry.item);
     },
-    [dismiss, router, userRole],
+    [dismiss, navigateFromNotification],
   );
 
   useEffect(() => {

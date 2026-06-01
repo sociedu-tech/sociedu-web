@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNotificationRealtime } from '@/hooks/useNotificationRealtime';
 import { filterActionNotifications, isActionNotification } from '@/lib/notificationFilter';
+import { normalizeNotificationItem } from '@/lib/notificationItem';
 import { notificationService, type NotificationItem } from '@/services/notificationService';
 
 export function useNotificationInbox() {
@@ -41,13 +42,14 @@ export function useNotificationInbox() {
 
   useNotificationRealtime({
     onNotification: (item) => {
-      if (!isActionNotification(item)) return;
+      const normalized = normalizeNotificationItem(item as unknown as Record<string, unknown>);
+      if (!isActionNotification(normalized)) return;
 
       setItems((prev) => {
-        const without = prev.filter((p) => p.id !== item.id);
-        return [item, ...without];
+        const without = prev.filter((p) => p.id !== normalized.id);
+        return [normalized, ...without];
       });
-      if (!item.isRead) {
+      if (!normalized.isRead) {
         setUnreadCount((c) => c + 1);
       }
     },

@@ -6,10 +6,10 @@ type ContainerProps = {
   className?: string;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
 
-/** Lề trang — full width + padding ngang. */
+/** Lề trang — căn giữa, giới hạn chiều rộng (khớp Navbar/Footer). */
 export function Container({ children, className, ...rest }: ContainerProps) {
   return (
-    <div className={cn('w-full px-4 md:px-6', className)} {...rest}>
+    <div className={cn('mx-auto w-full max-w-7xl px-4 md:px-6', className)} {...rest}>
       {children}
     </div>
   );

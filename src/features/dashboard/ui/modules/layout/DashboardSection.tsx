@@ -5,22 +5,32 @@ import { cn } from '@/lib/utils';
 
 export function DashboardSection({
   title,
+  description,
   children,
   className,
   action,
 }: {
   title?: string;
+  description?: string;
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
 }) {
-  const showHeader = Boolean(action);
+  const showHeader = Boolean(title || description || action);
 
   return (
-    <section className={cn('space-y-4', className)}>
+    <section className={cn('space-y-4', className)} aria-label={title}>
       {showHeader ? (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
-          <div className="shrink-0">{action}</div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            {title ? (
+              <h2 className="text-base font-semibold tracking-tight text-dashboard-ink">{title}</h2>
+            ) : null}
+            {description ? (
+              <p className="mt-0.5 text-sm leading-relaxed text-dashboard-muted">{description}</p>
+            ) : null}
+          </div>
+          {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       ) : null}
       {children}

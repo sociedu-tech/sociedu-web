@@ -12,6 +12,7 @@ import {
   Flag,
   ShieldCheck,
   Calendar,
+  Wallet,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
@@ -64,6 +65,7 @@ export function getShellNavItems(role: string, userId?: string | number): ShellN
       },
       { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Quản trị' },
       { href: ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, label: 'Quản lý đặt lịch', icon: Calendar, group: 'Quản trị' },
+      { href: '/dashboard/payouts', label: 'Rút tiền mentor', icon: Wallet, group: 'Quản trị' },
       {
         href: ROUTES.DASHBOARD.ADMIN.REPORTS.path,
         label: 'Báo cáo & tranh chấp',
@@ -88,6 +90,7 @@ export function getShellNavItems(role: string, userId?: string | number): ShellN
       { href: '/dashboard/schedule', label: 'Lịch dạy', icon: Calendar, group: 'Công việc' },
       { href: '/dashboard/mentees', label: 'Học viên', icon: Users, group: 'Công việc' },
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
+      { href: '/dashboard/payouts', label: 'Rút tiền', icon: Wallet, group: 'Công việc' },
       { href: '/dashboard/reports', label: 'Báo cáo', icon: Flag, group: 'Công việc' },
       ...accountItems,
     ];
@@ -176,6 +179,9 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/packages/new') return 'Tạo gói dịch vụ';
   if (/^\/dashboard\/packages\/[^/]+$/.test(normalized)) return 'Chi tiết gói dịch vụ';
   if (normalized === '/dashboard/find-mentors') return 'Tìm mentor';
+  if (normalized === '/dashboard/payouts') return 'Rút tiền';
+  if (normalized === '/dashboard/payouts/new') return 'Tạo yêu cầu rút tiền';
+  if (/^\/dashboard\/payouts\/[^/]+$/.test(normalized)) return 'Chi tiết rút tiền';
   if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — tất cả';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Báo cáo';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`) return 'Báo cáo — Đánh giá';

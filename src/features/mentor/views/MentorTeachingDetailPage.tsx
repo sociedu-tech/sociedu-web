@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useProgramDetailPage } from '@/features/dashboard/hooks/useProgramDetailPage';
@@ -9,7 +9,9 @@ import { MENTOR_PROGRAM } from '@/features/dashboard/lib/programLabels';
 
 export function MentorTeachingDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const bookingId = String(params?.bookingId ?? '');
+  const highlightSessionId = searchParams.get('sessionId');
   const { item, order, reportRequests, loading, error, refresh } = useProgramDetailPage(bookingId, 'mentor');
 
   if (!bookingId) {
@@ -37,6 +39,7 @@ export function MentorTeachingDetailPage() {
       labels={MENTOR_PROGRAM}
       showChat
       showReport={true}
+      highlightSessionId={highlightSessionId}
     />
   );
 }

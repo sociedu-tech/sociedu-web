@@ -51,8 +51,24 @@
   --palette-peach: #ffedd5;
   --palette-pink-light: #fce7f3;
 
-  /* Dashboard & biểu đồ */
+  /* Dashboard — shell, sidebar, surface */
+  --palette-dashboard-sidebar: #0f172a;
+  --palette-dashboard-sidebar-hover: #1e293b;
+  --palette-dashboard-sidebar-border: #1e293b;
+  --palette-dashboard-sidebar-muted: #64748b;
+  --palette-dashboard-sidebar-text: #cbd5e1;
+  --palette-dashboard-canvas: #f1f5f9;
+  --palette-dashboard-surface: #ffffff;
+  --palette-dashboard-border: #e2e8f0;
+  --palette-dashboard-border-subtle: #f1f5f9;
+  --palette-dashboard-muted: #64748b;
+  --palette-dashboard-subtle: #94a3b8;
   --palette-dashboard-ink: #0c1220;
+  --palette-dashboard-ink-secondary: #334155;
+  --palette-shadow-dashboard-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
+  --palette-shadow-dashboard-elevated: 0 4px 6px -1px rgb(15 23 42 / 0.06), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+
+  /* Dashboard & biểu đồ */
   --palette-chart-1: #0c1220;
   --palette-chart-2: var(--palette-primary);
   --palette-chart-3: #334155;
@@ -140,7 +156,21 @@
   --color-peach: var(--palette-peach);
   --color-pink-light: var(--palette-pink-light);
 
+  --color-dashboard-sidebar: var(--palette-dashboard-sidebar);
+  --color-dashboard-sidebar-hover: var(--palette-dashboard-sidebar-hover);
+  --color-dashboard-sidebar-border: var(--palette-dashboard-sidebar-border);
+  --color-dashboard-sidebar-muted: var(--palette-dashboard-sidebar-muted);
+  --color-dashboard-sidebar-text: var(--palette-dashboard-sidebar-text);
+  --color-dashboard-canvas: var(--palette-dashboard-canvas);
+  --color-dashboard-surface: var(--palette-dashboard-surface);
+  --color-dashboard-border: var(--palette-dashboard-border);
+  --color-dashboard-border-subtle: var(--palette-dashboard-border-subtle);
+  --color-dashboard-muted: var(--palette-dashboard-muted);
+  --color-dashboard-subtle: var(--palette-dashboard-subtle);
   --color-dashboard-ink: var(--palette-dashboard-ink);
+  --color-dashboard-ink-secondary: var(--palette-dashboard-ink-secondary);
+  --shadow-dashboard-card: var(--palette-shadow-dashboard-card);
+  --shadow-dashboard-elevated: var(--palette-shadow-dashboard-elevated);
   --color-chart-1: var(--palette-chart-1);
   --color-chart-2: var(--palette-chart-2);
   --color-chart-3: var(--palette-chart-3);

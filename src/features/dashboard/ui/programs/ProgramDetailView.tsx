@@ -14,7 +14,7 @@ import {
   openProgramChat,
 } from '@/features/dashboard/lib/programChat';
 import { useRouter } from 'next/navigation';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { orphanSessionReports } from '@/features/dashboard/ui/programs/SessionScheduleReportCells';
 import {
@@ -40,6 +40,7 @@ type Props = {
   showChat?: boolean;
   showReview?: boolean;
   showReport?: boolean;
+  highlightSessionId?: string | null;
 };
 
 function toLocalDatetimeInput(iso: string | null | undefined): string {
@@ -58,6 +59,7 @@ export function ProgramDetailView({
   showChat = true,
   showReview = false,
   showReport = true,
+  highlightSessionId = null,
 }: Props) {
   const router = useRouter();
   const toast = useToast();
@@ -89,6 +91,20 @@ export function ProgramDetailView({
     setMeetingUrl(row.meetingUrl || '');
     setScheduleOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (!highlightSessionId) return;
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById(`program-session-${highlightSessionId}`);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-indigo-400', 'ring-offset-2');
+      window.setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-indigo-400', 'ring-offset-2');
+      }, 3200);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [highlightSessionId, item.bookingId, item.sessionRows.length]);
 
   const closeScheduleModal = () => {
     setScheduleOpen(false);
@@ -281,6 +297,7 @@ export function ProgramDetailView({
             perspective={reportPerspective}
             onRefresh={onRefresh}
             onEditSchedule={openScheduleEditor}
+            highlightSessionId={highlightSessionId}
           />
 
           {unattachedReports.length > 0 ? (

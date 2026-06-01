@@ -30,7 +30,7 @@ export interface DashboardSidebarProps {
 }
 
 const navTooltip =
-  'pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 opacity-0 shadow-md ring-1 ring-slate-950/5 transition-opacity group-hover:opacity-100';
+  'pointer-events-none absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg border border-dashboard-border bg-dashboard-surface px-2.5 py-1.5 text-xs font-medium text-dashboard-ink opacity-0 shadow-[var(--shadow-dashboard-elevated)] transition-opacity group-hover:opacity-100';
 
 /** Sidebar nền trầm (slate) — accent primary giữ nguyên trên logo. */
 export function DashboardSidebar({
@@ -64,12 +64,12 @@ export function DashboardSidebar({
 
   const inner = (
     <>
-      <div className="relative flex h-14 shrink-0 items-center bg-slate-900 px-3">
+      <div className="relative flex h-14 shrink-0 items-center border-b border-dashboard-sidebar-border bg-dashboard-sidebar px-3">
         <Link
           href="/"
           onClick={handleNav}
           className={cn(
-            'flex min-w-0 flex-1 items-center gap-3 rounded-xl py-1.5 transition-colors hover:bg-slate-800/80',
+            'flex min-w-0 flex-1 items-center gap-3 rounded-xl py-1.5 transition-colors hover:bg-dashboard-sidebar-hover/80',
             showText ? 'w-full' : 'w-full justify-center',
           )}
         >
@@ -77,13 +77,13 @@ export function DashboardSidebar({
             <Zap className="size-[18px]" strokeWidth={2.5} aria-hidden />
           </div>
           {showText ? (
-            <span className="truncate text-[15px] font-semibold tracking-tight text-slate-100">Mentoree</span>
+            <span className="truncate text-[15px] font-semibold tracking-tight text-white">Mentoree</span>
           ) : null}
         </Link>
         {!isMobile && (
           <button
             onClick={onMenuToggle}
-            className="absolute -right-3.5 top-[14px] z-50 hidden size-7 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-400 shadow-md shadow-black/20 transition-colors hover:bg-slate-700 hover:text-slate-100 lg:flex"
+            className="absolute -right-3.5 top-[14px] z-50 hidden size-7 items-center justify-center rounded-full border border-dashboard-sidebar-border bg-dashboard-sidebar-hover text-dashboard-sidebar-muted shadow-[var(--shadow-dashboard-card)] transition-colors hover:bg-dashboard-sidebar-hover hover:text-white lg:flex"
             title={showText ? 'Thu gọn sidebar' : 'Mở rộng sidebar'}
           >
             {showText ? (
@@ -102,7 +102,7 @@ export function DashboardSidebar({
               <button
                 type="button"
                 onClick={() => toggleGroup(section.title)}
-                className="mb-1.5 flex flex-row items-center justify-between px-3 text-[10px] tracking-wider font-semibold text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
+                className="mb-1.5 flex flex-row items-center justify-between px-3 text-[10px] font-semibold tracking-wider text-dashboard-sidebar-muted transition-colors hover:text-dashboard-sidebar-text focus:outline-none"
               >
                 <span>{section.title}</span>
                 <ChevronDown
@@ -111,7 +111,7 @@ export function DashboardSidebar({
                 />
               </button>
             ) : sectionIdx > 0 ? (
-              <div className="mx-auto mb-2 mt-1 h-px w-8 bg-slate-700" aria-hidden />
+              <div className="mx-auto mb-2 mt-1 h-px w-8 bg-dashboard-sidebar-border" aria-hidden />
             ) : null}
 
             <div className={cn("flex flex-col gap-0.5", collapsedGroups[section.title] && showText ? "hidden" : "block")}>
@@ -128,13 +128,13 @@ export function DashboardSidebar({
                       onClick={handleNav}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'group relative flex items-center rounded-xl py-2.5 text-[13px] font-medium transition-colors',
+                        'group relative flex items-center rounded-xl py-2.5 text-[13px] font-medium transition-all',
                         showText ? 'gap-3 px-3' : 'justify-center px-2',
                         active && !hasChildren
-                          ? 'bg-slate-800 font-semibold text-white'
-                          : active && hasChildren 
-                          ? 'text-slate-100 font-semibold' 
-                          : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-100',
+                          ? 'bg-dashboard-sidebar-hover font-semibold text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-primary'
+                          : active && hasChildren
+                            ? 'font-semibold text-white'
+                            : 'text-dashboard-sidebar-muted hover:bg-dashboard-sidebar-hover/70 hover:text-white',
                       )}
                     >
                       <span className="relative shrink-0">
@@ -142,7 +142,7 @@ export function DashboardSidebar({
                           size={18}
                           strokeWidth={2}
                           className={cn(
-                            active ? 'text-white' : 'text-slate-500 group-hover:text-slate-300',
+                            active ? 'text-white' : 'text-dashboard-sidebar-muted group-hover:text-dashboard-sidebar-text',
                           )}
                         />
                         {!showText && navBadge > 0 ? (
@@ -159,14 +159,14 @@ export function DashboardSidebar({
                       ) : null}
                       {showText && hasChildren && (
                         <ChevronDown 
-                          className={cn("size-3.5 text-slate-500 shrink-0 transition-transform duration-200", !active && "-rotate-90")} 
+                          className={cn("size-3.5 shrink-0 text-dashboard-sidebar-muted transition-transform duration-200", !active && "-rotate-90")} 
                         />
                       )}
                       {!showText && <span className={navTooltip}>{item.label}</span>}
                     </Link>
                     
                     {showText && hasChildren && active && (
-                      <div className="relative mt-1 before:absolute before:left-[17px] before:top-1 before:bottom-1 before:w-px before:bg-slate-700">
+                      <div className="relative mt-1 before:absolute before:bottom-1 before:left-[17px] before:top-1 before:w-px before:bg-dashboard-sidebar-border">
                         <div className="flex max-h-[min(42vh,280px)] flex-col gap-0.5 overflow-y-auto overscroll-contain pr-0.5 [-ms-overflow-style:none] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-600/90 [&::-webkit-scrollbar-track]:bg-transparent">
                         {item.children!.map((child) => {
                           const childActive = child.exact 
@@ -179,10 +179,10 @@ export function DashboardSidebar({
                               href={child.href}
                               onClick={handleNav}
                               className={cn(
-                                'pl-10 pr-3 py-2 text-xs font-medium rounded-xl transition-colors relative',
-                                childActive 
-                                  ? 'bg-slate-800 text-white font-semibold before:absolute before:left-[16px] before:top-[14px] before:h-1.5 before:w-1.5 before:rounded-full before:bg-primary' 
-                                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+                                'relative rounded-xl py-2 pl-10 pr-3 text-xs font-medium transition-colors',
+                                childActive
+                                  ? 'bg-dashboard-sidebar-hover font-semibold text-white before:absolute before:left-[16px] before:top-[14px] before:h-1.5 before:w-1.5 before:rounded-full before:bg-primary'
+                                  : 'text-dashboard-sidebar-muted hover:bg-dashboard-sidebar-hover/50 hover:text-white',
                               )}
                             >
                               {child.label}
@@ -200,11 +200,11 @@ export function DashboardSidebar({
         ))}
       </nav>
 
-      <div className="shrink-0 border-t border-slate-800/90 bg-slate-950/40 p-3">
+      <div className="shrink-0 border-t border-dashboard-sidebar-border bg-dashboard-sidebar p-3">
         {showText ? (
-          <div className="rounded-xl border border-slate-700/90 bg-slate-800/60 p-3">
+          <div className="rounded-xl border border-dashboard-sidebar-border bg-dashboard-sidebar-hover/60 p-3">
             <div className="flex min-w-0 gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-600 bg-slate-900">
+              <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-dashboard-sidebar-border bg-dashboard-sidebar">
                 {user?.avatarUrl ? (
                   <Image
                     src={user.avatarUrl}
@@ -214,12 +214,12 @@ export function DashboardSidebar({
                     className="size-full object-cover"
                   />
                 ) : (
-                  <User className="size-4 text-slate-500" strokeWidth={2} />
+                  <User className="size-4 text-dashboard-sidebar-muted" strokeWidth={2} />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-100">{user?.fullName || 'Tài khoản'}</p>
-                <p className="mt-0.5 truncate text-xs text-slate-400" title={user?.email}>
+                <p className="truncate text-sm font-semibold text-white">{user?.fullName || 'Tài khoản'}</p>
+                <p className="mt-0.5 truncate text-xs text-dashboard-sidebar-muted" title={user?.email}>
                   {user?.email || '—'}
                 </p>
               </div>
@@ -227,7 +227,7 @@ export function DashboardSidebar({
           </div>
         ) : (
           <div className="flex justify-center py-1">
-            <div className="group relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-slate-600 bg-slate-800">
+            <div className="group relative flex size-10 items-center justify-center overflow-hidden rounded-full border border-dashboard-sidebar-border bg-dashboard-sidebar-hover">
               {user?.avatarUrl ? (
                 <Image
                   src={user.avatarUrl}
@@ -237,7 +237,7 @@ export function DashboardSidebar({
                   className="size-full object-cover"
                 />
               ) : (
-                <User className="size-[18px] text-slate-500" strokeWidth={2} />
+                <User className="size-[18px] text-dashboard-sidebar-muted" strokeWidth={2} />
               )}
               <span
                 className={cn(
@@ -245,8 +245,8 @@ export function DashboardSidebar({
                   'w-max max-w-[min(240px,calc(100vw-5rem))] py-2 text-left',
                 )}
               >
-                <span className="block truncate font-semibold text-slate-900">{user?.fullName || 'Tài khoản'}</span>
-                <span className="mt-0.5 block truncate text-[11px] font-normal text-slate-500">{user?.email || '—'}</span>
+                <span className="block truncate font-semibold text-dashboard-ink">{user?.fullName || 'Tài khoản'}</span>
+                <span className="mt-0.5 block truncate text-[11px] font-normal text-dashboard-muted">{user?.email || '—'}</span>
               </span>
             </div>
           </div>
@@ -256,7 +256,7 @@ export function DashboardSidebar({
   );
 
   const shellClass =
-    'fixed inset-y-0 left-0 z-[70] flex flex-col overflow-visible border-r border-slate-800 bg-slate-900 transition-all duration-300 ease-in-out';
+    'fixed inset-y-0 left-0 z-[70] flex flex-col overflow-visible border-r border-dashboard-sidebar-border bg-dashboard-sidebar transition-all duration-300 ease-in-out';
 
   if (isMobile) {
     return (
@@ -269,7 +269,7 @@ export function DashboardSidebar({
         {isMobileMenuOpen ? (
           <button
             type="button"
-            className="fixed inset-0 z-[65] bg-slate-900/25 backdrop-blur-[1px]"
+            className="fixed inset-0 z-[65] bg-dashboard-sidebar/40 backdrop-blur-[2px]"
             aria-label="Đóng menu"
             onClick={() => setIsMobileMenuOpen(false)}
           />

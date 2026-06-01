@@ -52,10 +52,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     /^\/dashboard\/my-orders\/[^/]+$/.test(pathname) ||
     /^\/dashboard\/orders\/[^/]+$/.test(pathname);
 
-  const lockMainScroll = isChatPage || isOrderDetailPage;
+  const isPayoutPage =
+    pathname === '/dashboard/payouts' || pathname.startsWith('/dashboard/payouts/');
+
+  const lockMainScroll = isChatPage || isOrderDetailPage || isPayoutPage;
 
   return (
-    <div className="flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-slate-50 font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased">
+    <div className="flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-dashboard-canvas font-sans text-[15px] font-normal leading-relaxed text-dashboard-ink antialiased">
       <DashboardSidebar
         items={navItems}
         pathname={pathname}
@@ -82,7 +85,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         />
         <main
           className={cn(
-            'flex min-h-0 flex-1 flex-col bg-slate-50',
+            'flex min-h-0 flex-1 flex-col bg-dashboard-canvas',
             lockMainScroll ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
           )}
         >
@@ -90,8 +93,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             className={cn(
               'w-full',
               lockMainScroll
-                ? 'flex min-h-0 w-full flex-1 flex-col h-full px-0 py-0'
-                : 'min-h-full px-4 py-8 sm:px-6 lg:px-8',
+                ? 'flex h-full min-h-0 w-full flex-1 flex-col px-0 py-0'
+                : 'mx-auto min-h-full w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
             )}
           >
             {children}

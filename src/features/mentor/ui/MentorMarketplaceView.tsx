@@ -463,8 +463,8 @@ export function MentorMarketplaceView({
     <div className={cn(isDashboard ? 'flex h-full min-h-0 w-full flex-1 flex-col text-dark' : 'min-h-dvh w-full bg-page pb-24 text-dark')}>
       {!isDashboard ? (
         <MarketingHeroSection variant="mentor">
-          <Container className="w-full py-12 md:py-16">
-            <div className="min-w-0">
+          <Container className="py-12 md:py-16">
+            <div className="min-w-0 max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-marketing-border/90 bg-white/90 px-3.5 py-1.5 text-xs font-medium text-marketing-body shadow-sm backdrop-blur-sm">
                 <span className="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20" />
                 Danh bạ mentor sinh viên · Mentoree

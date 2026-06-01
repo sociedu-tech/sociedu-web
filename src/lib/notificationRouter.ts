@@ -21,6 +21,13 @@ function metaStr(meta: Record<string, unknown>, key: string): string | null {
   return text.length > 0 ? text : null;
 }
 
+function withQuery(base: string, params: Record<string, string | null | undefined>): string {
+  const entries = Object.entries(params).filter((entry): entry is [string, string] => Boolean(entry[1]));
+  if (entries.length === 0) return base;
+  const qs = new URLSearchParams(entries).toString();
+  return `${base}?${qs}`;
+}
+
 function resolveOrderUrl(item: NotificationItem, role: string | null): string {
   const meta = (item.metadata ?? {}) as Record<string, unknown>;
   const orderId = metaStr(meta, 'orderId') ?? item.referenceId;
@@ -37,12 +44,23 @@ function resolveBookingUrl(
   referenceType: string | null | undefined,
   role: string | null,
 ): string {
+  const refType = referenceType?.toLowerCase() ?? '';
+  const sessionId =
+    metaStr(meta, 'sessionId') ?? (refType === 'booking_session' ? referenceId : null);
   const bookingId =
-    metaStr(meta, 'bookingId') ?? (referenceType === 'booking' ? referenceId : null);
+    metaStr(meta, 'bookingId') ?? (refType === 'booking' ? referenceId : null);
+
   if (role === ROLES.ADMIN) {
-    return bookingId ? `/dashboard/mentoring/${bookingId}` : '/dashboard/bookings';
+    if (bookingId) {
+      return withQuery(`/dashboard/mentoring/${bookingId}`, { sessionId });
+    }
+    return '/dashboard/bookings';
   }
-  if (bookingId) return programDetailPath(bookingId);
+
+  if (bookingId) {
+    return withQuery(programDetailPath(bookingId), { sessionId });
+  }
+
   return '/dashboard/mentoring';
 }
 
@@ -78,21 +96,28 @@ function resolveModerationUrl(item: NotificationItem, role: string | null): stri
   return '/dashboard/mentoring';
 }
 
-function resolveMentorApplicationUrl(role: string | null): string {
-  if (role === ROLES.ADMIN) return '/dashboard/mentors/requests';
+function resolveMentorApplicationUrl(item: NotificationItem, role: string | null): string {
+  const meta = (item.metadata ?? {}) as Record<string, unknown>;
+  const requestId = item.referenceId ?? metaStr(meta, 'requestId');
+
+  if (role === ROLES.ADMIN) {
+    return requestId
+      ? withQuery('/dashboard/mentors/requests', { highlight: requestId })
+      : '/dashboard/mentors/requests';
+  }
   if (role === ROLES.MENTOR) return '/dashboard/packages';
   return '/dashboard/profile/edit';
 }
 
 /**
  * Compute dashboard URL to navigate to when a notification is clicked.
- * Returns null when no sensible navigation target can be determined.
  */
 export function resolveNotificationUrl(item: NotificationItem, userRole?: string): string | null {
   const meta = (item.metadata ?? {}) as Record<string, unknown>;
   const role = userRole ? normalizeRole(userRole) : null;
+  const refType = item.referenceType?.toLowerCase() ?? '';
 
-  switch (item.referenceType) {
+  switch (refType) {
     case 'order':
       return resolveOrderUrl(item, role);
 
@@ -104,7 +129,7 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
       return resolveReportRequestUrl(item);
 
     case 'mentor_application':
-      return resolveMentorApplicationUrl(role);
+      return resolveMentorApplicationUrl(item, role);
 
     case 'moderation_report':
       return resolveModerationUrl(item, role);
@@ -127,7 +152,7 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
     case 'REPORT_REQUEST':
       return resolveReportRequestUrl(item);
     case 'MENTOR_APPLICATION':
-      return resolveMentorApplicationUrl(role);
+      return resolveMentorApplicationUrl(item, role);
     case 'MODERATION':
       return resolveModerationUrl(item, role);
     case 'REVIEW': {
@@ -136,6 +161,10 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
       return '/dashboard/mentoring';
     }
     default:
+      if (item.referenceId && refType === 'order') return resolveOrderUrl(item, role);
+      if (item.referenceId && (refType === 'booking' || refType === 'booking_session')) {
+        return resolveBookingUrl(meta, item.referenceId, item.referenceType, role);
+      }
       return null;
   }
 }

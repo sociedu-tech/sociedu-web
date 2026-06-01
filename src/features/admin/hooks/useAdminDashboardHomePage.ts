@@ -8,6 +8,9 @@ export type AdminAnalyticsBundle = {
     totalBookings: number;
     totalMentors: number;
     newLearners: number;
+    pendingPayouts: number;
+    openReports: number;
+    pendingMentorRequests: number;
   };
   deltas: {
     liveSessions: number;
@@ -25,7 +28,15 @@ export type AdminAnalyticsBundle = {
 };
 
 const emptyAnalytics = (): AdminAnalyticsBundle => ({
-  kpis: { liveSessions: 0, totalBookings: 0, totalMentors: 0, newLearners: 0 },
+  kpis: {
+    liveSessions: 0,
+    totalBookings: 0,
+    totalMentors: 0,
+    newLearners: 0,
+    pendingPayouts: 0,
+    openReports: 0,
+    pendingMentorRequests: 0,
+  },
   deltas: { liveSessions: 0, totalBookings: 0, totalMentors: 0, newLearners: 0 },
   series: { sessions: [], bookings: [], mentors: [], learners: [] },
   bookingMix: [],
@@ -36,6 +47,9 @@ function buildAnalytics(stats: Awaited<ReturnType<typeof adminService.getStats>>
   const learners = stats?.totalLearners ?? 0;
   const bookings = stats?.totalBookings ?? 0;
   const liveSessions = stats?.liveSessions ?? 0;
+  const pendingPayouts = stats?.pendingPayouts ?? 0;
+  const openReports = stats?.openReports ?? 0;
+  const pendingMentorRequests = stats?.pendingMentorRequests ?? 0;
 
   return {
     kpis: {
@@ -43,6 +57,9 @@ function buildAnalytics(stats: Awaited<ReturnType<typeof adminService.getStats>>
       totalBookings: bookings,
       totalMentors: mentors,
       newLearners: learners,
+      pendingPayouts,
+      openReports,
+      pendingMentorRequests,
     },
     deltas: {
       liveSessions: 0,
@@ -88,7 +105,7 @@ export function useAdminDashboardHomePage() {
   const analytics = useMemo(() => {
     if (!loaded) return emptyAnalytics();
     return buildAnalytics(stats);
-  }, [stats, loaded, range]);
+  }, [stats, loaded]);
 
   const totalUsers = stats?.totalUsers ?? 0;
 

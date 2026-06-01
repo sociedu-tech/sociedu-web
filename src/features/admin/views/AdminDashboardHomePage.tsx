@@ -2,122 +2,140 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { UserPlus, Activity, CalendarCheck, GraduationCap, Users } from 'lucide-react';
-import { useAdminDashboardHomePage } from '@/features/admin/hooks';
-import { AdminBookingActivityFeed } from '@/features/admin/ui';
 import {
-  StatsTimeRangeFilter,
+  Activity,
+  CalendarCheck,
+  GraduationCap,
+  Users,
+  Wallet,
+  Flag,
+  UserPlus,
+} from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useAdminDashboardHomePage } from '@/features/admin/hooks';
+import { AdminBookingActivityFeed, AdminBookingActivityFeedLink } from '@/features/admin/ui';
+import {
+  DashboardPage,
+  DashboardSection,
+  DashboardViewHeader,
+} from '@/features/dashboard/ui/modules';
+import {
   StatsKpiCard,
   StatsChartCard,
-  StatsAreaChart,
-  StatsLineChart,
   StatsBarChart,
   StatsDonutChart,
 } from '@/features/dashboard/ui/stats';
-
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ROUTES } from '@/constants/routes';
 
-/**
- * Trang duy nhất cho admin tại `/dashboard`: tổng quan vận hành + thống kê + quản lý người dùng.
- */
 export function AdminDashboardHomePage() {
-  const { range, setRange, analytics, totalUsers, loaded } = useAdminDashboardHomePage();
+  const { user } = useAuth();
+  const { analytics, totalUsers, loaded } = useAdminDashboardHomePage();
 
   if (!loaded) {
     return <PageLoadingState label="Đang tải…" variant="stats" minHeight="min-h-[50vh]" />;
   }
 
-  return (
-    <div className="space-y-12 pb-4">
-      <section className="space-y-6" aria-label="Chỉ số chính">
-        <div className="flex justify-end">
-          <StatsTimeRangeFilter value={range} onChange={setRange} />
-        </div>
+  const { kpis } = analytics;
+  const firstName = user?.fullName?.split(' ')[0];
 
+  return (
+    <DashboardPage spacing="relaxed">
+      <DashboardViewHeader
+        layout="featured"
+        eyebrow="Quản trị hệ thống"
+        title={firstName ? `Xin chào, ${firstName}` : 'Bảng điều khiển quản trị'}
+        description="Theo dõi vận hành, duyệt yêu cầu và phân tích hoạt động mentoring."
+      />
+
+      <DashboardSection title="Chỉ số vận hành" description="Tổng quan nhanh các số liệu quan trọng">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Link href={ROUTES.DASHBOARD.ADMIN.BOOKINGS.path}>
+            <StatsKpiCard
+              label="Tổng booking"
+              value={kpis.totalBookings}
+              icon={CalendarCheck}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
+          </Link>
           <StatsKpiCard
             label="Session đang diễn ra"
-            value={analytics.kpis.liveSessions}
-            hint="Ước tính realtime"
-            deltaPct={analytics.deltas.liveSessions}
+            value={kpis.liveSessions}
+            hint="Trạng thái scheduled"
             icon={Activity}
             tone="featured"
           />
-          <StatsKpiCard
-            label="Tổng booking"
-            value={analytics.kpis.totalBookings}
-            deltaPct={analytics.deltas.totalBookings}
-            icon={CalendarCheck}
-          />
-          <StatsKpiCard
-            label="Tổng mentor"
-            value={analytics.kpis.totalMentors}
-            deltaPct={analytics.deltas.totalMentors}
-            icon={GraduationCap}
-          />
-          <StatsKpiCard
-            label="Học viên mới"
-            value={analytics.kpis.newLearners}
-            deltaPct={analytics.deltas.newLearners}
-            icon={Users}
-          />
-        </div>
-      </section>
-
-      <section className="space-y-6" aria-label="Phân tích xu hướng">
-        <div className="grid gap-6 lg:grid-cols-2">
-          <StatsChartCard title="Session theo thời gian" subtitle="Số session trong kỳ">
-            <StatsAreaChart data={analytics.series.sessions} name="Session" />
-          </StatsChartCard>
-          <StatsChartCard title="Booking theo thời gian" subtitle="Lượt đặt lịch">
-            <StatsLineChart data={analytics.series.bookings} name="Booking" />
-          </StatsChartCard>
-          <StatsChartCard title="Mentor hoạt động" subtitle="Theo kỳ">
-            <StatsBarChart data={analytics.series.mentors} name="Mentor" />
-          </StatsChartCard>
-          <StatsChartCard title="Học viên mới" subtitle="Người đăng ký / kích hoạt">
-            <StatsAreaChart data={analytics.series.learners} name="Học viên" />
-          </StatsChartCard>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          <StatsChartCard title="Cơ cấu người dùng" subtitle="Theo vai trò trong hệ thống">
-            <StatsDonutChart data={analytics.bookingMix} />
-          </StatsChartCard>
-          <AdminBookingActivityFeed />
-        </div>
-      </section>
-
-      <section className="space-y-5" aria-label="Quan ly nguoi dung">
-        <div className="flex justify-end">
-          <Link
-            href={ROUTES.DASHBOARD.ADMIN.USERS.path}
-            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Mo quan ly nguoi dung
+          <Link href="/dashboard/users/mentors">
+            <StatsKpiCard
+              label="Mentor"
+              value={kpis.totalMentors}
+              icon={GraduationCap}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
+          </Link>
+          <Link href={ROUTES.DASHBOARD.ADMIN.USERS.path}>
+            <StatsKpiCard
+              label="Học viên"
+              value={kpis.newLearners}
+              icon={Users}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
-                <UserPlus className="size-7 text-primary" strokeWidth={2} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-600">Nguoi dung trong he thong</p>
-                <p className="mt-1 text-3xl font-semibold tabular-nums text-slate-900">{totalUsers}</p>
-              </div>
-            </div>
-            <p className="max-w-md text-sm leading-relaxed text-slate-500">
-              {totalUsers === 0
-                ? 'Chua co du lieu nguoi dung tu API.'
-                : `Co ${totalUsers} tai khoan. Ban co the vao trang nguoi dung de cap nhat role mentor/admin/user.`}
-            </p>
-          </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Link href="/dashboard/payouts">
+            <StatsKpiCard
+              label="Rút tiền chờ duyệt"
+              value={kpis.pendingPayouts}
+              icon={Wallet}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
+          </Link>
+          <Link href={`${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`}>
+            <StatsKpiCard
+              label="Báo cáo mở"
+              value={kpis.openReports}
+              icon={Flag}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
+          </Link>
+          <Link href="/dashboard/users/mentors">
+            <StatsKpiCard
+              label="Duyệt mentor chờ"
+              value={kpis.pendingMentorRequests}
+              icon={UserPlus}
+              className="h-full transition hover:border-primary/30 hover:shadow-[var(--shadow-dashboard-elevated)]"
+            />
+          </Link>
+          <StatsKpiCard label="Tổng tài khoản" value={totalUsers} icon={Users} />
         </div>
-      </section>
-    </div>
+      </DashboardSection>
+
+      <DashboardSection title="Phân tích" description="Biểu đồ người dùng và hoạt động mentoring">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <StatsChartCard title="Người dùng theo vai trò" subtitle="Dữ liệu thật từ hệ thống">
+            <StatsDonutChart data={analytics.bookingMix} />
+          </StatsChartCard>
+          <StatsChartCard title="Hoạt động mentoring" subtitle="Booking & session">
+            <StatsBarChart
+              data={[
+                { label: 'Booking', value: kpis.totalBookings },
+                { label: 'Session live', value: kpis.liveSessions },
+              ]}
+              name="Số lượng"
+            />
+          </StatsChartCard>
+        </div>
+      </DashboardSection>
+
+      <DashboardSection
+        title="Hoạt động gần đây"
+        description="Cập nhật trạng thái booking từ mentor và học viên"
+        action={<AdminBookingActivityFeedLink />}
+      >
+        <AdminBookingActivityFeed />
+      </DashboardSection>
+    </DashboardPage>
   );
 }

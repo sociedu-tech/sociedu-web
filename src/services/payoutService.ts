@@ -1,5 +1,6 @@
 import { api } from '@/lib/api';
-import { unwrapList, unwrapPage } from '@/lib/apiUtils';
+import { normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
+import { asMoney } from '@/features/finance/lib/payoutUi';
 
 const BASE = '/api/v1/mentors/me';
 
@@ -10,21 +11,37 @@ export type RevenueSummary = {
   availableBalance?: number | string;
 };
 
-export type PayoutRequest = {
+export type PayoutRequestDto = {
   id: string;
-  amount?: number | string;
+  mentorId?: string;
+  grossAmount?: number | string;
+  netAmount?: number | string;
+  platformFeeRate?: number | string;
   status?: string;
+  bankName?: string;
+  accountNumber?: string | null;
+  accountHolder?: string;
+  rejectReason?: string | null;
+  failureReason?: string | null;
+  transactionReference?: string | null;
   createdAt?: string;
-  bankAccountMasked?: string | null;
+  updatedAt?: string;
+  processedAt?: string | null;
 };
 
-const asNumber = (v: unknown): number => {
-  if (typeof v === 'number' && Number.isFinite(v)) return v;
-  if (typeof v === 'string' && v.trim() !== '') {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : 0;
-  }
-  return 0;
+export type CreatePayoutBody = {
+  amount: number;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+};
+
+export type FinanceSnapshot = {
+  walletBalance: number;
+  totalRevenue: number;
+  totalWithdrawn: number;
+  lockedBalance: number;
+  payouts: PayoutRequestDto[];
 };
 
 export const payoutService = {
@@ -33,25 +50,33 @@ export const payoutService = {
     return (res.data as RevenueSummary | undefined) ?? {};
   },
 
-  listPayouts: async (page = 0, size = 50): Promise<PayoutRequest[]> => {
+  listPayouts: async (page = 0, size = 20): Promise<PagePayload<PayoutRequestDto>> => {
     const res = await api.get(`${BASE}/payouts?page=${page}&size=${size}`);
-    const { items } = unwrapPage<PayoutRequest>(res.data);
-    return items;
+    return normalizePagePayload<PayoutRequestDto>(res.data, size);
   },
 
-  /** Gộp doanh thu + payouts cho UI dashboard mentor. */
-  getFinanceSnapshot: async () => {
-    const [summary, payouts] = await Promise.all([
+  getPayout: async (id: string): Promise<PayoutRequestDto> => {
+    const res = await api.get(`${BASE}/payouts/${id}`);
+    return res.data as PayoutRequestDto;
+  },
+
+  createPayout: async (body: CreatePayoutBody): Promise<PayoutRequestDto> => {
+    const res = await api.post(`${BASE}/payouts`, body);
+    return res.data as PayoutRequestDto;
+  },
+
+  getFinanceSnapshot: async (payoutSize = 10): Promise<FinanceSnapshot> => {
+    const [summary, payoutsPage] = await Promise.all([
       payoutService.getRevenueSummary(),
-      payoutService.listPayouts(),
+      payoutService.listPayouts(0, payoutSize),
     ]);
 
     return {
-      walletBalance: asNumber(summary.availableBalance),
-      totalRevenue: asNumber(summary.totalEarned),
-      totalWithdrawn: asNumber(summary.totalWithdrawn),
-      lockedBalance: asNumber(summary.lockedBalance),
-      payouts,
+      walletBalance: asMoney(summary.availableBalance),
+      totalRevenue: asMoney(summary.totalEarned),
+      totalWithdrawn: asMoney(summary.totalWithdrawn),
+      lockedBalance: asMoney(summary.lockedBalance),
+      payouts: payoutsPage.items,
     };
   },
 };

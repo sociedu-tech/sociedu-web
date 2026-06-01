@@ -386,7 +386,7 @@ export const MentorReportsPage = () => {
                     <button 
                       onClick={handleReview}
                       disabled={modReviewing || !feedbackText.trim()}
-                      className="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                      className="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary-hover rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
                       {modReviewing && <LoadingSpinner size={16} />} Gửi nhận xét
                     </button>

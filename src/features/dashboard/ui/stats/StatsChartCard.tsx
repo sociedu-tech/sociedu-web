@@ -16,14 +16,14 @@ export function StatsChartCard({ title, subtitle, action, children, className, c
   return (
     <div
       className={cn(
-        'flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm',
+        'flex flex-col overflow-hidden rounded-2xl border border-dashboard-border bg-dashboard-surface shadow-[var(--shadow-dashboard-card)]',
         className,
       )}
     >
-      <div className="flex flex-col gap-2 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 border-b border-dashboard-border-subtle px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-          {subtitle ? <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p> : null}
+          <h3 className="text-sm font-semibold text-dashboard-ink">{title}</h3>
+          {subtitle ? <p className="mt-0.5 text-xs text-dashboard-muted">{subtitle}</p> : null}
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>

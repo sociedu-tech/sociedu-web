@@ -10,7 +10,7 @@ type Props = {
   hint?: string;
   deltaPct?: number;
   icon: LucideIcon;
-  /** `featured`: nền slate-900 giống sidebar. `default`: thẻ trắng, icon dùng primary. */
+  /** `featured`: nền dashboard-ink. `default`: thẻ trắng, icon dùng primary. */
   tone?: 'default' | 'featured';
   className?: string;
 };
@@ -32,19 +32,19 @@ export function StatsKpiCard({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border p-5 shadow-sm',
+        'relative overflow-hidden rounded-2xl border p-5 shadow-[var(--shadow-dashboard-card)]',
         className,
         isFeatured
-          ? 'border-slate-800 bg-[var(--color-dashboard-ink)] text-slate-100'
-          : 'border-slate-200/80 bg-white text-slate-900',
+          ? 'border-dashboard-sidebar-border bg-dashboard-ink text-white'
+          : 'border-dashboard-border bg-dashboard-surface text-dashboard-ink',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p
             className={cn(
-              'text-[11px] font-semibold tracking-wider',
-              isFeatured ? 'text-slate-400' : 'text-slate-500',
+              'text-[11px] font-semibold uppercase tracking-wider',
+              isFeatured ? 'text-dashboard-subtle' : 'text-dashboard-muted',
             )}
           >
             {label}
@@ -52,13 +52,13 @@ export function StatsKpiCard({
           <p
             className={cn(
               'mt-2 text-2xl font-semibold tabular-nums tracking-tight',
-              isFeatured ? 'text-white' : 'text-slate-900',
+              isFeatured ? 'text-white' : 'text-dashboard-ink',
             )}
           >
             {formatted}
           </p>
           {hint ? (
-            <p className={cn('mt-1 text-xs', isFeatured ? 'text-slate-400' : 'text-slate-500')}>
+            <p className={cn('mt-1 text-xs', isFeatured ? 'text-dashboard-subtle' : 'text-dashboard-muted')}>
               {hint}
             </p>
           ) : null}
@@ -71,8 +71,8 @@ export function StatsKpiCard({
                     ? 'bg-primary/25 text-white'
                     : 'bg-primary/10 text-primary'
                   : isFeatured
-                    ? 'bg-white/10 text-slate-200'
-                    : 'bg-slate-100 text-slate-700',
+                    ? 'bg-white/10 text-dashboard-sidebar-text'
+                    : 'bg-dashboard-canvas text-dashboard-ink-secondary',
               )}
             >
               {deltaPct >= 0 ? '+' : ''}

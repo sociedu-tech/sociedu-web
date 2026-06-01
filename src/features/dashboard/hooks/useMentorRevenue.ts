@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { payoutService } from '@/services/payoutService';
 import { formatViDateTime } from '@/lib/apiUtils';
+import { asMoney } from '@/features/finance/lib/payoutUi';
 import type { MentorOrderRow } from '@/features/dashboard/hooks/useMentorOrders';
 
 export function useMentorRevenue() {
@@ -25,14 +26,14 @@ export function useMentorRevenue() {
           buyerId: null,
           mentee: '',
           package: 'Rút tiền',
-          amount: -Number(p.amount ?? 0),
+          amount: -asMoney(p.grossAmount),
           date: formatViDateTime(p.createdAt),
           sortAt: p.createdAt ?? '',
           paidAt: p.createdAt ?? null,
           rawStatus: String(p.status ?? ''),
           status: String(p.status ?? 'Đang xử lý'),
           type: 'withdrawal' as const,
-          bank: p.bankAccountMasked ?? undefined,
+          bank: p.bankName ?? undefined,
         })),
       );
     } catch (err: unknown) {

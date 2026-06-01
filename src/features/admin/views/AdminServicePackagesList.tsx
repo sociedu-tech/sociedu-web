@@ -24,6 +24,7 @@ export function AdminServicePackagesList({ pageLayout = false }: Props) {
     packages,
     mentorMap,
     loading,
+    initialLoading,
     error,
     page,
     size,
@@ -36,7 +37,7 @@ export function AdminServicePackagesList({ pageLayout = false }: Props) {
     refresh,
   } = useAdminServicePackages();
 
-  if (loading && packages.length === 0) {
+  if (pageLayout ? initialLoading : loading && packages.length === 0) {
     return <PageLoadingState label="Đang tải gói dịch vụ…" variant="cards" cardCount={4} />;
   }
 

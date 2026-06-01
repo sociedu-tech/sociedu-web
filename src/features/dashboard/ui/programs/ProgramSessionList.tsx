@@ -36,6 +36,7 @@ type Props = {
   perspective: SessionReportPerspective;
   onRefresh: () => void;
   onEditSchedule: (row: DashboardSessionRow) => void;
+  highlightSessionId?: string | null;
 };
 
 export function ProgramSessionList({
@@ -45,6 +46,7 @@ export function ProgramSessionList({
   perspective,
   onRefresh,
   onEditSchedule,
+  highlightSessionId = null,
 }: Props) {
   if (sessions.length === 0) {
     return (
@@ -67,6 +69,7 @@ export function ProgramSessionList({
           perspective={perspective}
           onRefresh={onRefresh}
           onEditSchedule={onEditSchedule}
+          highlighted={highlightSessionId === row.sessionId}
         />
       ))}
     </ul>
@@ -94,6 +97,7 @@ function ProgramSessionCard({
   perspective,
   onRefresh,
   onEditSchedule,
+  highlighted = false,
 }: {
   index: number;
   total: number;
@@ -103,6 +107,7 @@ function ProgramSessionCard({
   perspective: SessionReportPerspective;
   onRefresh: () => void;
   onEditSchedule: (row: DashboardSessionRow) => void;
+  highlighted?: boolean;
 }) {
   const toast = useToast();
   const isMentor = perspective === 'mentor';
@@ -132,9 +137,11 @@ function ProgramSessionCard({
 
   return (
     <li
+      id={`program-session-${row.sessionId}`}
       className={cn(
         'overflow-hidden rounded-2xl border border-slate-200/90 border-l-[3px] bg-white shadow-sm transition hover:shadow-md',
         accentClass,
+        highlighted && 'ring-2 ring-indigo-400 ring-offset-2',
       )}
     >
       <div className="flex flex-col gap-4 p-4 sm:p-5 lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-6">

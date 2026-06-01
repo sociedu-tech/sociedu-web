@@ -71,22 +71,36 @@
   /* giữ class để không gãy markup; không còn shadow */
 }
 
-/* Dashboard — shell dùng nền gray-50 + thẻ viền */
+/* Dashboard — shell, thẻ, section */
 .dashboard-app-bg {
-  @apply bg-gray-50;
+  @apply bg-dashboard-canvas;
 }
 
 .dashboard-content-card {
-  @apply rounded-2xl border border-slate-200/80 bg-white p-5 md:p-6;
+  @apply rounded-2xl border border-dashboard-border bg-dashboard-surface p-5 md:p-6;
+  box-shadow: var(--shadow-dashboard-card);
 }
 
-/* Thẻ số liệu / ô tương tác — hover nhẹ như trang tài khoản Airbnb */
 .dashboard-stat-tile {
-  @apply rounded-2xl border border-slate-200/80 bg-white p-5 transition-colors duration-200;
+  @apply rounded-2xl border border-dashboard-border bg-dashboard-surface p-5 transition-all duration-200;
+  box-shadow: var(--shadow-dashboard-card);
 }
 
 .dashboard-stat-tile:hover {
-  border-color: rgb(203 213 225 / 0.95);
+  @apply border-primary/25;
+  box-shadow: var(--shadow-dashboard-elevated);
+}
+
+.dashboard-section-title {
+  @apply text-[13px] font-semibold uppercase tracking-wider text-dashboard-muted;
+}
+
+.dashboard-page-title {
+  @apply text-xl font-semibold tracking-tight text-dashboard-ink sm:text-2xl;
+}
+
+.dashboard-page-desc {
+  @apply mt-1 max-w-2xl text-sm leading-relaxed text-dashboard-muted;
 }
 
 ::-webkit-scrollbar {

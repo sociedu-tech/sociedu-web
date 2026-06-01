@@ -4,5 +4,5 @@ export { adminSelect, adminBtnPrimary, adminBtnGhost } from './adminClasses';
 export { SessionDisputePanel } from './SessionDisputePanel';
 export { DisputeProcessStepper } from './DisputeProcessStepper';
 export { SessionDisputeAdjudicationBar } from './SessionDisputeAdjudicationBar';
-export { AdminBookingActivityFeed } from './AdminBookingActivityFeed';
+export { AdminBookingActivityFeed, AdminBookingActivityFeedLink } from './AdminBookingActivityFeed';
 

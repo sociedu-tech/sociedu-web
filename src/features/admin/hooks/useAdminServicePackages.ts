@@ -15,6 +15,8 @@ export function useAdminServicePackages() {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [mentorsLoading, setMentorsLoading] = useState(true);
+  const [initialReady, setInitialReady] = useState(false);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export function useAdminServicePackages() {
   }, [searchQuery]);
 
   useEffect(() => {
+    setMentorsLoading(true);
     mentorService
       .getMentors({ page: 0, size: 500 })
       .then((mentors) => {
@@ -37,6 +40,9 @@ export function useAdminServicePackages() {
       })
       .catch((err) => {
         console.error('Lỗi khi tải danh sách mentor:', err);
+      })
+      .finally(() => {
+        setMentorsLoading(false);
       });
   }, []);
 
@@ -64,10 +70,16 @@ export function useAdminServicePackages() {
     void loadPackages();
   }, [loadPackages]);
 
+  useEffect(() => {
+    if (initialReady || loading || mentorsLoading) return;
+    setInitialReady(true);
+  }, [initialReady, loading, mentorsLoading]);
+
   return {
     packages,
     mentorMap,
-    loading,
+    loading: loading || mentorsLoading,
+    initialLoading: !initialReady && !error,
     error,
     page,
     size,

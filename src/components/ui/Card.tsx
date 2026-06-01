@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 export type CardVariant = 'dashboard' | 'surface' | 'outline';
 
 const variantClass: Record<CardVariant, string> = {
-  dashboard: 'rounded-2xl border border-slate-200/80 bg-white',
+  dashboard: 'rounded-2xl border border-dashboard-border bg-dashboard-surface shadow-[var(--shadow-dashboard-card)]',
   surface: 'glass-card',
   outline: 'rounded-xl border border-border bg-white',
 };

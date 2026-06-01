@@ -231,7 +231,7 @@ export const UserReportsPage = () => {
                                     setReportAttachment('');
                                     setSubmitReportOpen(true);
                                   }}
-                                  className="px-5 py-2.5 text-xs font-bold text-white bg-primary hover:bg-primary-dark rounded-xl transition-all self-start md:self-auto animate-pulse"
+                                  className="px-5 py-2.5 text-xs font-bold text-white bg-primary hover:bg-primary-hover rounded-xl transition-all self-start md:self-auto animate-pulse"
                                 >
                                   Nộp báo cáo
                                 </button>
