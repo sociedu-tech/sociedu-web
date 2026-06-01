@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { reportService, type ProgressReport } from '@/services/reportService';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useUserReportsPage() {
-  const paginated = usePaginatedList<ProgressReport>({
-    fetchPage: useCallback((page, size) => reportService.getMyReports(page, size), []),
+  const paginated = usePaginatedList<any>({
+    fetchPage: useCallback(async (page, size) => {
+      return { items: [], total: 0, totalPages: 0, page, size };
+    }, []),
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,15 +34,9 @@ export function useUserReportsPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await reportService.submitReport({
-        mentorId,
-        title,
-        content,
-        attachmentUrl,
-      });
+      // Progress reports endpoint removed — just close modal and reset
       setIsModalOpen(false);
       resetForm();
-      await paginated.refresh();
     } catch (err: unknown) {
       const m = err as { message?: string };
       setError(m?.message || 'Có lỗi xảy ra khi nộp báo cáo');

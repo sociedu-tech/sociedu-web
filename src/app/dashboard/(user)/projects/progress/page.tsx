@@ -1,5 +1,5 @@
-import { DashboardProjectProgressPage } from '@/features/dashboard/views/DashboardProjectProgressPage';
+import { redirect } from 'next/navigation';
 
-export default function Page() {
-  return <DashboardProjectProgressPage />;
+export default function LegacyProjectProgressPage() {
+  redirect('/dashboard/sessions');
 }

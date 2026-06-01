@@ -1,7 +1,7 @@
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { API_BASE_URL } from '@/lib/api';
+import { buildSockJsChatUrl } from '@/lib/wsConfig';
 import { useAuth } from '@/context/AuthContext';
 
 export interface ChatSocketMessage {
@@ -32,7 +32,7 @@ export function useChatSocket() {
 
     const client = new Client({
       reconnectDelay: 3000,
-      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws-chat?token=${encodeURIComponent(token)}`),
+      webSocketFactory: () => new SockJS(buildSockJsChatUrl(token)),
     });
     client.onConnect = () => {
       setConnected(true);

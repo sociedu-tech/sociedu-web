@@ -9,7 +9,7 @@ import type { StatsSeriesPoint } from '@/features/dashboard/ui/stats';
 
 type Props = {
   sessionsSeries: StatsSeriesPoint[];
-  reportsSeries: StatsSeriesPoint[];
+  sessionStatusSeries: StatsSeriesPoint[];
 };
 
 function EmptyChart({ label }: { label: string }) {
@@ -18,7 +18,7 @@ function EmptyChart({ label }: { label: string }) {
   );
 }
 
-export function MenteeOverviewChartGrids({ sessionsSeries, reportsSeries }: Props) {
+export function MenteeOverviewChartGrids({ sessionsSeries, sessionStatusSeries }: Props) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <StatsChartCard title="Buổi học">
@@ -29,17 +29,17 @@ export function MenteeOverviewChartGrids({ sessionsSeries, reportsSeries }: Prop
         )}
       </StatsChartCard>
 
-      <StatsChartCard title="Báo cáo tiến độ">
-        {reportsSeries.some((p) => p.value > 0) ? (
+      <StatsChartCard title="Trạng thái buổi học">
+        {sessionStatusSeries.some((p) => p.value > 0) ? (
           <StatsLineChart
-            data={reportsSeries}
-            name="Báo cáo"
+            data={sessionStatusSeries}
+            name="Buổi"
             height={240}
             yAllowDecimals={false}
             dotRadius={4}
           />
         ) : (
-          <EmptyChart label="Chưa có báo cáo tiến độ." />
+          <EmptyChart label="Chưa có dữ liệu buổi học." />
         )}
       </StatsChartCard>
     </div>

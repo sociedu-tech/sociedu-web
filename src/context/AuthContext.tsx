@@ -21,15 +21,14 @@ export interface AuthUser {
   headline?: string;
   avatarUrl?: string;
   roles: string[];
-  capabilities: string[];
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   userRole: string;
-  capabilities: string[];
-  hasCapability: (cap: string) => boolean;
+  roles: string[];
+  hasRole: (role: string) => boolean;
   loading: boolean;
   token: string | null;
   login: (credentials: unknown) => Promise<void>;
@@ -58,6 +57,8 @@ const buildDisplayName = (me: MePayload): string => {
   return joined || me.email || 'Người dùng';
 };
 
+const normalizeRoleName = (role: string) => role.trim().toUpperCase();
+
 const toAuthUser = (me: MePayload): AuthUser => ({
   id: String(me.userId),
   email: me.email,
@@ -68,8 +69,7 @@ const toAuthUser = (me: MePayload): AuthUser => ({
   fullName: buildDisplayName(me),
   headline: me.headline ?? undefined,
   avatarUrl: me.avatarUrl ?? undefined,
-  roles: Array.isArray(me.roles) ? me.roles : [],
-  capabilities: Array.isArray(me.capabilities) ? me.capabilities : [],
+  roles: Array.isArray(me.roles) ? me.roles.map(normalizeRoleName) : [],
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -136,11 +136,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearAuthStorage();
   }, []);
 
-  const userRole = user?.roles?.[0] ? normalizeRole(user.roles[0]) : ROLES.GUEST;
-  const capabilities = user?.capabilities ?? [];
-  const hasCapability = useCallback(
-    (cap: string) => capabilities.includes(cap),
-    [capabilities],
+  const roles = user?.roles ?? [];
+  const userRole = roles[0] ? normalizeRole(roles[0]) : ROLES.GUEST;
+  const hasRole = useCallback(
+    (role: string) => roles.includes(normalizeRoleName(role)),
+    [roles],
   );
 
   const value = useMemo(
@@ -148,8 +148,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user,
       isAuthenticated: !!user && !!token,
       userRole,
-      capabilities,
-      hasCapability,
+      roles,
+      hasRole,
       loading,
       token,
       login,
@@ -158,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       setUser,
     }),
-    [user, userRole, capabilities, hasCapability, loading, token, login, applyAuthPayload, reloadSession, logout],
+    [user, userRole, roles, hasRole, loading, token, login, applyAuthPayload, reloadSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

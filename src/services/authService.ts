@@ -23,7 +23,6 @@ export type MePayload = {
   headline?: string | null;
   avatarUrl?: string | null;
   roles: string[];
-  capabilities: string[];
   createdAt?: string | null;
 };
 
@@ -152,7 +151,7 @@ export const authService = {
     setRefreshToken(null);
   },
 
-  /** Nguồn sự thật cho phiên hiện tại: user + roles + capabilities. */
+  /** Nguồn sự thật cho phiên hiện tại: user + roles. */
   getMe: async (): Promise<MePayload | null> => {
     const res = await api.get(`${AUTH}/me`);
     return (res.data as MePayload | undefined) ?? null;

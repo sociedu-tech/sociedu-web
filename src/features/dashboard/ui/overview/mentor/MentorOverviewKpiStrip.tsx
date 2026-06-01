@@ -14,7 +14,7 @@ export function MentorOverviewKpiStrip({ hideKpiStrip = false, kpi }: Props) {
 
   const ITEMS = [
     { label: 'Học viên đang hoạt động', value: kpi.activeMentees, icon: Users },
-    { label: 'Báo cáo tiến độ', value: kpi.activeProjects, icon: FolderOpen },
+    { label: 'Booking đang mở', value: kpi.activeBookings, icon: FolderOpen },
     { label: 'Buổi học (tháng này)', value: kpi.sessionsThisMonth, icon: Video },
     { label: 'Đánh giá trung bình', value: `${kpi.avgRating}`, icon: Star },
   ] as const;

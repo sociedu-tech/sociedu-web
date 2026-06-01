@@ -1,5 +1,5 @@
-import { MentorReportsPage } from '@/features/mentor/views/MentorReportsPage';
+import { redirect } from 'next/navigation';
 
-export default function DashboardReportsPage() {
-  return <MentorReportsPage />;
+export default function LegacyMentorReportsPage() {
+  redirect('/dashboard/schedule');
 }

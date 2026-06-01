@@ -34,9 +34,6 @@ export const Navbar = () => {
   const navLinks: NavItem[] = [
     { name: 'Tìm Mentor', path: '/mentors', isHash: false },
     { name: 'Trở thành Mentor', path: '/register', isHash: false },
-    ...(isAuthenticated && !hasRole(userRole, ROLES.MENTOR, ROLES.ADMIN)
-      ? [{ name: 'Nộp báo cáo', path: '/my-reports', isHash: false as const }]
-      : []),
     { name: 'Cách hoạt động', path: '#how-it-works', isHash: true },
     { name: 'Hỏi đáp', path: '#faq', isHash: true },
   ];

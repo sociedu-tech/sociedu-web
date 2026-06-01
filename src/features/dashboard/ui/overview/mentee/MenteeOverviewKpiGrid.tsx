@@ -8,9 +8,9 @@ type Props = { kpi: MenteeOverviewData['kpi'] };
 
 export function MenteeOverviewKpiGrid({ kpi }: Props) {
   const ITEMS = [
-    { label: 'Báo cáo tiến độ', value: kpi.activeProjects, icon: PlayCircle },
+    { label: 'Gói đang học', value: kpi.activeBookings, icon: PlayCircle },
     { label: 'Buổi sắp tới', value: kpi.upcomingSessions, icon: Video },
-    { label: 'Đã nộp báo cáo', value: kpi.reportsSubmitted, icon: ClipboardList },
+    { label: 'Buổi hoàn thành', value: kpi.completedSessions, icon: ClipboardList },
     { label: 'Hoàn thành (%)', value: `${kpi.completionPct}%`, icon: CheckCircle2 },
   ] as const;
 

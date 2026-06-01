@@ -84,25 +84,10 @@ export function useMentorBookingPage() {
         orderInfo: selectedPackage
           ? `Đặt gói: ${selectedPackage.title} — ${mentorName}`
           : undefined,
-      })) as {
-        id?: string;
-        paymentUrl?: string;
-        mockPayment?: boolean;
-      };
+      })) as { id?: string; paymentUrl?: string };
 
       const url = order?.paymentUrl;
-      if (order?.mockPayment && order.id) {
-        router.push(
-          `/payment-result?status=success&orderId=${encodeURIComponent(order.id)}&code=00&mock=true`,
-        );
-        return;
-      }
       if (url) {
-        if (url.includes('/payment-result')) {
-          const path = url.startsWith('http') ? new URL(url).pathname + new URL(url).search : url;
-          router.push(path);
-          return;
-        }
         window.location.href = url;
         return;
       }

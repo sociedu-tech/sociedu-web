@@ -278,7 +278,7 @@ export function DashboardNewProjectPage() {
               ) : topSuggestions.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-slate-200 bg-white/60 px-4 py-8 text-center text-sm text-slate-600">
                   <p>Chưa có mentor để gợi ý.</p>
-                  <Link href="/mentors" className="mt-2 inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline">
+                  <Link href="/dashboard/find-mentors" className="mt-2 inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline">
                     Tìm mentor
                     <ChevronRight className="size-4" />
                   </Link>

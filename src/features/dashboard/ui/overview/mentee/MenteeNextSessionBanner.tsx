@@ -11,7 +11,7 @@ export function MenteeNextSessionBanner({ nextSession }: Props) {
     return (
       <div className="dashboard-stat-tile flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-600">Chưa có buổi học sắp tới. Đặt lịch với mentor từ trang Tìm mentor.</p>
-        <Link href="/mentors" className="shrink-0 text-sm font-medium text-primary hover:underline">
+        <Link href="/dashboard/find-mentors" className="shrink-0 text-sm font-medium text-primary hover:underline">
           Tìm mentor
         </Link>
       </div>

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { StatsSeriesPoint } from '@/features/dashboard/ui/stats';
 import { bookingService } from '@/services/bookingService';
-import { reportService } from '@/services/reportService';
 import { flattenBookingsToSessions } from '@/features/dashboard/lib/bookingMappers';
 import type { BookingApi } from '@/features/dashboard/types/booking';
 
@@ -12,24 +11,24 @@ export type MenteeOverviewData = {
   error: string | null;
   nextSession: { title: string; when: string; mentor: string } | null;
   kpi: {
-    activeProjects: number;
+    activeBookings: number;
     upcomingSessions: number;
-    reportsSubmitted: number;
+    completedSessions: number;
     completionPct: number;
   };
   sessionsSeries: StatsSeriesPoint[];
-  reportsSeries: StatsSeriesPoint[];
-  progressBars: { label: string; pct: number }[];
+  sessionStatusSeries: StatsSeriesPoint[];
+  sessionProgressBars: { label: string; pct: number }[];
 };
 
 const EMPTY: MenteeOverviewData = {
   loading: true,
   error: null,
   nextSession: null,
-  kpi: { activeProjects: 0, upcomingSessions: 0, reportsSubmitted: 0, completionPct: 0 },
+  kpi: { activeBookings: 0, upcomingSessions: 0, completedSessions: 0, completionPct: 0 },
   sessionsSeries: [],
-  reportsSeries: [],
-  progressBars: [],
+  sessionStatusSeries: [],
+  sessionProgressBars: [],
 };
 
 export function useMenteeDashboardOverview(): MenteeOverviewData {
@@ -41,32 +40,26 @@ export function useMenteeDashboardOverview(): MenteeOverviewData {
     (async () => {
       setState((s) => ({ ...s, loading: true, error: null }));
       try {
-        const [bookingsPage, reportsPage] = await Promise.all([
-          bookingService.listAsBuyer(0, 50),
-          reportService.getMyReports(0, 50),
-        ]);
+        const bookingsPage = await bookingService.listAsBuyer(0, 50);
         if (cancelled) return;
 
         const bookings = bookingsPage.items as BookingApi[];
-        const reports = reportsPage.items;
         const sessions = flattenBookingsToSessions(bookings, 'buyer');
         const upcoming = sessions.filter((s) => s.status === 'Sắp diễn ra' || s.status === 'Đang diễn ra');
+        const completed = sessions.filter((s) => s.status === 'Hoàn thành');
 
         const next = upcoming[0] ?? sessions[0] ?? null;
-
-        const reviewed = reports.filter((r) => String(r.status).toUpperCase() === 'REVIEWED').length;
         const completionPct =
-          reports.length > 0 ? Math.round((reviewed / reports.length) * 100) : 0;
+          sessions.length > 0 ? Math.round((completed.length / sessions.length) * 100) : 0;
 
-        const progressBars = reports.slice(0, 5).map((r) => ({
-          label: r.title,
-          pct:
-            String(r.status).toUpperCase() === 'REVIEWED'
-              ? 100
-              : String(r.status).toUpperCase() === 'PENDING'
-                ? 40
-                : 15,
+        const sessionProgressBars = sessions.slice(0, 5).map((s) => ({
+          label: s.title,
+          pct: s.status === 'Hoàn thành' ? 100 : s.status === 'Đang diễn ra' ? 60 : 20,
         }));
+
+        const activeBookings = bookings.filter(
+          (b) => !['completed', 'canceled', 'cancelled'].includes(String(b.status).toLowerCase()),
+        ).length;
 
         setState({
           loading: false,
@@ -75,14 +68,17 @@ export function useMenteeDashboardOverview(): MenteeOverviewData {
             ? { title: next.title, when: next.when, mentor: next.counterparty }
             : null,
           kpi: {
-            activeProjects: reports.length,
+            activeBookings,
             upcomingSessions: upcoming.length,
-            reportsSubmitted: reports.length,
+            completedSessions: completed.length,
             completionPct,
           },
           sessionsSeries: [{ label: 'Buổi học', value: sessions.length }],
-          reportsSeries: [{ label: 'Báo cáo', value: reports.length }],
-          progressBars,
+          sessionStatusSeries: [
+            { label: 'Sắp tới', value: upcoming.length },
+            { label: 'Hoàn thành', value: completed.length },
+          ],
+          sessionProgressBars,
         });
       } catch (err: unknown) {
         if (!cancelled) {

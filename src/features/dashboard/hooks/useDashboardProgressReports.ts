@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { reportService, type ProgressReport } from '@/services/reportService';
 import { reportStatusLabel } from '@/features/dashboard/lib/bookingMappers';
 import type { DashboardProjectRow } from '@/features/dashboard/types/booking';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
@@ -9,12 +8,10 @@ import { usePaginatedList } from '@/hooks/usePaginatedList';
 export type ProgressReportsRole = 'mentee' | 'mentor';
 
 export function useDashboardProgressReports(role: ProgressReportsRole) {
-  const paginated = usePaginatedList<ProgressReport>({
-    fetchPage: useCallback(
-      (page, size) =>
-        role === 'mentor' ? reportService.getAssignedReports(page, size) : reportService.getMyReports(page, size),
-      [role],
-    ),
+  const paginated = usePaginatedList<any>({
+    fetchPage: useCallback(async (page, size) => {
+      return { items: [], total: 0, totalPages: 0, page, size };
+    }, []),
     resetKey: role,
   });
 

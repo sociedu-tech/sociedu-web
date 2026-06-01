@@ -1,5 +1,6 @@
 import { api } from '@/lib/api';
 import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
+import type { ConfirmSessionCompletionRequest } from '@/features/dashboard/types/booking';
 
 const BASE = '/api/v1/bookings';
 
@@ -35,6 +36,18 @@ export const bookingService = {
   ) => {
     const res = await api.post(
       `${BASE}/${bookingId}/sessions/${sessionId}/evidences`,
+      body,
+    );
+    return res.data;
+  },
+
+  confirmSessionCompletion: async (
+    bookingId: number | string,
+    sessionId: number | string,
+    body: ConfirmSessionCompletionRequest,
+  ) => {
+    const res = await api.post(
+      `${BASE}/${bookingId}/sessions/${sessionId}/confirm-completion`,
       body,
     );
     return res.data;

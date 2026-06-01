@@ -78,7 +78,7 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
   if (!isRecord(raw)) return null;
 
   const id =
-    asStr(pick(raw, 'id', 'userId', 'user_id')).trim() ||
+    asStr(pick(raw, 'userId', 'user_id', 'id')).trim() ||
     asStr(pick(raw, 'mentorId', 'mentor_id')).trim();
   if (!id) return null;
 
@@ -86,8 +86,9 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
   const last = asStr(pick(raw, 'lastName', 'last_name')).trim();
   const combinedName = [first, last].filter(Boolean).join(' ').trim();
   const name =
-    asStr(pick(raw, 'name', 'displayName', 'display_name', 'fullName', 'full_name')).trim() ||
+    asStr(pick(raw, 'displayName', 'display_name', 'name', 'fullName', 'full_name')).trim() ||
     combinedName ||
+    asStr(pick(raw, 'headline')).trim() ||
     'Mentor';
 
   const avatar =
@@ -101,7 +102,7 @@ export const normalizeMentorUser = (raw: unknown): User | null => {
     roleRaw === 'admin' ? 'admin' : (roleRaw === 'seller' || roleRaw === 'mentor') ? 'mentor' : 'mentor';
 
   const mi = pick(raw, 'mentorInfo', 'mentor_info');
-  const mentorBlock = isRecord(mi) ? mi : {};
+  const mentorBlock = isRecord(mi) ? mi : raw;
 
   const headline =
     asStr(

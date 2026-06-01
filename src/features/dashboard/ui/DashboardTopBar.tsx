@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Bell, ChevronRight, Home, Menu } from 'lucide-react';
+import { ChevronRight, Home, Menu } from 'lucide-react';
 import { getDashboardBreadcrumb } from '@/lib/dashboardNav';
+import { NotificationBell } from '@/components/dashboard/NotificationBell';
 import { UserAvatarMenu, type UserAvatarMenuUser } from '@/components/ui/UserAvatarMenu';
 
 type DashboardTopBarProps = {
@@ -68,13 +69,7 @@ export function DashboardTopBar({
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <button
-          type="button"
-          className="flex size-9 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
-          aria-label="Thông báo"
-        >
-          <Bell className="size-[18px]" strokeWidth={2} />
-        </button>
+        <NotificationBell />
 
         <UserAvatarMenu
           variant="dashboard"

@@ -27,14 +27,14 @@ export function MentorOverviewChartRows({ data }: Props) {
     label: r.t,
     value: r.sessions,
   }));
-  const projectByStatusSeries: StatsSeriesPoint[] = data.projectByStatus.map((r) => ({
+  const projectByStatusSeries: StatsSeriesPoint[] = data.sessionByStatus.map((r) => ({
     label: r.status,
     value: r.count,
   }));
-  const projectMonthlyGrouped = data.projectMonthly.map((r) => ({
+  const sessionMonthlyGrouped = data.sessionMonthly.map((r) => ({
     label: r.thang,
-    moMoi: r.moMoi,
-    hoanThanh: r.hoanThanh,
+    scheduled: r.scheduled,
+    completed: r.completed,
   }));
 
   return (
@@ -67,19 +67,19 @@ export function MentorOverviewChartRows({ data }: Props) {
           )}
         </StatsChartCard>
 
-        <StatsChartCard title="Báo cáo theo tháng">
-          {projectMonthlyGrouped.length > 0 ? (
+        <StatsChartCard title="Buổi học theo tháng">
+          {sessionMonthlyGrouped.length > 0 ? (
             <StatsGroupedBarChart
-              data={projectMonthlyGrouped}
+              data={sessionMonthlyGrouped}
               xKey="label"
               series={[
-                { dataKey: 'moMoi', name: 'Tổng', colorVar: 'var(--color-chart-1)' },
-                { dataKey: 'hoanThanh', name: 'Đã phản hồi', colorVar: 'var(--color-chart-2)' },
+                { dataKey: 'scheduled', name: 'Sắp diễn ra', colorVar: 'var(--color-chart-1)' },
+                { dataKey: 'completed', name: 'Hoàn thành', colorVar: 'var(--color-chart-2)' },
               ]}
               height={260}
             />
           ) : (
-            <EmptyChart label="Chưa có báo cáo tiến độ." />
+            <EmptyChart label="Chưa có buổi học." />
           )}
         </StatsChartCard>
       </div>

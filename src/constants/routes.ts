@@ -29,10 +29,9 @@ export const ROUTES = {
     },
     // ---- USER ROUTES ----
     USER: {
-      PROJECTS: { path: '/dashboard/projects', label: 'Dự án của tôi', roles: [ROLES.USER], sidebar: true },
-      PROJECT_NEW: { path: '/dashboard/projects/new', label: 'Tạo dự án mới', roles: [ROLES.USER] },
-      PROJECT_PROGRESS: { path: '/dashboard/projects/progress', label: 'Tiến độ dự án', roles: [ROLES.USER] },
       SESSIONS: { path: '/dashboard/sessions', label: 'Buổi học', roles: [ROLES.USER], sidebar: true },
+      MY_ORDERS: { path: '/dashboard/my-orders', label: 'Đơn hàng', roles: [ROLES.USER], sidebar: true },
+      FIND_MENTORS: { path: '/dashboard/find-mentors', label: 'Tìm Mentor', roles: [ROLES.USER], sidebar: true },
     },
     // ---- MENTOR ROUTES ----
     MENTOR: {
@@ -40,7 +39,6 @@ export const ROUTES = {
       SCHEDULE: { path: '/dashboard/schedule', label: 'Lịch dạy', roles: [ROLES.MENTOR], sidebar: true },
       MENTEES: { path: '/dashboard/mentees', label: 'Học viên', roles: [ROLES.MENTOR], sidebar: true },
       ORDERS: { path: '/dashboard/orders', label: 'Đơn hàng', roles: [ROLES.MENTOR], sidebar: true },
-      REPORTS: { path: '/dashboard/reports', label: 'Chấm báo cáo', roles: [ROLES.MENTOR], sidebar: true },
     },
     // ---- ADMIN ROUTES ----
     ADMIN: {

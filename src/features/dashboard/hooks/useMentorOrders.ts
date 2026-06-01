@@ -27,15 +27,17 @@ const orderStatusLabel = (status?: string | null): string => {
 export function useMentorOrders() {
   const paginated = usePaginatedList<MentorOrderRow>({
     fetchPage: useCallback(async (page, size) => {
-      const p = await orderService.getMyOrders(page, size);
+      const p = await orderService.getIncomingOrders(page, size);
       return {
         ...p,
         items: p.items.map((raw) => {
           const row = raw as Record<string, unknown>;
+          const buyerLabel = (row.buyerLabel as string) || (row.buyerId ? `Học viên #${String(row.buyerId).slice(0, 8)}` : '—');
+          const packageName = (row.packageName as string) || (row.serviceId ? `Gói #${String(row.serviceId).slice(0, 8)}` : 'Gói dịch vụ');
           return {
             id: String(row.id ?? ''),
-            mentee: row.buyerId ? `Học viên #${String(row.buyerId).slice(0, 8)}` : '—',
-            package: row.serviceId ? `Gói #${String(row.serviceId).slice(0, 8)}` : 'Gói dịch vụ',
+            mentee: buyerLabel,
+            package: packageName,
             amount: Number(row.totalAmount ?? 0),
             date: formatViDateTime(row.createdAt as string | undefined),
             status: orderStatusLabel(row.status as string | undefined),

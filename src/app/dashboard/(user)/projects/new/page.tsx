@@ -1,5 +1,5 @@
-import { DashboardNewProjectPage } from '@/features/dashboard/views/DashboardNewProjectPage';
+import { redirect } from 'next/navigation';
 
-export default function DashboardNewProjectRoutePage() {
-  return <DashboardNewProjectPage />;
+export default function LegacyNewProjectPage() {
+  redirect('/dashboard/sessions');
 }

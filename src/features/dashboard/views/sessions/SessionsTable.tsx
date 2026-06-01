@@ -1,0 +1,168 @@
+ 'use client';
+
+import { Video } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
+import { DataPagination } from '@/components/ui/DataPagination';
+import { SessionConfirmActions } from '@/features/dashboard/views/sessions/SessionConfirmActions';
+import type { DashboardSessionRow } from '@/features/dashboard/types/booking';
+import { useState } from 'react';
+import { reviewService } from '@/services/reviewService';
+
+type Props = {
+  counterpartyHeader: string;
+  rows: DashboardSessionRow[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => void;
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+  setPage: (page: number) => void;
+  setSize: (size: number) => void;
+  role?: 'buyer' | 'mentor';
+};
+
+export function SessionsTable({
+  counterpartyHeader,
+  rows,
+  loading,
+  error,
+  refresh,
+  page,
+  size,
+  total,
+  totalPages,
+  setPage,
+  setSize,
+  role,
+}: Props) {
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+  const [rating, setRating] = useState<number>(5);
+  const [comment, setComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  if (loading) {
+    return <LoadingSpinner label="Đang tải buổi học…" />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={refresh} />;
+  }
+
+  return (
+    <div className="space-y-4">
+      <DashboardTableCard>
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className={dashboardTableHeadClass}>
+              <th className="px-4 py-3">Buổi học</th>
+              <th className="hidden px-4 py-3 sm:table-cell">Thời gian</th>
+              <th className="hidden px-4 py-3 md:table-cell">{counterpartyHeader}</th>
+              <th className="px-4 py-3">Trạng thái</th>
+              <th className="min-w-[180px] px-4 py-3">Xác nhận</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-slate-800">
+            {rows.map((row) => (
+              <tr key={`${row.bookingId}-${row.sessionId}`} className="bg-white hover:bg-slate-50/80">
+                <td className="px-4 py-3 font-medium">{row.title}</td>
+                <td className="hidden px-4 py-3 text-slate-600 sm:table-cell">{row.when}</td>
+                <td className="hidden px-4 py-3 text-slate-600 md:table-cell">{row.counterparty}</td>
+                <td className="px-4 py-3">
+                  <span className="badge-primary">{row.status}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <SessionConfirmActions row={row} onUpdated={refresh} />
+                    {role === 'buyer' && row.status === 'Hoàn thành' ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBooking(row.bookingId);
+                          setRating(5);
+                          setComment('');
+                          setReviewOpen(true);
+                        }}
+                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        Đánh giá
+                      </button>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </DashboardTableCard>
+      {rows.length === 0 && !loading && (
+        <div className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200/90 bg-white p-10 text-center text-slate-500 shadow-sm">
+          <Video className="size-10 text-slate-300" strokeWidth={1.5} />
+          <p>Chưa có buổi học nào.</p>
+        </div>
+      )}
+      <DataPagination
+        page={page}
+        size={size}
+        total={total}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onSizeChange={setSize}
+        disabled={loading}
+      />
+      {reviewOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setReviewOpen(false)} />
+          <div className="relative z-10 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h3 className="mb-3 text-lg font-semibold">Đánh giá buổi học</h3>
+            <label className="block text-sm">Điểm (1-5)</label>
+            <input
+              type="number"
+              min={1}
+              max={5}
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="mb-3 w-full rounded border px-2 py-1"
+            />
+            <label className="block text-sm">Bình luận</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="mb-3 h-24 w-full rounded border px-2 py-1"
+            />
+            <div className="flex justify-end gap-2">
+              <button type="button" className="rounded px-3 py-1" onClick={() => setReviewOpen(false)}>
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!selectedBooking) return;
+                  setSubmittingReview(true);
+                  try {
+                    await reviewService.createReview(selectedBooking, { rating, comment });
+                    setReviewOpen(false);
+                    setSelectedBooking(null);
+                    refresh();
+                  } catch {
+                    // ignore
+                  } finally {
+                    setSubmittingReview(false);
+                  }
+                }}
+                disabled={submittingReview}
+                className="rounded bg-primary px-3 py-1 text-white"
+              >
+                {submittingReview ? 'Đang gửi…' : 'Gửi đánh giá'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}

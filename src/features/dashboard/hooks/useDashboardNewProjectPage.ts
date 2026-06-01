@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { mentorService } from '@/services/mentorService';
-import { reportService } from '@/services/reportService';
 import type { User } from '@/types';
 import {
   NEW_PROJECT_DURATION_OPTIONS,
@@ -121,11 +120,7 @@ export function useDashboardNewProjectPage() {
         .filter(Boolean)
         .join('\n\n');
 
-      await reportService.submitReport({
-        mentorId,
-        title: t,
-        content: content || t,
-      });
+      // Progress reports API removed — redirect to projects page after submit
       router.push('/dashboard/projects?created=1');
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : 'Không thể lưu. Vui lòng thử lại.');

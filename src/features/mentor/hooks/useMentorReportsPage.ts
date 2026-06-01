@@ -1,34 +1,21 @@
 import { useCallback, useState } from 'react';
-import { reportService, type ProgressReport, type ReviewReportRequest } from '@/services/reportService';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useMentorReportsPage() {
-  const paginated = usePaginatedList<ProgressReport>({
-    fetchPage: useCallback((page, size) => reportService.getAssignedReports(page, size), []),
+  const paginated = usePaginatedList<any>({
+    fetchPage: useCallback(async (page, size) => {
+      return { items: [], total: 0, totalPages: 0, page, size };
+    }, []),
   });
 
-  const [selectedReport, setSelectedReport] = useState<ProgressReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const [feedbackText, setFeedbackText] = useState('');
   const [reviewStatus, setReviewStatus] = useState<'REVIEWED' | 'REJECTED'>('REVIEWED');
   const [reviewing, setReviewing] = useState(false);
 
   const handleReview = async () => {
-    if (!selectedReport || !feedbackText.trim()) return;
-    setReviewing(true);
-    try {
-      const payload: ReviewReportRequest = {
-        status: reviewStatus,
-        mentorFeedback: feedbackText,
-      };
-      await reportService.reviewReport(selectedReport.id, payload);
-      await paginated.refresh();
-      setSelectedReport(null);
-      setFeedbackText('');
-    } catch (err) {
-      console.error('Lỗi khi chấm bài', err);
-    } finally {
-      setReviewing(false);
-    }
+    // Progress reports feature removed from API — no-op
+    return;
   };
 
   return {

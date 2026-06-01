@@ -1,10 +1,5 @@
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { UserReportsPage } from '@/features/report/views/UserReportsPage';
+import { redirect } from 'next/navigation';
 
-export default function MyReportsRoute() {
-  return (
-    <ProtectedRoute>
-      <UserReportsPage />
-    </ProtectedRoute>
-  );
+export default function LegacyMyReportsPage() {
+  redirect('/dashboard/sessions');
 }

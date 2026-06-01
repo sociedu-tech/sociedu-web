@@ -3,14 +3,11 @@ import {
   Calendar,
   Users,
   ShoppingBag,
-  FileText,
   Search,
   Home,
   Package,
-  FolderKanban,
   Video,
   MessageCircle,
-  TrendingUp,
   UserCheck,
   UserCog,
   Flag,
@@ -83,8 +80,6 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: '/dashboard/schedule', label: 'Lịch dạy', icon: Calendar, group: 'Công việc' },
       { href: '/dashboard/mentees', label: 'Học viên', icon: Users, group: 'Công việc' },
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
-      { href: '/dashboard/reports', label: 'Chấm báo cáo', icon: FileText, group: 'Công việc' },
-      { href: '/dashboard/projects/progress', label: 'Tiến độ dự án', icon: TrendingUp, group: 'Công việc' },
       ...ACCOUNT_NAV_ITEMS,
     ];
   }
@@ -92,11 +87,9 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
   return [
     { href: '/dashboard', label: 'Trang chủ', icon: Home, exact: true, group: 'Chính' },
     { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Chính' },
-    { href: '/dashboard/projects', label: 'Dự án', icon: FolderKanban, group: 'Học tập' },
-    { href: '/dashboard/projects/progress', label: 'Tiến độ dự án', icon: TrendingUp, group: 'Học tập' },
     { href: '/dashboard/sessions', label: 'Buổi học', icon: Video, group: 'Học tập' },
-    { href: '/mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
-    { href: '/my-reports', label: 'Báo cáo của tôi', icon: FileText, group: 'Học tập' },
+    { href: '/dashboard/my-orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Học tập' },
+    { href: '/dashboard/find-mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
     ...ACCOUNT_NAV_ITEMS,
   ];
 }
@@ -132,12 +125,6 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
     return pathname === item.href || pathname === `${item.href}/`;
   }
   const n = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
-  if (item.href === '/dashboard/projects') {
-    return (
-      n === '/dashboard/projects' ||
-      (n.startsWith('/dashboard/projects/') && !n.startsWith('/dashboard/projects/progress'))
-    );
-  }
   return n === item.href || n.startsWith(`${item.href}/`);
 }
 
@@ -153,7 +140,6 @@ const TITLE_ENTRIES: [string, string][] = [
   ['/dashboard/schedule', 'Lịch dạy'],
   ['/dashboard/mentees', 'Học viên'],
   ['/dashboard/orders', 'Đơn hàng'],
-  ['/dashboard/reports', 'Chấm báo cáo'],
 ];
 
 
@@ -164,11 +150,9 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
   if (normalized === '/dashboard/security') return 'Bảo mật tài khoản';
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
-  if (normalized === '/dashboard/projects') return 'Dự án';
-  if (normalized === '/dashboard/projects/new') return 'Tạo dự án mới';
-  if (normalized === '/dashboard/projects/progress') return 'Tiến độ dự án';
-  if (normalized.startsWith('/dashboard/projects/')) return 'Chi tiết dự án';
   if (normalized === '/dashboard/sessions') return 'Buổi học';
+  if (normalized === '/dashboard/my-orders') return 'Đơn hàng của tôi';
+  if (normalized === '/dashboard/find-mentors') return 'Tìm mentor';
   if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — Tất cả';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Người dùng & mentor';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`) return 'Báo cáo — Đánh giá';
@@ -199,12 +183,6 @@ export function getDashboardBreadcrumb(pathname: string): { label: string; href?
   const title = getDashboardTitle(pathname);
   if (normalized === '/dashboard') {
     return [{ label: 'Trang chủ' }];
-  }
-  if (normalized === '/dashboard/projects/new') {
-    return [
-      { label: 'Dự án', href: '/dashboard/projects' },
-      { label: 'Tạo dự án mới' },
-    ];
   }
   return [{ label: title }];
 }

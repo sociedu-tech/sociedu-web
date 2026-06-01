@@ -3,10 +3,17 @@
 export type DashboardSessionRow = {
   id: string;
   bookingId: string;
+  sessionId: string;
   title: string;
   when: string;
+  scheduledAtIso: string | null;
   counterparty: string;
   status: string;
+  rawStatus: string;
+  menteeCompletionAck: boolean | null;
+  mentorCompletionAck: boolean | null;
+  canConfirm: boolean;
+  myAck: boolean | null;
 };
 
 export type DashboardProjectRow = {
@@ -23,6 +30,11 @@ export type BookingApiSession = {
   scheduledAt?: string | null;
   completedAt?: string | null;
   status?: string | null;
+  meetingUrl?: string | null;
+  menteeCompletionAck?: boolean | null;
+  mentorCompletionAck?: boolean | null;
+  menteeAckAt?: string | null;
+  mentorAckAt?: string | null;
 };
 
 export type BookingApi = {
@@ -33,3 +45,9 @@ export type BookingApi = {
   createdAt?: string | null;
   sessions?: BookingApiSession[] | null;
 };
+
+export type ConfirmSessionCompletionRequest = {
+  completed: boolean;
+};
+
+export type BookingSessionDto = BookingApiSession & { id: string };

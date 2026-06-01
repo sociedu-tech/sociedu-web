@@ -8,7 +8,7 @@ import { MenteeOverviewChartGrids } from '@/features/dashboard/ui/overview/mente
 import { MenteeOverviewProgressSection } from '@/features/dashboard/ui/overview/mentee/MenteeOverviewProgressSection';
 import { useMenteeDashboardOverview } from '@/features/dashboard/hooks/useMenteeDashboardOverview';
 
-/** Tổng quan học viên — dữ liệu từ bookings & báo cáo tiến độ. */
+/** Tổng quan học viên — dữ liệu từ bookings & buổi học. */
 export function MenteeOverviewCharts() {
   const data = useMenteeDashboardOverview();
 
@@ -26,9 +26,9 @@ export function MenteeOverviewCharts() {
       <MenteeOverviewKpiGrid kpi={data.kpi} />
       <MenteeOverviewChartGrids
         sessionsSeries={data.sessionsSeries}
-        reportsSeries={data.reportsSeries}
+        sessionStatusSeries={data.sessionStatusSeries}
       />
-      <MenteeOverviewProgressSection progressBars={data.progressBars} />
+      <MenteeOverviewProgressSection sessionProgressBars={data.sessionProgressBars} />
     </div>
   );
 }

@@ -8,16 +8,16 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 function ProfileRedirect() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (loading) return;
     if (isAuthenticated && user?.id != null) {
       router.replace(`/profile/${user.id}`);
       return;
     }
     router.replace('/mentors');
-  }, [isLoading, isAuthenticated, user?.id, router]);
+  }, [loading, isAuthenticated, user?.id, router]);
 
   return (
     <div className="flex min-h-[50vh] items-center justify-center bg-marketing-canvas">

@@ -1,10 +1,5 @@
-import { ProjectsDetailHub } from '@/features/dashboard/views/projects/ProjectsDetailHub';
+import { redirect } from 'next/navigation';
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function DashboardProjectDetailPage({ params }: Props) {
-  const { id } = await params;
-  return <ProjectsDetailHub projectId={id} />;
+export default function LegacyProjectDetailPage() {
+  redirect('/dashboard/sessions');
 }

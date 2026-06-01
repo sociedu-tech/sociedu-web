@@ -356,7 +356,86 @@ function MarketplaceFilters({
   );
 }
 
-export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
+function MarketplaceSearchBar({
+  searchTerm,
+  setSearchTerm,
+  compact = false,
+}: {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+  compact?: boolean;
+}) {
+  return (
+    <>
+      <form
+        className={cn(
+          'flex w-full flex-col gap-2 rounded-2xl border bg-white p-2 shadow-sm',
+          compact
+            ? 'border-slate-200'
+            : 'border-marketing-border bg-white/95 backdrop-blur-sm sm:flex-row sm:items-stretch',
+        )}
+        onSubmit={(e) => e.preventDefault()}
+        role="search"
+      >
+        <div className="flex min-h-[48px] flex-1 items-center gap-2.5 px-3 sm:px-4">
+          <Search className={cn('h-4 w-4 shrink-0', compact ? 'text-slate-400' : 'text-marketing-fg-subtle')} aria-hidden />
+          <input
+            type="search"
+            placeholder="Tên mentor, môn, đề tài (VD: đồ án web, NCKH Kinh tế…)"
+            className={cn(
+              'w-full bg-transparent py-2 text-sm font-medium outline-hidden placeholder:text-slate-400',
+              compact ? 'text-slate-900' : 'text-marketing-fg-strong placeholder:text-marketing-fg-subtle',
+            )}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Tìm mentor"
+          />
+          {searchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100"
+              aria-label="Xoá từ khoá"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : null}
+        </div>
+        <button
+          type="submit"
+          className="btn-primary inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl px-5 py-3 text-sm font-semibold sm:rounded-xl sm:py-0"
+        >
+          Tìm
+          <ArrowRight className="h-4 w-4" aria-hidden />
+        </button>
+      </form>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Gợi ý:</span>
+        {SUGGESTED_SEARCHES.map((q) => (
+          <button
+            key={q}
+            type="button"
+            onClick={() => setSearchTerm(q)}
+            className={cn(
+              'rounded-full border px-3 py-1 text-xs font-semibold transition hover:border-primary/40 hover:text-primary',
+              compact
+                ? 'border-slate-200 bg-white text-slate-600'
+                : 'border-marketing-border bg-white/80 text-marketing-body',
+            )}
+          >
+            {q}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+export function MentorMarketplaceView({
+  variant = 'marketing',
+  ...vm
+}: MentorMarketplaceViewModel & { variant?: 'marketing' | 'dashboard' }) {
   const {
     loading,
     error,
@@ -378,90 +457,51 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
     setSize,
   } = vm;
 
+  const isDashboard = variant === 'dashboard';
+
   return (
-    <div className="min-h-screen bg-page pb-24 text-dark">
-      <MarketingHeroSection variant="mentor">
-        <Container className="max-w-3xl py-12 md:py-16">
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-full border border-marketing-border/90 bg-white/90 px-3.5 py-1.5 text-xs font-medium text-marketing-body shadow-sm backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20" />
-              Danh bạ mentor sinh viên · Mentoree
-            </div>
-
-            <h1 className="mt-6 text-balance font-black tracking-tight text-marketing-fg md:mt-7">
-              <span className="block text-2xl leading-tight sm:text-3xl md:text-[2.15rem] md:leading-[1.15]">
-                Mentor kèm{' '}
-                <span className="bg-linear-to-br from-primary via-primary to-secondary-purple bg-clip-text text-transparent">
-                  đồ án, BTL, NCKH
-                </span>
-              </span>
-              <span className="mt-2 block text-lg font-extrabold text-marketing-fg-muted sm:text-xl md:text-2xl">
-                cho sinh viên — tìm đúng người, đúng việc
-              </span>
-            </h1>
-
-            <p className="mt-5 text-pretty text-sm leading-relaxed text-marketing-body md:text-base">
-              Anh chị đi trước và chuyên gia trong ngành đồng hành 1-1: đồ án môn học, bài tập lớn, đồ án tốt nghiệp,
-              nghiên cứu khoa học, khóa luận và luyện phỏng vấn thực tập.
-            </p>
-
-            <form
-              className="mt-8 flex w-full flex-col gap-2 rounded-2xl border border-marketing-border bg-white/95 p-2 shadow-sm backdrop-blur-sm sm:flex-row sm:items-stretch"
-              onSubmit={(e) => e.preventDefault()}
-              role="search"
-            >
-              <div className="flex min-h-[48px] flex-1 items-center gap-2.5 px-3 sm:px-4">
-                <Search className="h-4 w-4 shrink-0 text-marketing-fg-subtle" aria-hidden />
-                <input
-                  type="search"
-                  placeholder="Tên mentor, môn, đề tài (VD: đồ án web, NCKH Kinh tế…)"
-                  className="w-full bg-transparent py-2 text-sm font-medium text-marketing-fg-strong outline-hidden placeholder:text-marketing-fg-subtle"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  aria-label="Tìm mentor"
-                />
-                {searchTerm ? (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm('')}
-                    className="rounded-full p-1.5 text-marketing-fg-muted hover:bg-marketing-canvas"
-                    aria-label="Xoá từ khoá"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                ) : null}
+    <div className={cn(isDashboard ? 'text-dark' : 'min-h-screen bg-page pb-24 text-dark')}>
+      {!isDashboard ? (
+        <MarketingHeroSection variant="mentor">
+          <Container className="max-w-3xl py-12 md:py-16">
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-2 rounded-full border border-marketing-border/90 bg-white/90 px-3.5 py-1.5 text-xs font-medium text-marketing-body shadow-sm backdrop-blur-sm">
+                <span className="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20" />
+                Danh bạ mentor sinh viên · Mentoree
               </div>
-              <button
-                type="submit"
-                className="btn-primary inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl px-5 py-3 text-sm font-semibold sm:rounded-xl sm:py-0"
-              >
-                Tìm
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </button>
-            </form>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-marketing-fg-subtle">Gợi ý:</span>
-              {SUGGESTED_SEARCHES.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => setSearchTerm(q)}
-                  className="rounded-full border border-marketing-border bg-white/80 px-3 py-1 text-xs font-semibold text-marketing-body transition hover:border-primary/40 hover:text-primary"
-                >
-                  {q}
-                </button>
-              ))}
+              <h1 className="mt-6 text-balance font-black tracking-tight text-marketing-fg md:mt-7">
+                <span className="block text-2xl leading-tight sm:text-3xl md:text-[2.15rem] md:leading-[1.15]">
+                  Mentor kèm{' '}
+                  <span className="bg-linear-to-br from-primary via-primary to-secondary-purple bg-clip-text text-transparent">
+                    đồ án, BTL, NCKH
+                  </span>
+                </span>
+                <span className="mt-2 block text-lg font-extrabold text-marketing-fg-muted sm:text-xl md:text-2xl">
+                  cho sinh viên — tìm đúng người, đúng việc
+                </span>
+              </h1>
+
+              <p className="mt-5 text-pretty text-sm leading-relaxed text-marketing-body md:text-base">
+                Anh chị đi trước và chuyên gia trong ngành đồng hành 1-1: đồ án môn học, bài tập lớn, đồ án tốt nghiệp,
+                nghiên cứu khoa học, khóa luận và luyện phỏng vấn thực tập.
+              </p>
+
+              <MarketplaceSearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             </div>
-          </div>
-        </Container>
-      </MarketingHeroSection>
+          </Container>
+        </MarketingHeroSection>
+      ) : (
+        <MarketplaceSearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} compact />
+      )}
 
-      <Container>
+      <Container className={isDashboard ? 'px-0' : undefined}>
         <div
           className={cn(
-            'sticky z-40 -mx-4 mt-8 flex flex-col gap-3 border border-marketing-border bg-page/90 px-4 py-3 backdrop-blur-md sm:mx-0 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:rounded-2xl sm:px-5',
-            'top-24',
+            'sticky z-40 flex flex-col gap-3 border px-4 py-3 backdrop-blur-md sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:rounded-2xl sm:px-5',
+            isDashboard
+              ? 'top-0 -mx-0 mt-6 border-slate-200 bg-slate-50/95'
+              : '-mx-4 mt-8 border-marketing-border bg-page/90 sm:mx-0 top-24',
           )}
         >
           <p className="text-sm text-marketing-body" aria-live="polite">
@@ -544,7 +584,14 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
 
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-4 lg:items-start lg:gap-10">
           <aside className="hidden lg:col-span-1 lg:block">
-            <div className="sticky top-28 rounded-2xl border border-marketing-border bg-page p-5">
+            <div
+              className={cn(
+                'sticky rounded-2xl border p-5',
+                isDashboard
+                  ? 'top-16 border-slate-200 bg-white'
+                  : 'top-28 border-marketing-border bg-page',
+              )}
+            >
               <MarketplaceFilters vm={vm} />
             </div>
           </aside>
@@ -688,31 +735,33 @@ export function MentorMarketplaceView(vm: MentorMarketplaceViewModel) {
           </section>
         </div>
 
-        <section className="mt-16 overflow-hidden rounded-2xl border border-marketing-panel-border bg-marketing-panel px-6 py-10 text-white md:mt-20 md:px-10 md:py-12">
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-black tracking-tight md:text-3xl">Mentor Mentoree hỗ trợ sinh viên việc gì?</h2>
-              <p className="mt-4 text-sm leading-relaxed text-marketing-on-panel-soft md:text-base">
-                Đồng hành bài tập lớn, đồ án môn học, đồ án tốt nghiệp (ĐATN), nghiên cứu khoa học (NCKH), khóa luận,
-                tiểu luận và luyện phỏng vấn thực tập/fresher ở nhiều ngành: CNTT, Kinh tế, Điện - Điện tử, Cơ khí, Xây dựng,
-                Ngoại ngữ, Thiết kế, Dữ liệu. Bạn xem chuyên môn, đánh giá và giá trước khi đặt buổi.
-              </p>
+        {!isDashboard ? (
+          <section className="mt-16 overflow-hidden rounded-2xl border border-marketing-panel-border bg-marketing-panel px-6 py-10 text-white md:mt-20 md:px-10 md:py-12">
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight md:text-3xl">Mentor Mentoree hỗ trợ sinh viên việc gì?</h2>
+                <p className="mt-4 text-sm leading-relaxed text-marketing-on-panel-soft md:text-base">
+                  Đồng hành bài tập lớn, đồ án môn học, đồ án tốt nghiệp (ĐATN), nghiên cứu khoa học (NCKH), khóa luận,
+                  tiểu luận và luyện phỏng vấn thực tập/fresher ở nhiều ngành: CNTT, Kinh tế, Điện - Điện tử, Cơ khí, Xây dựng,
+                  Ngoại ngữ, Thiết kế, Dữ liệu. Bạn xem chuyên môn, đánh giá và giá trước khi đặt buổi.
+                </p>
+              </div>
+              <ul className="space-y-3 text-sm text-marketing-on-panel-soft">
+                {[
+                  'Mentor là anh chị đi trước, hồ sơ đã xác thực',
+                  'Gói lẻ gỡ khó hoặc gói đi cùng đến khi bảo vệ',
+                  'Giá sinh viên · thanh toán an toàn · hoàn tiền minh bạch',
+                  'Chỉ hướng dẫn & review — không làm hộ, tránh vi phạm học thuật',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-3 text-sm text-marketing-on-panel-soft">
-              {[
-                'Mentor là anh chị đi trước, hồ sơ đã xác thực',
-                'Gói lẻ gỡ khó hoặc gói đi cùng đến khi bảo vệ',
-                'Giá sinh viên · thanh toán an toàn · hoàn tiền minh bạch',
-                'Chỉ hướng dẫn & review — không làm hộ, tránh vi phạm học thuật',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+          </section>
+        ) : null}
       </Container>
 
       {loading && (

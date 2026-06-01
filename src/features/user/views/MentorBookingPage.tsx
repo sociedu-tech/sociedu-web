@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Clock, CreditCard, Shield } from 'lucide-react';
+import { ArrowLeft, Check, Clock, CreditCard, Loader2, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
@@ -58,8 +58,8 @@ export function MentorBookingPage() {
           <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{mentorName}</h1>
           {mentorVerified ? (
             <p className="mt-2 text-sm text-slate-600">
-              Chọn gói dịch vụ, xác nhận và thanh toán qua VNPay. Sau khi thanh toán thành công, buổi
-              học sẽ được tạo trên hệ thống.
+              Chọn gói dịch vụ, xác nhận và thanh toán an toàn. Sau khi thanh toán thành công, buổi học
+              sẽ được tạo trên hệ thống.
             </p>
           ) : null}
         </header>
@@ -145,7 +145,7 @@ export function MentorBookingPage() {
                 <ul className="mt-4 space-y-2 text-xs text-slate-500">
                   <li className="flex items-center gap-2">
                     <Shield className="size-3.5 shrink-0 text-emerald-600" />
-                    Thanh toán bảo mật qua VNPay
+                    Thanh toán bảo mật qua cổng thanh toán
                   </li>
                   <li className="flex items-center gap-2">
                     <CreditCard className="size-3.5 shrink-0 text-slate-400" />
@@ -156,14 +156,20 @@ export function MentorBookingPage() {
                   type="button"
                   disabled={submitting || !selectedVersionId}
                   onClick={() => void handleCheckout()}
-                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+                  aria-busy={submitting}
+                  className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting ? (
-                    <LoadingSpinner size={18} />
+                    <>
+                      <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+                      <span>Đang xử lý...</span>
+                    </>
                   ) : (
-                    <CreditCard className="size-4" />
+                    <>
+                      <CreditCard className="size-4 shrink-0" aria-hidden />
+                      <span>Thanh toán</span>
+                    </>
                   )}
-                  {submitting ? 'Đang tạo đơn...' : 'Thanh toán VNPay'}
                 </button>
               </section>
             ) : null}
