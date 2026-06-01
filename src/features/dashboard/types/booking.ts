@@ -9,6 +9,7 @@ export type DashboardSessionRow = {
   startAt: string;
   endAt: string;
   scheduledAtIso: string | null;
+  scheduledAtEndIso?: string | null;
   counterparty: string;
   status: string;
   rawStatus: string;
@@ -30,6 +31,7 @@ export type BookingApiSession = {
   id?: string;
   title?: string | null;
   scheduledAt?: string | null;
+  scheduledAtEnd?: string | null;
   completedAt?: string | null;
   status?: string | null;
   meetingUrl?: string | null;
@@ -47,6 +49,7 @@ export type BookingApi = {
   packageId?: string | null;
   status?: string | null;
   createdAt?: string | null;
+  progressPercent?: number | null;
   sessions?: BookingApiSession[] | null;
 };
 

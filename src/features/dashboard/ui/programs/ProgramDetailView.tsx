@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Flag, Loader2, MessageSquare, ShoppingBag, User } from 'lucide-react';
+import { Flag, Loader2, MessageSquare, ShoppingBag, User, FileText, CheckCircle2, XCircle, Plus, AlertCircle, Calendar, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
@@ -15,11 +15,16 @@ import {
   openProgramChat,
 } from '@/features/dashboard/lib/programChat';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { reviewService } from '@/services/reviewService';
 import { pickPackageLabel } from '@/lib/resolveOrderPackageNames';
+<<<<<<< Updated upstream
+=======
+import { bookingService } from '@/services/bookingService';
+import { sessionReportService, type SessionReportRequest } from '@/services/sessionReportService';
+>>>>>>> Stashed changes
 
 type Props = {
   item: BookingProgramItem;
@@ -49,6 +54,227 @@ export function ProgramDetailView({
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
 
+<<<<<<< Updated upstream
+=======
+  // States for Scheduling (Xếp lịch)
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleSession, setScheduleSession] = useState<DashboardSessionRow | null>(null);
+  const [scheduledAt, setScheduledAt] = useState('');
+  const [scheduledAtEnd, setScheduledAtEnd] = useState('');
+  const [meetingUrl, setMeetingUrl] = useState('');
+  const [scheduling, setScheduling] = useState(false);
+
+  // States for Custom Session Creation (Thêm buổi học mới)
+  const [createSessionOpen, setCreateSessionOpen] = useState(false);
+  const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [newSessionDescription, setNewSessionDescription] = useState('');
+  const [creatingSession, setCreatingSession] = useState(false);
+
+  // States for Progress Update (Cập nhật tiến trình)
+  const [progressOpen, setProgressOpen] = useState(false);
+  const [progressVal, setProgressVal] = useState(0);
+  const [updatingProgress, setUpdatingProgress] = useState(false);
+
+  // States for Session Report Requests
+  const [reportRequests, setReportRequests] = useState<SessionReportRequest[]>([]);
+  const [loadingReports, setLoadingReports] = useState(false);
+
+  // Modal Create Report Request
+  const [createReqOpen, setCreateReqOpen] = useState(false);
+  const [reqTitle, setReqTitle] = useState('');
+  const [reqDescription, setReqDescription] = useState('');
+  const [reqDueDate, setReqDueDate] = useState('');
+  const [reqSessionId, setReqSessionId] = useState('');
+  const [creatingReq, setCreatingReq] = useState(false);
+
+  // Modal Submit Report (Mentee)
+  const [submitReportOpen, setSubmitReportOpen] = useState(false);
+  const [activeReqId, setActiveReqId] = useState<string | null>(null);
+  const [reportContent, setReportContent] = useState('');
+  const [reportAttachment, setReportAttachment] = useState('');
+  const [submittingReport, setSubmittingReport] = useState(false);
+
+  // Modal Review Report (Mentor)
+  const [reviewReportOpen, setReviewReportOpen] = useState(false);
+  const [reviewReq, setReviewReq] = useState<SessionReportRequest | null>(null);
+  const [reviewStatus, setReviewStatus] = useState<'APPROVED' | 'REJECTED'>('APPROVED');
+  const [reviewFeedback, setReviewFeedback] = useState('');
+  const [reviewingReport, setReviewingReport] = useState(false);
+
+  const handleScheduleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!scheduleSession) return;
+    if (!scheduledAt) {
+      toast.error('Vui lòng chọn ngày giờ học.');
+      return;
+    }
+    if (scheduledAtEnd && new Date(scheduledAtEnd) <= new Date(scheduledAt)) {
+      toast.error('Thời gian kết thúc phải sau thời gian bắt đầu.');
+      return;
+    }
+    setScheduling(true);
+    try {
+      const isoScheduledAt = new Date(scheduledAt).toISOString();
+      const isoScheduledAtEnd = scheduledAtEnd ? new Date(scheduledAtEnd).toISOString() : undefined;
+      await bookingService.updateSession(item.bookingId, scheduleSession.sessionId, {
+        scheduledAt: isoScheduledAt,
+        scheduledAtEnd: isoScheduledAtEnd,
+        meetingUrl: meetingUrl.trim() || undefined,
+      });
+      toast.success('Xếp lịch buổi học thành công.');
+      setScheduleOpen(false);
+      setScheduleSession(null);
+      setScheduledAt('');
+      setScheduledAtEnd('');
+      setMeetingUrl('');
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không xếp được lịch học.');
+    } finally {
+      setScheduling(false);
+    }
+  };
+
+  const fetchReports = async () => {
+    setLoadingReports(true);
+    try {
+      const res = await sessionReportService.listForBooking(item.bookingId);
+      setReportRequests(res);
+    } catch (err) {
+      console.error('Error fetching reports:', err);
+    } finally {
+      setLoadingReports(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, [item]);
+
+  const handleUpdateProgress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (progressVal < 0 || progressVal > 100) {
+      toast.error('Tiến trình phải từ 0 đến 100%.');
+      return;
+    }
+    setUpdatingProgress(true);
+    try {
+      await bookingService.updateProgress(item.bookingId, progressVal);
+      toast.success('Cập nhật tiến trình thành công.');
+      setProgressOpen(false);
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không cập nhật được tiến trình.');
+    } finally {
+      setUpdatingProgress(false);
+    }
+  };
+
+  const handleCreateReportRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reqTitle.trim()) {
+      toast.error('Vui lòng nhập tiêu đề yêu cầu.');
+      return;
+    }
+    setCreatingReq(true);
+    try {
+      const isoDueDate = reqDueDate ? new Date(reqDueDate).toISOString() : undefined;
+      await sessionReportService.createRequest(item.bookingId, {
+        title: reqTitle.trim(),
+        description: reqDescription.trim() || undefined,
+        dueDate: isoDueDate,
+        sessionId: reqSessionId || undefined,
+      });
+      toast.success('Tạo yêu cầu báo cáo thành công.');
+      setCreateReqOpen(false);
+      setReqTitle('');
+      setReqDescription('');
+      setReqDueDate('');
+      setReqSessionId('');
+      fetchReports();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không tạo được yêu cầu.');
+    } finally {
+      setCreatingReq(false);
+    }
+  };
+
+  const handleSubmitReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeReqId) return;
+    if (!reportContent.trim()) {
+      toast.error('Vui lòng nhập nội dung báo cáo.');
+      return;
+    }
+    if (reportAttachment && !reportAttachment.startsWith('http://') && !reportAttachment.startsWith('https://')) {
+      toast.error('Link tài liệu đính kèm phải là URL hợp lệ (bắt đầu bằng http:// hoặc https://).');
+      return;
+    }
+    setSubmittingReport(true);
+    try {
+      await sessionReportService.submit(activeReqId, {
+        content: reportContent.trim(),
+        attachmentUrl: reportAttachment.trim() || undefined,
+      });
+      toast.success('Nộp báo cáo thành công.');
+      setSubmitReportOpen(false);
+      setActiveReqId(null);
+      setReportContent('');
+      setReportAttachment('');
+      fetchReports();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không nộp được báo cáo.');
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
+
+  const handleReviewReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewReq) return;
+    setReviewingReport(true);
+    try {
+      await sessionReportService.review(reviewReq.id, {
+        status: reviewStatus,
+        feedback: reviewFeedback.trim() || undefined,
+      });
+      toast.success('Duyệt báo cáo thành công.');
+      setReviewReportOpen(false);
+      setReviewReq(null);
+      setReviewFeedback('');
+      fetchReports();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không duyệt được báo cáo.');
+    } finally {
+      setReviewingReport(false);
+    }
+  };
+
+  const handleCreateSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSessionTitle.trim()) {
+      toast.error('Vui lòng nhập tiêu đề buổi học.');
+      return;
+    }
+    setCreatingSession(true);
+    try {
+      await bookingService.createSession(item.bookingId, {
+        title: newSessionTitle.trim(),
+        description: newSessionDescription.trim() || undefined,
+      });
+      toast.success('Thêm buổi học mới thành công.');
+      setCreateSessionOpen(false);
+      setNewSessionTitle('');
+      setNewSessionDescription('');
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không tạo được buổi học.');
+    } finally {
+      setCreatingSession(false);
+    }
+  };
+
+>>>>>>> Stashed changes
   const packageName = pickPackageLabel(
     item.orderId,
     item.packageLabel,
@@ -125,6 +351,18 @@ export function ProgramDetailView({
               Báo cáo
             </Link>
           ) : null}
+          {item.sessionPerspective === 'mentor' && (
+            <button
+              type="button"
+              onClick={() => {
+                setProgressVal(item.progressPercent);
+                setProgressOpen(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+            >
+              Cập nhật tiến trình
+            </button>
+          )}
           {showChat && chatAction ? (
             <button
               type="button"
@@ -181,6 +419,55 @@ export function ProgramDetailView({
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex flex-wrap items-center justify-end gap-2">
+<<<<<<< Updated upstream
+=======
+                          {row.meetingUrl ? (
+                            <a
+                              href={row.meetingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100"
+                            >
+                              Vào phòng học
+                            </a>
+                          ) : null}
+                          {item.sessionPerspective === 'mentor' &&
+                          !['completed', 'canceled', 'cancelled', 'disputed'].includes(
+                            row.rawStatus.toLowerCase(),
+                          ) ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setScheduleSession(row);
+                                if (row.scheduledAtIso) {
+                                  const d = new Date(row.scheduledAtIso);
+                                  const tzOffset = d.getTimezoneOffset() * 60000;
+                                  const localTime = new Date(d.getTime() - tzOffset)
+                                    .toISOString()
+                                    .slice(0, 16);
+                                  setScheduledAt(localTime);
+                                } else {
+                                  setScheduledAt('');
+                                }
+                                if (row.scheduledAtEndIso) {
+                                  const d = new Date(row.scheduledAtEndIso);
+                                  const tzOffset = d.getTimezoneOffset() * 60000;
+                                  const localTime = new Date(d.getTime() - tzOffset)
+                                    .toISOString()
+                                    .slice(0, 16);
+                                  setScheduledAtEnd(localTime);
+                                } else {
+                                  setScheduledAtEnd('');
+                                }
+                                setMeetingUrl(row.meetingUrl || '');
+                                setScheduleOpen(true);
+                              }}
+                              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              Xếp lịch
+                            </button>
+                          ) : null}
+>>>>>>> Stashed changes
                           <SessionConfirmActions row={row} onUpdated={onRefresh} />
                           {showReview && row.status === 'Hoàn thành' ? (
                             <button
@@ -260,6 +547,564 @@ export function ProgramDetailView({
           </div>
         </div>
       ) : null}
+<<<<<<< Updated upstream
+=======
+
+      {/* Modal Xếp lịch */}
+      {scheduleOpen && scheduleSession ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setScheduleOpen(false)} />
+          <form
+            onSubmit={(e) => void handleScheduleSave(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Lên lịch buổi học</h3>
+            <p className="text-sm text-slate-500 font-medium">Buổi: {scheduleSession.title}</p>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Ngày giờ bắt đầu (*)</label>
+              <input
+                type="datetime-local"
+                required
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Ngày giờ kết thúc</label>
+              <input
+                type="datetime-local"
+                value={scheduledAtEnd}
+                onChange={(e) => setScheduledAtEnd(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Link phòng họp (Google Meet, Zoom...)</label>
+              <input
+                type="url"
+                value={meetingUrl}
+                onChange={(e) => setMeetingUrl(e.target.value)}
+                placeholder="https://meet.google.com/..."
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setScheduleOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={scheduling}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
+              >
+                {scheduling ? 'Đang lưu…' : 'Lưu lịch'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Modal Thêm buổi học mới */}
+      {createSessionOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCreateSessionOpen(false)} />
+          <form
+            onSubmit={(e) => void handleCreateSession(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Thêm buổi học mới</h3>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tiêu đề buổi học (*)</label>
+              <input
+                type="text"
+                required
+                value={newSessionTitle}
+                onChange={(e) => setNewSessionTitle(e.target.value)}
+                placeholder="Ví dụ: Hướng dẫn viết Proposal"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Mô tả nội dung</label>
+              <textarea
+                value={newSessionDescription}
+                onChange={(e) => setNewSessionDescription(e.target.value)}
+                placeholder="Mô tả tóm tắt nội dung sẽ trao đổi..."
+                className="w-full h-24 resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setCreateSessionOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={creatingSession}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
+              >
+                {creatingSession ? 'Đang tạo…' : 'Tạo buổi học'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Yêu cầu báo cáo buổi học */}
+      <section className="space-y-4 pt-6 border-t border-slate-200/85">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Báo cáo buổi học</h2>
+            <p className="text-xs text-slate-500">Danh sách các yêu cầu nộp báo cáo và tiến trình duyệt</p>
+          </div>
+          {item.sessionPerspective === 'mentor' && (
+            <button
+              type="button"
+              onClick={() => setCreateReqOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-650 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+            >
+              <Plus className="size-3.5" />
+              Tạo yêu cầu báo cáo
+            </button>
+          )}
+        </div>
+
+        {loadingReports ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="size-6 animate-spin text-slate-400" />
+          </div>
+        ) : reportRequests.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500">
+            Chưa có yêu cầu báo cáo nào cho chương trình học này.
+          </p>
+        ) : (
+          <div className="grid gap-3">
+            {reportRequests.map((req) => {
+              const statusColors = {
+                PENDING_SUBMISSION: 'bg-amber-50 text-amber-850 border-amber-205',
+                SUBMITTED: 'bg-blue-50 text-blue-855 border-blue-205',
+                APPROVED: 'bg-emerald-50 text-emerald-855 border-emerald-205',
+                REJECTED: 'bg-rose-50 text-rose-855 border-rose-205',
+              };
+
+              const statusTexts = {
+                PENDING_SUBMISSION: 'Chờ nộp báo cáo',
+                SUBMITTED: 'Đã nộp - Chờ duyệt',
+                APPROVED: 'Đã thông qua',
+                REJECTED: 'Cần sửa đổi (Từ chối)',
+              };
+
+              const associatedSession = item.sessionRows.find((s) => s.sessionId === req.sessionId);
+
+              return (
+                <div
+                  key={req.id}
+                  className="group relative flex flex-col justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-100 hover:shadow-md md:flex-row md:items-center"
+                >
+                  <div className="space-y-1.5 max-w-xl">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="font-semibold text-sm text-slate-900">{req.title}</h4>
+                      <span
+                        className={cn(
+                          'inline-flex items-center rounded-full border px-2 py-0.5 text-2xs font-semibold',
+                          statusColors[req.status],
+                        )}
+                      >
+                        {statusTexts[req.status]}
+                      </span>
+                      {associatedSession && (
+                        <span className="inline-flex items-center rounded-full bg-slate-50 border border-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-600">
+                          Buổi: {associatedSession.title}
+                        </span>
+                      )}
+                    </div>
+                    {req.description && (
+                      <p className="text-xs text-slate-600 line-clamp-2">{req.description}</p>
+                    )}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-2xs text-slate-500 font-medium">
+                      {req.dueDate && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="size-3 text-slate-400" />
+                          Hạn nộp: {new Date(req.dueDate).toLocaleString('vi-VN')}
+                        </span>
+                      )}
+                      <span>Yêu cầu lúc: {new Date(req.createdAt).toLocaleString('vi-VN')}</span>
+                    </div>
+                    
+                    {/* Báo cáo đã nộp / Phản hồi của Mentor */}
+                    {(req.menteeContent || req.mentorFeedback) && (
+                      <div className="mt-3 rounded-lg bg-slate-50 p-3 space-y-2 border border-slate-100">
+                        {req.menteeContent && (
+                          <div className="text-xs">
+                            <span className="font-semibold text-slate-700">Học viên nộp:</span>{' '}
+                            <span className="text-slate-600 whitespace-pre-wrap">{req.menteeContent}</span>
+                            {req.menteeAttachmentUrl && (
+                              <div className="mt-1">
+                                <a
+                                  href={req.menteeAttachmentUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-2xs font-bold text-indigo-600 hover:text-indigo-800"
+                                >
+                                  <ExternalLink className="size-3" />
+                                  Tài liệu đính kèm (Drive)
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {req.mentorFeedback && (
+                          <div className="text-xs border-t border-slate-200/60 pt-2">
+                            <span className="font-semibold text-slate-700">Mentor phản hồi:</span>{' '}
+                            <span className="text-slate-600 whitespace-pre-wrap">{req.mentorFeedback}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 self-end md:self-center">
+                    {/* Action buttons */}
+                    {item.sessionPerspective === 'mentor' && req.status === 'SUBMITTED' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReviewReq(req);
+                          setReviewStatus('APPROVED');
+                          setReviewFeedback(req.mentorFeedback || '');
+                          setReviewReportOpen(true);
+                        }}
+                        className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-sm"
+                      >
+                        Xem &amp; Duyệt
+                      </button>
+                    )}
+
+                    {item.sessionPerspective === 'buyer' && req.status === 'PENDING_SUBMISSION' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveReqId(req.id);
+                          setReportContent('');
+                          setReportAttachment('');
+                          setSubmitReportOpen(true);
+                        }}
+                        className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition shadow-sm"
+                      >
+                        Nộp báo cáo
+                      </button>
+                    )}
+
+                    {item.sessionPerspective === 'buyer' && req.status === 'REJECTED' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveReqId(req.id);
+                          setReportContent(req.menteeContent || '');
+                          setReportAttachment(req.menteeAttachmentUrl || '');
+                          setSubmitReportOpen(true);
+                        }}
+                        className="rounded-lg bg-amber-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 transition shadow-sm"
+                      >
+                        Nộp lại báo cáo
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Modal Cập nhật tiến trình */}
+      {progressOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setProgressOpen(false)} />
+          <form
+            onSubmit={(e) => void handleUpdateProgress(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Cập nhật tiến trình gói dịch vụ</h3>
+            <p className="text-xs text-slate-500">Cập nhật tiến trình hoàn thành của gói dịch vụ này cho học viên.</p>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến trình (%)</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={progressVal}
+                  onChange={(e) => setProgressVal(Number(e.target.value))}
+                  className="flex-1 accent-indigo-600"
+                />
+                <span className="w-12 text-right font-semibold text-indigo-600 text-sm">{progressVal}%</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setProgressOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={updatingProgress}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
+              >
+                {updatingProgress ? 'Đang lưu…' : 'Lưu tiến trình'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Modal Tạo yêu cầu báo cáo */}
+      {createReqOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCreateReqOpen(false)} />
+          <form
+            onSubmit={(e) => void handleCreateReportRequest(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Yêu cầu nộp báo cáo</h3>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tiêu đề yêu cầu (*)</label>
+              <input
+                type="text"
+                required
+                value={reqTitle}
+                onChange={(e) => setReqTitle(e.target.value)}
+                placeholder="Ví dụ: Báo cáo kết quả buổi 1"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Mô tả chi tiết</label>
+              <textarea
+                value={reqDescription}
+                onChange={(e) => setReqDescription(e.target.value)}
+                placeholder="Nêu rõ nội dung, các mục học viên cần viết báo cáo..."
+                className="w-full h-24 resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Chọn buổi học liên quan (tùy chọn)</label>
+              <select
+                value={reqSessionId}
+                onChange={(e) => setReqSessionId(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition bg-white"
+              >
+                <option value="">-- Không liên quan buổi nào --</option>
+                {item.sessionRows.map((s) => (
+                  <option key={s.sessionId} value={s.sessionId}>
+                    {s.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Hạn nộp</label>
+              <input
+                type="datetime-local"
+                value={reqDueDate}
+                onChange={(e) => setReqDueDate(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setCreateReqOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={creatingReq}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition"
+              >
+                {creatingReq ? 'Đang tạo…' : 'Gửi yêu cầu'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Modal Nộp báo cáo */}
+      {submitReportOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSubmitReportOpen(false)} />
+          <form
+            onSubmit={(e) => void handleSubmitReport(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Nộp báo cáo học tập</h3>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nội dung báo cáo (*)</label>
+              <textarea
+                required
+                value={reportContent}
+                onChange={(e) => setReportContent(e.target.value)}
+                placeholder="Nhập nội dung tóm tắt buổi học, kết quả đạt được, khó khăn..."
+                className="w-full h-32 resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Link đính kèm tài liệu (Google Drive, Github, v.v.)</label>
+              <input
+                type="url"
+                value={reportAttachment}
+                onChange={(e) => setReportAttachment(e.target.value)}
+                placeholder="https://drive.google.com/..."
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setSubmitReportOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={submittingReport}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition"
+              >
+                {submittingReport ? 'Đang nộp…' : 'Nộp báo cáo'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Modal Duyệt báo cáo */}
+      {reviewReportOpen && reviewReq ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setReviewReportOpen(false)} />
+          <form
+            onSubmit={(e) => void handleReviewReport(e)}
+            className="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Xem &amp; Duyệt báo cáo</h3>
+            
+            <div className="rounded-xl bg-slate-50 p-4 border border-slate-150 space-y-3">
+              <div>
+                <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Yêu cầu</span>
+                <span className="text-sm font-semibold text-slate-800">{reviewReq.title}</span>
+              </div>
+              <div>
+                <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Nội dung học viên nộp</span>
+                <p className="text-xs text-slate-700 whitespace-pre-wrap font-medium">{reviewReq.menteeContent}</p>
+              </div>
+              {reviewReq.menteeAttachmentUrl && (
+                <div>
+                  <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Tài liệu đính kèm</span>
+                  <a
+                    href={reviewReq.menteeAttachmentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 mt-0.5"
+                  >
+                    <ExternalLink className="size-3.5" />
+                    Mở link tài liệu đính kèm (Drive)
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Đánh giá / Phán quyết</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReviewStatus('APPROVED')}
+                  className={cn(
+                    'rounded-xl py-2.5 text-xs font-bold border transition flex items-center justify-center gap-1.5',
+                    reviewStatus === 'APPROVED'
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-850 ring-2 ring-emerald-100'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600',
+                  )}
+                >
+                  <CheckCircle2 className="size-4" />
+                  Đồng ý (Thông qua)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReviewStatus('REJECTED')}
+                  className={cn(
+                    'rounded-xl py-2.5 text-xs font-bold border transition flex items-center justify-center gap-1.5',
+                    reviewStatus === 'REJECTED'
+                      ? 'bg-rose-50 border-rose-205 text-rose-850 ring-2 ring-rose-100'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600',
+                  )}
+                >
+                  <XCircle className="size-4" />
+                  Từ chối (Cần chỉnh sửa)
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Gợi ý / Nhận xét / Lý do từ chối</label>
+              <textarea
+                value={reviewFeedback}
+                onChange={(e) => setReviewFeedback(e.target.value)}
+                placeholder="Nhận xét của bạn về báo cáo này để học viên biết..."
+                className="w-full h-24 resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setReviewReportOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={reviewingReport}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition"
+              >
+                {reviewingReport ? 'Đang gửi…' : 'Lưu phán quyết'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+>>>>>>> Stashed changes
     </div>
   );
 }
