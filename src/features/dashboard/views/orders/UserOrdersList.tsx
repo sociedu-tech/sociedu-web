@@ -9,7 +9,7 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { useUserOrders } from '@/features/dashboard/hooks/useUserOrders';
-import { orderStatusBadgeClass, shortOrderId } from '@/features/dashboard/lib/orderLabels';
+import { orderStatusBadgeClass, shortOrderId, userOrderDetailPath } from '@/features/dashboard/lib/orderLabels';
 
 export function UserOrdersList() {
   const { orders, loading, error, refresh, page, size, total, totalPages, setPage, setSize, repay } =
@@ -49,8 +49,8 @@ export function UserOrdersList() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-slate-600">
-        Đơn chờ thanh toán hết hạn sau 15 phút nếu chưa hoàn tất. Đơn thất bại hoặc hết hạn có thể bấm{' '}
-        <span className="font-medium text-slate-800">Thanh toán lại</span>.
+        Đơn chờ thanh toán hết hạn sau 15 phút nếu chưa hoàn tất. Đơn thất bại có thể bấm{' '}
+        <span className="font-medium text-slate-800">Thanh toán lại</span>; đơn đã hết hạn cần đặt gói mới.
       </p>
 
       {actionError ? (
@@ -91,7 +91,9 @@ export function UserOrdersList() {
                   return (
                     <tr key={order.id} className="bg-white hover:bg-slate-50/80">
                       <td className="px-4 py-3 font-mono text-xs font-medium text-slate-700">
-                        {shortOrderId(order.id)}
+                        <Link href={userOrderDetailPath(order.id)} className="hover:text-primary">
+                          {shortOrderId(order.id)}
+                        </Link>
                       </td>
                       <td className="hidden max-w-[200px] truncate px-4 py-3 text-slate-600 sm:table-cell">
                         {order.packageLabel}
@@ -116,27 +118,33 @@ export function UserOrdersList() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {order.canPay ? (
-                          <button
-                            type="button"
-                            disabled={isPaying}
-                            onClick={() => void handleRepay(order.id)}
-                            className="inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          <Link
+                            href={userOrderDetailPath(order.id)}
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                           >
-                            {isPaying ? (
-                              <>
-                                <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                                Đang xử lý…
-                              </>
-                            ) : order.status === 'pending_payment' ? (
-                              'Thanh toán'
-                            ) : (
-                              'Thanh toán lại'
-                            )}
-                          </button>
-                        ) : (
-                          <span className="text-xs text-slate-400">—</span>
-                        )}
+                            Chi tiết
+                          </Link>
+                          {order.canPay ? (
+                            <button
+                              type="button"
+                              disabled={isPaying}
+                              onClick={() => void handleRepay(order.id)}
+                              className="inline-flex min-w-[7.5rem] items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {isPaying ? (
+                                <>
+                                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                                  Đang xử lý…
+                                </>
+                              ) : order.status === 'pending_payment' ? (
+                                'Thanh toán'
+                              ) : (
+                                'Thanh toán lại'
+                              )}
+                            </button>
+                          ) : null}
+                        </div>
                       </td>
                     </tr>
                   );

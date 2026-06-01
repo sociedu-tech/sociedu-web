@@ -1,28 +1,63 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { orderService } from '@/services/orderService';
 import { formatViDateTime } from '@/lib/apiUtils';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
+import { orderStatusLabel } from '@/features/dashboard/lib/orderLabels';
+import { pickDisplayName, resolveUserNames } from '@/lib/resolveUserNames';
 
 export type MentorOrderRow = {
   id: string;
+  buyerId: string | null;
   mentee: string;
   package: string;
   amount: number;
   date: string;
+  paidAt: string | null;
+  rawStatus: string;
   status: string;
   type: 'credit' | 'withdrawal';
   bank?: string;
 };
 
-const orderStatusLabel = (status?: string | null): string => {
-  const s = String(status ?? '').toUpperCase();
-  if (s === 'PAID' || s === 'COMPLETED') return 'Hoàn thành';
-  if (s === 'PENDING' || s === 'PROCESSING') return 'Đang xử lý';
-  if (s === 'CANCELLED' || s === 'CANCELED') return 'Đã hủy';
-  return status?.trim() || '—';
-};
+export type MentorOrderFilter = 'all' | 'pending_payment' | 'paid' | 'failed' | 'expired';
+
+export const MENTOR_ORDER_FILTERS: { id: MentorOrderFilter; label: string }[] = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'pending_payment', label: 'Chờ thanh toán' },
+  { id: 'paid', label: 'Đã thanh toán' },
+  { id: 'failed', label: 'Thất bại' },
+  { id: 'expired', label: 'Hết hạn' },
+];
+
+function mapRawOrder(raw: Record<string, unknown>): MentorOrderRow {
+  const buyerLabel =
+    (raw.buyerLabel as string) ||
+    (raw.buyerId ? `Học viên #${String(raw.buyerId).slice(0, 8)}` : '—');
+  const packageName =
+    (raw.packageName as string) ||
+    (raw.serviceId ? `Gói #${String(raw.serviceId).slice(0, 8)}` : 'Gói dịch vụ');
+  const rawStatus = String(raw.status ?? '');
+
+  return {
+    id: String(raw.id ?? ''),
+    buyerId: raw.buyerId ? String(raw.buyerId) : null,
+    mentee: buyerLabel,
+    package: packageName,
+    amount: Number(raw.totalAmount ?? 0),
+    date: formatViDateTime(raw.createdAt as string | undefined),
+    paidAt: raw.paidAt ? formatViDateTime(raw.paidAt as string) : null,
+    rawStatus,
+    status: orderStatusLabel(rawStatus),
+    type: 'credit',
+  };
+}
+
+export function filterMentorOrders(orders: MentorOrderRow[], filter: MentorOrderFilter): MentorOrderRow[] {
+  if (filter === 'all') return orders;
+  return orders.filter((order) => order.rawStatus.toLowerCase() === filter);
+}
 
 export function useMentorOrders() {
   const paginated = usePaginatedList<MentorOrderRow>({
@@ -30,26 +65,37 @@ export function useMentorOrders() {
       const p = await orderService.getIncomingOrders(page, size);
       return {
         ...p,
-        items: p.items.map((raw) => {
-          const row = raw as Record<string, unknown>;
-          const buyerLabel = (row.buyerLabel as string) || (row.buyerId ? `Học viên #${String(row.buyerId).slice(0, 8)}` : '—');
-          const packageName = (row.packageName as string) || (row.serviceId ? `Gói #${String(row.serviceId).slice(0, 8)}` : 'Gói dịch vụ');
-          return {
-            id: String(row.id ?? ''),
-            mentee: buyerLabel,
-            package: packageName,
-            amount: Number(row.totalAmount ?? 0),
-            date: formatViDateTime(row.createdAt as string | undefined),
-            status: orderStatusLabel(row.status as string | undefined),
-            type: 'credit' as const,
-          };
-        }),
+        items: p.items.map((raw) => mapRawOrder(raw as Record<string, unknown>)),
       };
     }, []),
   });
 
+  const [orders, setOrders] = useState<MentorOrderRow[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const base = paginated.items;
+    const buyerIds = base.map((o) => o.buyerId).filter(Boolean) as string[];
+
+    const enrich = async () => {
+      const names = buyerIds.length ? await resolveUserNames(buyerIds) : {};
+      if (cancelled) return;
+      setOrders(
+        base.map((order) => ({
+          ...order,
+          mentee: pickDisplayName(order.buyerId, order.mentee, names),
+        })),
+      );
+    };
+
+    void enrich();
+    return () => {
+      cancelled = true;
+    };
+  }, [paginated.items]);
+
   return {
-    orders: paginated.items,
+    orders,
     loading: paginated.loading,
     error: paginated.error,
     page: paginated.page,

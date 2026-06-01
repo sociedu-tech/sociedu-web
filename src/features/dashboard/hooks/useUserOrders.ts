@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { orderService } from '@/services/orderService';
 import { formatViDateTime } from '@/lib/apiUtils';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
-import { orderStatusLabel } from '@/features/dashboard/lib/orderLabels';
+import { orderCanPay, orderStatusLabel } from '@/features/dashboard/lib/orderLabels';
 import type { ServiceOrderDto, UserOrderRow } from '@/features/dashboard/types/serviceOrder';
 
 function mapOrder(raw: unknown): UserOrderRow {
@@ -20,7 +20,7 @@ function mapOrder(raw: unknown): UserOrderRow {
     paymentExpiresAt: row.paymentExpiresAt ? formatViDateTime(row.paymentExpiresAt) : null,
     status: String(row.status ?? ''),
     statusLabel: orderStatusLabel(row.status),
-    canPay: Boolean(row.canPay),
+    canPay: orderCanPay(row.status, row.paymentExpiresAt, row.canPay),
   };
 }
 

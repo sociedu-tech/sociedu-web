@@ -38,3 +38,33 @@ export function shortOrderId(id?: string | null): string {
   const s = String(id);
   return s.length > 8 ? `#${s.slice(0, 8).toUpperCase()}` : `#${s}`;
 }
+
+/** Đơn hết hạn thanh toán hoặc quá paymentExpiresAt thì không cho thanh toán lại. */
+export function orderCanPay(
+  status?: string | null,
+  paymentExpiresAt?: string | null,
+  apiCanPay?: boolean,
+): boolean {
+  const key = String(status ?? '').toLowerCase();
+  if (key === 'expired') return false;
+  if (key === 'pending_payment' && paymentExpiresAt) {
+    const expires = new Date(paymentExpiresAt);
+    if (!Number.isNaN(expires.getTime()) && expires.getTime() <= Date.now()) {
+      return false;
+    }
+  }
+  if (key === 'pending_payment' || key === 'failed') return true;
+  return Boolean(apiCanPay);
+}
+
+export const USER_ORDERS_PATH = '/dashboard/my-orders';
+
+export const MENTOR_ORDERS_PATH = '/dashboard/orders';
+
+export function userOrderDetailPath(orderId: string): string {
+  return `${USER_ORDERS_PATH}/${orderId}`;
+}
+
+export function mentorOrderDetailPath(orderId: string): string {
+  return `${MENTOR_ORDERS_PATH}/${orderId}`;
+}

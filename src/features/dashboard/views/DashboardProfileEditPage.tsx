@@ -126,7 +126,7 @@ export function DashboardProfileEditPage() {
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Giới thiệu ngắn (bio)</span>
+              <span className="mb-1 block text-sm font-medium text-gray-700">Giới thiệu ngắn</span>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
@@ -143,7 +143,7 @@ export function DashboardProfileEditPage() {
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
                 className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-                placeholder="Ví dụ: Full-stack · React & Spring Boot"
+                placeholder="Ví dụ: Lập trình viên full-stack · React và Spring Boot"
               />
             </label>
           </div>
@@ -186,7 +186,7 @@ export function DashboardProfileEditPage() {
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">GPA (thang 4.0 hoặc hệ trường)</span>
+              <span className="mb-1 block text-sm font-medium text-gray-700">Điểm trung bình (thang 4,0 hoặc hệ trường)</span>
               <input
                 value={gpa}
                 onChange={(e) => setGpa(e.target.value)}
@@ -376,7 +376,7 @@ export function DashboardProfileEditPage() {
               value={skillsText}
               onChange={(e) => setSkillsText(e.target.value)}
               className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-              placeholder="TypeScript, React, Tiếng Anh B2, …"
+              placeholder="JavaScript, React, Tiếng Anh B2, …"
             />
           </label>
           <label className="mt-4 block">
@@ -388,7 +388,7 @@ export function DashboardProfileEditPage() {
               onChange={(e) => setCertsText(e.target.value)}
               rows={5}
               className="w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-              placeholder={'AWS Cloud Practitioner\nICPC Regional — Honorable\n…'}
+              placeholder={'Chứng chỉ AWS Cloud Practitioner\nGiải khuyến khích ICPC miền Bắc\n…'}
             />
           </label>
         </section>
@@ -402,37 +402,37 @@ export function DashboardProfileEditPage() {
             <label className="block">
               <span className="mb-1 flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Github className="size-4 text-gray-400" />
-                GitHub
+                Liên kết GitHub
               </span>
               <input
                 value={github}
                 onChange={(e) => setGithub(e.target.value)}
                 className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-                placeholder="https://github.com/username"
+                placeholder="https://github.com/ten-dang-nhap"
               />
             </label>
             <label className="block">
               <span className="mb-1 flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Linkedin className="size-4 text-gray-400" />
-                LinkedIn
+                Liên kết LinkedIn
               </span>
               <input
                 value={linkedin}
                 onChange={(e) => setLinkedin(e.target.value)}
                 className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-                placeholder="https://linkedin.com/in/…"
+                placeholder="https://linkedin.com/in/ten-dang-nhap"
               />
             </label>
             <label className="block">
               <span className="mb-1 flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Globe className="size-4 text-gray-400" />
-                Website / Portfolio
+                Trang web cá nhân
               </span>
               <input
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
-                placeholder="https://…"
+                placeholder="https://ten-mien-cua-ban.com"
               />
             </label>
           </div>

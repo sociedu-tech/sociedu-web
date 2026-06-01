@@ -6,7 +6,7 @@ export type ModerationListSlug = (typeof MODERATION_LIST_SLUGS)[number];
 const BASE = '/dashboard/moderation';
 
 export function listSlugForReport(r: AdminModerationReport): ModerationListSlug {
-  if (r.targetType === 'session') return 'sessions';
+  if (r.targetType === 'session' || r.targetType === 'booking') return 'sessions';
   if (r.targetType === 'review') return 'reviews';
   if (r.targetType === 'user' || r.targetType === 'mentor') return 'people';
   return 'all';

@@ -29,14 +29,14 @@ export const ROUTES = {
     },
     // ---- USER ROUTES ----
     USER: {
-      SESSIONS: { path: '/dashboard/sessions', label: 'Buổi học', roles: [ROLES.USER], sidebar: true },
+      MENTORING: { path: '/dashboard/mentoring', label: 'Mentoring', roles: [ROLES.USER], sidebar: true },
       MY_ORDERS: { path: '/dashboard/my-orders', label: 'Đơn hàng', roles: [ROLES.USER], sidebar: true },
       FIND_MENTORS: { path: '/dashboard/find-mentors', label: 'Tìm Mentor', roles: [ROLES.USER], sidebar: true },
     },
     // ---- MENTOR ROUTES ----
     MENTOR: {
       PACKAGES: { path: '/dashboard/packages', label: 'Gói dịch vụ', roles: [ROLES.MENTOR], sidebar: true },
-      SCHEDULE: { path: '/dashboard/schedule', label: 'Lịch dạy', roles: [ROLES.MENTOR], sidebar: true },
+      MENTORING: { path: '/dashboard/mentoring', label: 'Mentoring', roles: [ROLES.MENTOR], sidebar: true },
       MENTEES: { path: '/dashboard/mentees', label: 'Học viên', roles: [ROLES.MENTOR], sidebar: true },
       ORDERS: { path: '/dashboard/orders', label: 'Đơn hàng', roles: [ROLES.MENTOR], sidebar: true },
     },
@@ -46,7 +46,7 @@ export const ROUTES = {
       USERS: { path: '/dashboard/users', label: 'Người dùng', roles: [ROLES.ADMIN], sidebar: true },
       MENTORS: { path: '/dashboard/mentors', label: 'Quản lý Mentor', roles: [ROLES.ADMIN], sidebar: true },
       PRODUCT_REQUESTS: { path: '/dashboard/product-requests', label: 'Duyệt Sản phẩm', roles: [ROLES.ADMIN], sidebar: true },
-      BOOKINGS: { path: '/dashboard/bookings', label: 'Giao dịch / Booking', roles: [ROLES.ADMIN], sidebar: true },
+      MENTORING: { path: '/dashboard/mentoring', label: 'Mentoring', roles: [ROLES.ADMIN], sidebar: true },
       REPORTS: { path: '/dashboard/moderation', label: 'Báo cáo & tranh chấp', roles: [ROLES.ADMIN], sidebar: true },
     }
   }

@@ -1,45 +1,40 @@
 'use client';
 
+import Link from 'next/link';
 import {
   ShoppingBag,
-  CheckCircle2,
-  Clock,
-  XCircle,
   Eye,
   MessageSquare,
-  MoreVertical,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MentorOrderRow } from '@/features/dashboard/hooks/useMentorOrders';
+import { mentorOrderDetailPath, orderStatusBadgeClass, shortOrderId } from '@/features/dashboard/lib/orderLabels';
 
-type Props = { order: MentorOrderRow };
+type Props = {
+  order: MentorOrderRow;
+  messaging?: boolean;
+  onMessage: (order: MentorOrderRow) => void;
+};
 
-export function MentorOrderCard({ order }: Props) {
+export function MentorOrderCard({ order, messaging, onMessage }: Props) {
+  const canMessage = ['paid', 'completed'].includes(order.rawStatus.toLowerCase());
+
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all">
-      {order.status === 'Chờ xác nhận' ? (
-        <div className="absolute left-0 top-0 h-full w-1 bg-red-500" />
-      ) : null}
-
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <div
-            className={cn(
-              'flex size-12 items-center justify-center rounded-xl border',
-              order.status === 'Chờ xác nhận'
-                ? 'border-red-100 bg-red-50 text-red-600'
-                : order.status === 'Đã xác nhận'
-                  ? 'border-blue-100 bg-blue-50 text-blue-600'
-                  : order.status === 'Hoàn thành'
-                    ? 'border-green-100 bg-green-50 text-green-600'
-                    : 'border-slate-100 bg-slate-50 text-slate-500',
-            )}
-          >
+          <div className="flex size-12 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-slate-500">
             <ShoppingBag size={20} />
           </div>
           <div>
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-wider text-slate-500">{order.id}</span>
+              <Link
+                href={mentorOrderDetailPath(order.id)}
+                className="font-mono text-xs font-semibold tracking-wider text-slate-500 hover:text-primary"
+              >
+                {shortOrderId(order.id)}
+              </Link>
             </div>
             <h3 className="text-base font-semibold text-slate-900">{order.package}</h3>
             <p className="text-sm text-slate-500">
@@ -55,70 +50,46 @@ export function MentorOrderCard({ order }: Props) {
           </div>
           <div>
             <p className="mb-1 text-xs font-medium text-slate-500">Số tiền</p>
-            <p className="text-sm font-bold text-primary">{order.amount.toLocaleString()}đ</p>
+            <p className="text-sm font-bold text-primary">{order.amount.toLocaleString('vi-VN')}đ</p>
           </div>
           <div>
             <p className="mb-1 text-xs font-medium text-slate-500">Trạng thái</p>
-            <div
+            <span
               className={cn(
-                'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium',
-                order.status === 'Chờ xác nhận'
-                  ? 'bg-red-50 text-red-700'
-                  : order.status === 'Đã xác nhận'
-                    ? 'bg-blue-50 text-blue-700'
-                    : order.status === 'Hoàn thành'
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-slate-100 text-slate-700',
+                'inline-flex rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset',
+                orderStatusBadgeClass(order.rawStatus),
               )}
             >
-              {order.status === 'Hoàn thành' ? (
-                <CheckCircle2 size={12} />
-              ) : order.status === 'Chờ xác nhận' ? (
-                <Clock size={12} />
-              ) : order.status === 'Đã hủy' ? (
-                <XCircle size={12} />
-              ) : (
-                <CheckCircle2 size={12} />
-              )}
               {order.status}
-            </div>
+            </span>
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-end gap-3 lg:mt-0">
-          {order.status === 'Chờ xác nhận' ? (
-            <>
-              <button
-                type="button"
-                className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
-              >
-                Chấp nhận
-              </button>
-              <button
-                type="button"
-                className="rounded-lg border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-              >
-                Từ chối
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition-colors hover:bg-slate-50"
-              title="Xem chi tiết"
-            >
-              <Eye size={18} />
-            </button>
-          )}
+        <div className="mt-4 flex items-center justify-end gap-2 lg:mt-0">
+          <Link
+            href={mentorOrderDetailPath(order.id)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            <Eye size={16} />
+            Chi tiết
+          </Link>
           <button
             type="button"
-            className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition-colors hover:bg-slate-50"
-            title="Nhắn tin"
+            disabled={!canMessage || messaging}
+            title={
+              canMessage
+                ? 'Nhắn tin với học viên'
+                : 'Nhắn tin khả dụng sau khi học viên thanh toán thành công'
+            }
+            onClick={() => onMessage(order)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <MessageSquare size={18} />
-          </button>
-          <button type="button" className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100">
-            <MoreVertical size={18} />
+            {messaging ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <MessageSquare size={16} />
+            )}
+            Nhắn tin
           </button>
         </div>
       </div>

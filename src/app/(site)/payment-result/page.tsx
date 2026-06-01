@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { orderService } from '@/services/orderService';
 import { paymentService } from '@/services/paymentService';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
 function PaymentResultContent() {
   const searchParams = useSearchParams();
@@ -84,11 +85,20 @@ function PaymentResultContent() {
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {(isSuccess || polledStatus?.toLowerCase() === 'paid' || polledStatus?.toLowerCase() === 'completed') ? (
           <>
-            <Button href="/dashboard/sessions" variant="primary">
-              Xem buổi học
+            <Button href={MENTORING_PATH} variant="primary">
+              Xem Mentoring
             </Button>
             <Button href="/dashboard/my-orders" variant="outline">
               Đơn hàng của tôi
+            </Button>
+          </>
+        ) : polledStatus?.toLowerCase() === 'expired' ? (
+          <>
+            <Button href="/dashboard/find-mentors" variant="primary">
+              Đặt gói mới
+            </Button>
+            <Button href="/dashboard/my-orders" variant="outline">
+              Xem đơn hàng
             </Button>
           </>
         ) : (

@@ -13,7 +13,7 @@ import { listSlugForReport, moderationDetailPath } from '@/lib/moderationDetailR
 const TARGET_LABEL: Record<ModerationTargetType, string> = {
   user: 'Người dùng',
   mentor: 'Mentor',
-  booking: 'Booking',
+  booking: 'Lộ trình mentoring',
   session: 'Buổi học',
   review: 'Đánh giá',
 };

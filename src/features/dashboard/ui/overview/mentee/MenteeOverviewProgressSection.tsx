@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { StatsChartCard, StatsHorizontalBarChart } from '@/features/dashboard/ui/stats';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
 type Props = { sessionProgressBars: { label: string; pct: number }[] };
 
@@ -22,7 +23,7 @@ export function MenteeOverviewProgressSection({ sessionProgressBars }: Props) {
         <p className="py-8 text-center text-sm text-slate-500">Chưa có buổi học.</p>
       )}
       <div className="flex flex-wrap justify-end gap-4 border-t border-slate-100 pt-3 text-xs">
-        <Link href="/dashboard/sessions" className="font-medium text-primary hover:underline">
+        <Link href={MENTORING_PATH} className="font-medium text-primary hover:underline">
           Xem tất cả buổi học
         </Link>
       </div>

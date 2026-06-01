@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
 import type { MenteeOverviewData } from '@/features/dashboard/hooks/useMenteeDashboardOverview';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
 type Props = { nextSession: MenteeOverviewData['nextSession'] };
 
@@ -33,7 +34,7 @@ export function MenteeNextSessionBanner({ nextSession }: Props) {
         </div>
       </div>
       <Link
-        href="/dashboard/sessions"
+        href={MENTORING_PATH}
         className="shrink-0 text-sm font-medium text-primary hover:underline sm:text-right"
       >
         Xem lịch

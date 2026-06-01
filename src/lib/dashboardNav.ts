@@ -1,34 +1,38 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Calendar,
   Users,
   ShoppingBag,
   Search,
   Home,
   Package,
-  Video,
+  BookOpen,
   MessageCircle,
-  UserCheck,
   UserCog,
+  UserCircle,
   Flag,
   ShieldCheck,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
+import { MENTORING_NAV, MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
 export type ShellNavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
-  /** Khi true, chỉ active đúng pathname === href */
   exact?: boolean;
-  /** Nhóm trong sidebar (tiêu đề phụ) */
   group?: string;
-  /** Danh sách trang con của mục này (để làm Menu xổ xuống/Accordion) */
   children?: { href: string; label: string; exact?: boolean }[];
 };
 
 const ACCOUNT_NAV_ITEMS: ShellNavItem[] = [
+  {
+    href: ROUTES.DASHBOARD.SHARED.PROFILE_EDIT.path,
+    label: 'Cập nhật hồ sơ',
+    icon: UserCircle,
+    exact: true,
+    group: 'Tài khoản',
+  },
   {
     href: ROUTES.DASHBOARD.SHARED.SECURITY.path,
     label: 'Bảo mật tài khoản',
@@ -50,12 +54,10 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
         label: 'Quản lý Mentor',
         icon: UserCog,
         group: 'Quản trị',
-        children: [
-          { href: ROUTES.DASHBOARD.ADMIN.MENTORS.path, label: 'Danh mục', exact: true },
-        ]
+        children: [{ href: ROUTES.DASHBOARD.ADMIN.MENTORS.path, label: 'Danh mục', exact: true }],
       },
       { href: ROUTES.DASHBOARD.ADMIN.USERS.path, label: 'Người dùng', icon: Users, group: 'Quản trị' },
-      { href: ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, label: 'Đặt lịch', icon: Calendar, group: 'Quản trị' },
+      { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Quản trị' },
       {
         href: ROUTES.DASHBOARD.ADMIN.REPORTS.path,
         label: 'Báo cáo & tranh chấp',
@@ -65,7 +67,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
           { href: ROUTES.DASHBOARD.ADMIN.REPORTS.path, label: 'Tất cả', exact: true },
           { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`, label: 'Người dùng & mentor' },
           { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`, label: 'Đánh giá' },
-          { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`, label: 'Buổi học & tranh chấp' },
+          { href: `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`, label: MENTORING_NAV },
         ],
       },
       ...ACCOUNT_NAV_ITEMS,
@@ -77,7 +79,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: '/dashboard', label: 'Trang chủ', icon: Home, exact: true, group: 'Chính' },
       { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Chính' },
       { href: '/dashboard/packages', label: 'Dịch vụ', icon: Package, group: 'Công việc' },
-      { href: '/dashboard/schedule', label: 'Lịch dạy', icon: Calendar, group: 'Công việc' },
+      { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Công việc' },
       { href: '/dashboard/mentees', label: 'Học viên', icon: Users, group: 'Công việc' },
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
       ...ACCOUNT_NAV_ITEMS,
@@ -87,7 +89,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
   return [
     { href: '/dashboard', label: 'Trang chủ', icon: Home, exact: true, group: 'Chính' },
     { href: '/dashboard/chat', label: 'Tin nhắn', icon: MessageCircle, exact: true, group: 'Chính' },
-    { href: '/dashboard/sessions', label: 'Buổi học', icon: Video, group: 'Học tập' },
+    { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Học tập' },
     { href: '/dashboard/my-orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Học tập' },
     { href: '/dashboard/find-mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
     ...ACCOUNT_NAV_ITEMS,
@@ -98,7 +100,6 @@ const SHELL_GROUP_ORDER = ['Chính', 'Quản trị', 'Công việc', 'Học tậ
 
 export type ShellNavGroup = { title: string; items: ShellNavItem[] };
 
-/** Gom mục theo `group` để hiển thị tiêu đề nhóm trong sidebar. */
 export function groupShellNavItems(items: ShellNavItem[]): ShellNavGroup[] {
   const map = new Map<string, ShellNavItem[]>();
   for (const item of items) {
@@ -131,32 +132,33 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 const TITLE_ENTRIES: [string, string][] = [
   [ROUTES.DASHBOARD.ADMIN.MENTORS.path, 'Quản lý Mentor'],
   [ROUTES.DASHBOARD.ADMIN.USERS.path, 'Người dùng'],
-  [ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, 'Đặt lịch'],
+  [MENTORING_PATH, MENTORING_NAV],
   [ROUTES.DASHBOARD.ADMIN.REPORTS.path, 'Báo cáo & khiếu nại'],
   ['/dashboard/mentors/', 'Chi tiết Mentor'],
   ['/dashboard/mentors/[mentorId]/packages', 'Gói dịch vụ Mentor'],
   ['/dashboard/mentors/[mentorId]/mentees', 'Học viên của Mentor'],
   ['/dashboard/packages', 'Gói dịch vụ'],
-  ['/dashboard/schedule', 'Lịch dạy'],
   ['/dashboard/mentees', 'Học viên'],
   ['/dashboard/orders', 'Đơn hàng'],
 ];
 
-
-// sd?
 export function getDashboardTitle(pathname: string): string {
   const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
   if (normalized === '/dashboard') return 'Trang chủ';
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
   if (normalized === '/dashboard/security') return 'Bảo mật tài khoản';
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
-  if (normalized === '/dashboard/sessions') return 'Buổi học';
+  if (/^\/dashboard\/mentoring\/[^/]+\/report$/.test(normalized)) return 'Gửi báo cáo';
+  if (/^\/dashboard\/mentoring\/[^/]+$/.test(normalized)) return 'Chi tiết';
+  if (normalized === MENTORING_PATH) return MENTORING_NAV;
+  if (/^\/dashboard\/my-orders\/[^/]+$/.test(normalized)) return 'Chi tiết đơn hàng';
   if (normalized === '/dashboard/my-orders') return 'Đơn hàng của tôi';
+  if (/^\/dashboard\/orders\/[^/]+$/.test(normalized)) return 'Chi tiết đơn hàng';
   if (normalized === '/dashboard/find-mentors') return 'Tìm mentor';
   if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — Tất cả';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Người dùng & mentor';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`) return 'Báo cáo — Đánh giá';
-  if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`) return 'Báo cáo — Buổi học';
+  if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`) return `Báo cáo — ${MENTORING_NAV}`;
   if (/^\/dashboard\/moderation\/(all|people|reviews|sessions)\/[^/]+$/.test(normalized)) {
     return 'Chi tiết báo cáo';
   }
@@ -174,15 +176,37 @@ export function getDashboardTitle(pathname: string): string {
   return 'Trang chủ';
 }
 
-/**
- * Phần breadcrumb sau mục "Bảng điều khiển" (đã render riêng trong top bar).
- * Ví dụ: /dashboard → [{ }], /dashboard/projects → [{ Dự án }].
- */
 export function getDashboardBreadcrumb(pathname: string): { label: string; href?: string }[] {
   const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
   const title = getDashboardTitle(pathname);
   if (normalized === '/dashboard') {
     return [{ label: 'Trang chủ' }];
+  }
+  if (/^\/dashboard\/mentoring\/([^/]+)\/report$/.test(normalized)) {
+    const bookingId = normalized.match(/^\/dashboard\/mentoring\/([^/]+)\/report$/)?.[1];
+    return [
+      { label: MENTORING_NAV, href: MENTORING_PATH },
+      { label: 'Chi tiết', href: bookingId ? `${MENTORING_PATH}/${bookingId}` : undefined },
+      { label: 'Gửi báo cáo' },
+    ];
+  }
+  if (/^\/dashboard\/mentoring\/[^/]+$/.test(normalized)) {
+    return [
+      { label: MENTORING_NAV, href: MENTORING_PATH },
+      { label: 'Chi tiết' },
+    ];
+  }
+  if (/^\/dashboard\/my-orders\/[^/]+$/.test(normalized)) {
+    return [
+      { label: 'Đơn hàng', href: '/dashboard/my-orders' },
+      { label: 'Chi tiết đơn hàng' },
+    ];
+  }
+  if (/^\/dashboard\/orders\/[^/]+$/.test(normalized)) {
+    return [
+      { label: 'Đơn hàng', href: '/dashboard/orders' },
+      { label: 'Chi tiết đơn hàng' },
+    ];
   }
   return [{ label: title }];
 }

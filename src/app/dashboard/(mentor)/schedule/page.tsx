@@ -1,5 +1,6 @@
-import { MentorSchedulePage } from '@/features/mentor/views/MentorSchedulePage';
+import { redirect } from 'next/navigation';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
-export default function DashboardSchedulePage() {
-  return <MentorSchedulePage />;
+export default function LegacyScheduleRedirect() {
+  redirect(MENTORING_PATH);
 }

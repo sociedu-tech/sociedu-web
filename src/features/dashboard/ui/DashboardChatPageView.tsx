@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 import {
   ArrowLeft,
   CalendarPlus,
@@ -200,7 +201,7 @@ export function DashboardChatPageView({
                   <p className="truncate text-xs text-slate-500">{active.roleLabel}</p>
                 </div>
                 <Link
-                  href="/dashboard/sessions"
+                  href={MENTORING_PATH}
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:opacity-95 sm:px-3 sm:text-sm"
                   title="Lên lịch hẹn"
                 >

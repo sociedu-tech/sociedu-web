@@ -6,6 +6,8 @@ export type DashboardSessionRow = {
   sessionId: string;
   title: string;
   when: string;
+  startAt: string;
+  endAt: string;
   scheduledAtIso: string | null;
   counterparty: string;
   status: string;
@@ -39,12 +41,42 @@ export type BookingApiSession = {
 
 export type BookingApi = {
   id?: string;
+  orderId?: string | null;
   buyerId?: string;
   mentorId?: string;
+  packageId?: string | null;
   status?: string | null;
   createdAt?: string | null;
   sessions?: BookingApiSession[] | null;
 };
+
+export type BookingProgramItem = {
+  bookingId: string;
+  orderId: string | null;
+  packageId: string | null;
+  packageLabel: string;
+  /** Tên hiển thị đối tác (học viên hoặc mentor tùy góc nhìn). */
+  counterpartyLabel: string;
+  buyerId: string | null;
+  mentorId: string | null;
+  chatPeerId: string | null;
+  counterpartyRoleLabel: string;
+  sessionPerspective: 'buyer' | 'mentor';
+  createdAt: string;
+  bookingStatus: string;
+  bookingStatusLabel: string;
+  totalSessions: number;
+  completedSessions: number;
+  progressPercent: number;
+  sessionRows: DashboardSessionRow[];
+  nextSessionWhen: string | null;
+  startAt: string;
+  endAt: string;
+  endAtIsEstimated: boolean;
+};
+
+/** @deprecated Use BookingProgramItem */
+export type MentorTeachingItem = BookingProgramItem;
 
 export type ConfirmSessionCompletionRequest = {
   completed: boolean;

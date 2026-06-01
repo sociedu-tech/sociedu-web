@@ -6,11 +6,15 @@ import { bookingService } from '@/services/bookingService';
 import { orderService } from '@/services/orderService';
 import { payoutService } from '@/services/payoutService';
 import { flattenBookingsToSessions } from '@/features/dashboard/lib/bookingMappers';
+import { mapNextSessionForMentor } from '@/features/dashboard/lib/nextSessionApi';
 import type { BookingApi } from '@/features/dashboard/types/booking';
+
+export type MentorNextSession = { title: string; when: string; mentee: string };
 
 export type MentorOverviewData = {
   loading: boolean;
   error: string | null;
+  nextSession: MentorNextSession | null;
   kpi: {
     activeMentees: number;
     activeBookings: number;
@@ -27,6 +31,7 @@ export type MentorOverviewData = {
 const EMPTY: MentorOverviewData = {
   loading: true,
   error: null,
+  nextSession: null,
   kpi: { activeMentees: 0, activeBookings: 0, sessionsThisMonth: 0, avgRating: '—' },
   revenueByWeek: [],
   sessionByStatus: [],
@@ -53,10 +58,11 @@ export function useMentorDashboardOverview(): MentorOverviewData {
     (async () => {
       setState((s) => ({ ...s, loading: true, error: null }));
       try {
-        const [bookingsPage, ordersPage, finance] = await Promise.all([
+        const [bookingsPage, ordersPage, finance, nextSessionRaw] = await Promise.all([
           bookingService.listAsMentor(0, 50),
           orderService.getMyOrders(0, 50),
           payoutService.getFinanceSnapshot(),
+          bookingService.getNextSessionAsMentor(),
         ]);
 
         if (cancelled) return;
@@ -76,8 +82,12 @@ export function useMentorDashboardOverview(): MentorOverviewData {
           return !Number.isNaN(d.getTime()) && monthKey(d) === thisMonth;
         }).length;
 
-        const upcoming = sessions.filter((s) => s.status === 'Sắp diễn ra' || s.status === 'Đang diễn ra').length;
+        const upcomingSessions = sessions.filter(
+          (s) => s.status === 'Sắp diễn ra' || s.status === 'Đang diễn ra',
+        );
+        const upcoming = upcomingSessions.length;
         const completed = sessions.filter((s) => s.status === 'Hoàn thành').length;
+        const nextSession = mapNextSessionForMentor(nextSessionRaw);
 
         const revenueByWeek: MentorOverviewData['revenueByWeek'] = [];
         for (let i = 3; i >= 0; i -= 1) {
@@ -102,6 +112,7 @@ export function useMentorDashboardOverview(): MentorOverviewData {
         setState({
           loading: false,
           error: null,
+          nextSession,
           kpi: {
             activeMentees: buyerIds.size,
             activeBookings,

@@ -28,7 +28,7 @@ const LIST_LABEL: Record<ModerationListSlug, string> = {
   all: 'Tất cả',
   people: 'Người dùng & mentor',
   reviews: 'Đánh giá',
-  sessions: 'Buổi học & tranh chấp',
+  sessions: 'Lộ trình & buổi học',
 };
 
 function listHref(slug: ModerationListSlug) {
@@ -45,10 +45,15 @@ function ModerationReportDetailInner({
   listSlug: ModerationListSlug;
 }) {
   const [status, setStatus] = useState(initial.status);
+  const [resolutionNote, setResolutionNote] = useState(
+    initial.sessionDispute?.adminResolutionNote ?? '',
+  );
+  const [savingNote, setSavingNote] = useState(false);
 
   useEffect(() => {
     setStatus(initial.status);
-  }, [initial.id, initial.status]);
+    setResolutionNote(initial.sessionDispute?.adminResolutionNote ?? '');
+  }, [initial.id, initial.status, initial.sessionDispute?.adminResolutionNote]);
 
   const {
     dispute,
@@ -139,7 +144,7 @@ function ModerationReportDetailInner({
           </div>
         </div>
 
-        {merged.targetType === 'session' && merged.sessionDispute ? (
+        {(merged.targetType === 'session' || merged.targetType === 'booking') && merged.sessionDispute ? (
           <div className="mt-8 space-y-6">
             {!slugMismatch ? (
               <SessionDisputeAdjudicationBar
@@ -162,11 +167,69 @@ function ModerationReportDetailInner({
               </div>
             </div>
             <SessionDisputePanel detail={merged.sessionDispute} showStageList={false} />
+            <div className="rounded-2xl border border-slate-200/90 bg-slate-50 p-4">
+              <label htmlFor="resolution-note-dispute" className="mb-1 block text-sm font-medium text-slate-700">
+                Ghi chú xử lý (admin)
+              </label>
+              <textarea
+                id="resolution-note-dispute"
+                rows={3}
+                value={resolutionNote}
+                onChange={(e) => setResolutionNote(e.target.value)}
+                placeholder="Ghi chú kết luận, hướng xử lý…"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-400"
+              />
+              <button
+                type="button"
+                disabled={savingNote}
+                onClick={() => {
+                  setSavingNote(true);
+                  void adminModerationService
+                    .resolve(initial.id, { status, resolutionNote: resolutionNote.trim() || undefined })
+                    .then(() => undefined)
+                    .catch(() => undefined)
+                    .finally(() => setSavingNote(false));
+                }}
+                className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60"
+              >
+                {savingNote ? 'Đang lưu…' : 'Lưu ghi chú & trạng thái'}
+              </button>
+            </div>
           </div>
         ) : (
-          <p className="mt-6 text-sm text-slate-500">
-            Không có dữ liệu tranh chấp buổi học trên báo cáo này. Cập nhật trạng thái ở ô phía trên; khi nối API có thể thêm ghi chú nội bộ và lịch sử thao tác.
-          </p>
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-slate-500">
+              Loại báo cáo: <strong>{merged.targetLabel}</strong>
+            </p>
+            <div>
+              <label htmlFor="resolution-note" className="mb-1 block text-sm font-medium text-slate-700">
+                Ghi chú xử lý (admin)
+              </label>
+              <textarea
+                id="resolution-note"
+                rows={3}
+                value={resolutionNote}
+                onChange={(e) => setResolutionNote(e.target.value)}
+                placeholder="Ghi chú kết luận, hướng xử lý…"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+              />
+              <button
+                type="button"
+                disabled={savingNote}
+                onClick={() => {
+                  setSavingNote(true);
+                  void adminModerationService
+                    .resolve(initial.id, { status, resolutionNote: resolutionNote.trim() || undefined })
+                    .then(() => undefined)
+                    .catch(() => undefined)
+                    .finally(() => setSavingNote(false));
+                }}
+                className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60"
+              >
+                {savingNote ? 'Đang lưu…' : 'Lưu ghi chú & trạng thái'}
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

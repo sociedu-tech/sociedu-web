@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { collectAttachments } from '@/features/dashboard/chat/utils';
-import { chatService, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
+import { chatService, type ChatContextType, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useChatSocket } from '@/hooks/useChatSocket';
@@ -9,6 +10,15 @@ import { useChatSocket } from '@/hooks/useChatSocket';
 export function useDashboardChatPage() {
   const { user } = useAuth();
   const toast = useToast();
+  const searchParams = useSearchParams();
+  const conversationFromUrl = searchParams.get('conversation')?.trim() ?? '';
+  const peerNameFromUrl = searchParams.get('peerName')?.trim() ?? '';
+  const contextTypeFromUrl = (searchParams.get('contextType')?.trim() ?? '') as ChatContextType | '';
+  const contextIdFromUrl = searchParams.get('contextId')?.trim() ?? '';
+  const messageContext =
+    contextTypeFromUrl && contextIdFromUrl
+      ? { contextType: contextTypeFromUrl as ChatContextType, contextId: contextIdFromUrl }
+      : undefined;
   const { connected, subscribeConversation } = useChatSocket();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState('');
@@ -47,18 +57,28 @@ export function useDashboardChatPage() {
     return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   }, []);
 
-  const conversationTitle = useCallback((c: ChatConversationDto) => {
-    const shortId = c.id.slice(0, 8);
-    if (c.type === 'booking' && c.bookingId) {
-      return `Booking #${String(c.bookingId).slice(0, 8)}`;
-    }
-    if (c.type === 'support') {
-      return `Hỗ trợ #${shortId}`;
-    }
-    return `Hội thoại #${shortId}`;
-  }, []);
+  const conversationTitle = useCallback(
+    (c: ChatConversationDto) => {
+      const shortId = c.id.slice(0, 8);
+      if (c.type === 'general') {
+        if (peerNameFromUrl && c.id === conversationFromUrl) {
+          return peerNameFromUrl;
+        }
+        return 'Tin nhắn';
+      }
+      if (c.type === 'booking' && c.bookingId) {
+        return `Booking #${String(c.bookingId).slice(0, 8)}`;
+      }
+      if (c.type === 'support') {
+        return `Hỗ trợ #${shortId}`;
+      }
+      return `Hội thoại #${shortId}`;
+    },
+    [conversationFromUrl, peerNameFromUrl],
+  );
 
   const conversationRole = useCallback((c: ChatConversationDto) => {
+    if (c.type === 'general') return 'Tin nhắn';
     if (c.type === 'booking') return 'Chat theo booking';
     if (c.type === 'support') return 'CSKH';
     return 'Trò chuyện';
@@ -106,6 +126,19 @@ export function useDashboardChatPage() {
   const [convTotal, setConvTotal] = useState(0);
   const [convTotalPages, setConvTotalPages] = useState(0);
 
+  const toUiConversation = useCallback(
+    (c: ChatConversationDto): Conversation => ({
+      id: c.id,
+      name: conversationTitle(c),
+      roleLabel: conversationRole(c),
+      lastMessage: 'Chưa có tin nhắn',
+      time: formatTime(c.createdAt),
+      unread: undefined,
+      messages: [],
+    }),
+    [conversationRole, conversationTitle, formatTime],
+  );
+
   useEffect(() => {
     let activeRequest = true;
     const loadConversations = async () => {
@@ -116,18 +149,15 @@ export function useDashboardChatPage() {
         if (!activeRequest) return;
         setConvTotal(page.total);
         setConvTotalPages(page.totalPages);
-        const mapped: Conversation[] = items.map((c) => ({
-          id: c.id,
-          name: conversationTitle(c),
-          roleLabel: conversationRole(c),
-          lastMessage: 'Chưa có tin nhắn',
-          time: formatTime(c.createdAt),
-          unread: undefined,
-          messages: [],
-        }));
+        const mapped: Conversation[] = items.map(toUiConversation);
         setConversations(mapped);
         if (mapped.length > 0) {
-          setActiveId((prev) => prev || mapped[0].id);
+          setActiveId((prev) => {
+            if (conversationFromUrl && mapped.some((c) => c.id === conversationFromUrl)) {
+              return conversationFromUrl;
+            }
+            return prev || mapped[0].id;
+          });
         }
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Không tải được danh sách hội thoại.');
@@ -141,7 +171,48 @@ export function useDashboardChatPage() {
     return () => {
       activeRequest = false;
     };
-  }, [conversationRole, conversationTitle, formatTime, toast, convPage, convSize]);
+  }, [convPage, convSize, conversationFromUrl, peerNameFromUrl, toast, toUiConversation]);
+
+  const fetchedUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!conversationFromUrl) return;
+
+    setActiveId(conversationFromUrl);
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
+      setMobileThread(true);
+    }
+
+    if (conversations.some((c) => c.id === conversationFromUrl)) {
+      return;
+    }
+    if (fetchedUrlRef.current === conversationFromUrl || loading) {
+      return;
+    }
+
+    fetchedUrlRef.current = conversationFromUrl;
+    let cancelled = false;
+
+    const loadRemote = async () => {
+      try {
+        const remote = await chatService.getConversation(conversationFromUrl);
+        if (cancelled || !remote?.id) return;
+        const mapped = toUiConversation(remote);
+        setConversations((prev) => {
+          if (prev.some((c) => c.id === mapped.id)) return prev;
+          return [mapped, ...prev];
+        });
+      } catch (error) {
+        fetchedUrlRef.current = null;
+        toast.error(error instanceof Error ? error.message : 'Không mở được hội thoại từ liên kết.');
+      }
+    };
+
+    void loadRemote();
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationFromUrl, conversations, loading, peerNameFromUrl, toast, toUiConversation]);
 
   useEffect(() => {
     if (!activeId || loadedMessagesRef.current.has(activeId)) {
@@ -216,7 +287,12 @@ export function useDashboardChatPage() {
     const text = draft.trim();
     if (!text || !active) return;
     try {
-      const saved = await chatService.sendMessage(active.id, { content: text, type: 'text' });
+      const saved = await chatService.sendMessage(active.id, {
+        content: text,
+        type: 'text',
+        contextType: messageContext?.contextType,
+        contextId: messageContext?.contextId,
+      });
       if (saved) {
         upsertMessage(active.id, toUiMessage(saved));
       }

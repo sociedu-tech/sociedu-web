@@ -1,5 +1,6 @@
-import { SessionsHub } from '@/features/dashboard/views/sessions/SessionsHub';
+import { redirect } from 'next/navigation';
+import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 
-export default function DashboardSessionsPage() {
-  return <SessionsHub />;
+export default function LegacySessionsRedirect() {
+  redirect(MENTORING_PATH);
 }

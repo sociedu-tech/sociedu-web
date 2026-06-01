@@ -49,11 +49,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const isChatPage =
     pathname === '/dashboard/chat' || pathname.startsWith('/dashboard/chat/');
 
+  const isOrderDetailPage =
+    /^\/dashboard\/my-orders\/[^/]+$/.test(pathname) ||
+    /^\/dashboard\/orders\/[^/]+$/.test(pathname);
+
+  const isFullBleedPage = isChatPage || isOrderDetailPage;
+
   return (
     <div
       className={cn(
         'flex flex-col bg-slate-50 font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased',
-        isChatPage ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen',
+        isFullBleedPage ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen',
       )}
     >
       <DashboardSidebar
@@ -70,7 +76,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <div
         className={cn(
           'flex min-h-0 min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out',
-          isChatPage && 'h-[100dvh] overflow-hidden',
+          isFullBleedPage && 'h-[100dvh] overflow-hidden',
         )}
         style={{ marginLeft }}
       >
@@ -86,12 +92,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <main
           className={cn(
             'min-h-0 flex-1 bg-slate-50',
-            isChatPage ? 'flex flex-col overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
+            isFullBleedPage ? 'flex flex-col overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
           )}
         >
           <div
             className={cn(
-              isChatPage
+              isFullBleedPage
                 ? 'flex h-full min-h-0 w-full max-w-none flex-1 flex-col px-0 py-0'
                 : 'min-h-[calc(100dvh-3.5rem)] w-full max-w-none px-4 py-8 sm:px-6 lg:px-8',
             )}

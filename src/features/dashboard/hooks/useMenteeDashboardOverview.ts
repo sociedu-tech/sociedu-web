@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { StatsSeriesPoint } from '@/features/dashboard/ui/stats';
 import { bookingService } from '@/services/bookingService';
 import { flattenBookingsToSessions } from '@/features/dashboard/lib/bookingMappers';
+import { mapNextSessionForMentee } from '@/features/dashboard/lib/nextSessionApi';
 import type { BookingApi } from '@/features/dashboard/types/booking';
 
 export type MenteeOverviewData = {
@@ -40,7 +41,10 @@ export function useMenteeDashboardOverview(): MenteeOverviewData {
     (async () => {
       setState((s) => ({ ...s, loading: true, error: null }));
       try {
-        const bookingsPage = await bookingService.listAsBuyer(0, 50);
+        const [bookingsPage, nextSessionRaw] = await Promise.all([
+          bookingService.listAsBuyer(0, 50),
+          bookingService.getNextSessionAsBuyer(),
+        ]);
         if (cancelled) return;
 
         const bookings = bookingsPage.items as BookingApi[];
@@ -48,7 +52,7 @@ export function useMenteeDashboardOverview(): MenteeOverviewData {
         const upcoming = sessions.filter((s) => s.status === 'Sắp diễn ra' || s.status === 'Đang diễn ra');
         const completed = sessions.filter((s) => s.status === 'Hoàn thành');
 
-        const next = upcoming[0] ?? sessions[0] ?? null;
+        const nextSession = mapNextSessionForMentee(nextSessionRaw);
         const completionPct =
           sessions.length > 0 ? Math.round((completed.length / sessions.length) * 100) : 0;
 
@@ -64,9 +68,7 @@ export function useMenteeDashboardOverview(): MenteeOverviewData {
         setState({
           loading: false,
           error: null,
-          nextSession: next
-            ? { title: next.title, when: next.when, mentor: next.counterparty }
-            : null,
+          nextSession,
           kpi: {
             activeBookings,
             upcomingSessions: upcoming.length,
