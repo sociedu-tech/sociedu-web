@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { UserProvider } from '@/context/UserContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { StompProvider } from '@/context/StompProvider';
+import { GlobalRealtimeSubscriptions } from '@/components/realtime/GlobalRealtimeSubscriptions';
 import { NotificationToastContainer } from '@/components/dashboard/NotificationToast';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -11,6 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ToastProvider>
       <AuthProvider>
         <StompProvider>
+          <GlobalRealtimeSubscriptions />
           <UserProvider>{children}</UserProvider>
           <NotificationToastContainer />
         </StompProvider>

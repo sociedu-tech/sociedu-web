@@ -30,7 +30,7 @@ export const MentorMentees = () => {
     return [...map.values()];
   }, [rows]);
 
-  if (loading) {
+  if (loading && rows.length === 0) {
     return <PageLoadingState label="Đang tải học viên…" variant="table" />;
   }
 

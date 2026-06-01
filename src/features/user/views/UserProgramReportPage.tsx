@@ -16,7 +16,7 @@ export function UserProgramReportPage() {
     return <ErrorMessage message="Không xác định được chương trình học." />;
   }
 
-  if (loading) {
+  if (loading && !item) {
     return <PageLoadingState label="Đang tải thông tin lộ trình…" />;
   }
 

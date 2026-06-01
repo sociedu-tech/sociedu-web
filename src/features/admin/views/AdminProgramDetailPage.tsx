@@ -19,7 +19,7 @@ export function AdminProgramDetailPage() {
     return <ErrorMessage message="Không xác định được chương trình." />;
   }
 
-  if (loading) {
+  if (loading && !item) {
     return <PageLoadingState label="Đang tải chi tiết chương trình…" />;
   }
 

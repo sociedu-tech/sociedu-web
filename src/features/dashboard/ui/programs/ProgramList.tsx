@@ -10,14 +10,18 @@ import { ProgramSessionCard } from '@/features/dashboard/ui/programs/ProgramSess
 import { ProgramFilters } from '@/features/dashboard/ui/programs/ProgramFilters';
 import { filterProgramItems, type ProgramFilter } from '@/features/dashboard/lib/programFilters';
 import type { ProgramLabels } from '@/features/dashboard/lib/programLabels';
+import { DashboardPage, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 type Props = {
   perspective: 'buyer' | 'mentor';
   labels: ProgramLabels;
   detailPath: (bookingId: string) => string;
+  /** Khi true: chờ load xong mới render header + danh sách (trang /dashboard/mentoring). */
+  pageLayout?: boolean;
+  eyebrow?: string;
 };
 
-export function ProgramList({ perspective, labels, detailPath }: Props) {
+export function ProgramList({ perspective, labels, detailPath, pageLayout = false, eyebrow }: Props) {
   const { items, loading, error, refresh, page, size, total, totalPages, setPage, setSize } =
     useProgramBookings(perspective);
   const [filter, setFilter] = useState<ProgramFilter>('all');
@@ -44,7 +48,7 @@ export function ProgramList({ perspective, labels, detailPath }: Props) {
     return <ErrorMessage message={error} onRetry={refresh} />;
   }
 
-  return (
+  const listBody = (
     <div className="space-y-6">
       {items.length > 0 ? (
         <ProgramFilters value={filter} onChange={setFilter} counts={filterCounts} />
@@ -83,5 +87,21 @@ export function ProgramList({ perspective, labels, detailPath }: Props) {
         disabled={loading}
       />
     </div>
+  );
+
+  if (!pageLayout) {
+    return listBody;
+  }
+
+  return (
+    <DashboardPage>
+      <DashboardViewHeader
+        eyebrow={eyebrow}
+        title={labels.nav}
+        description={labels.listDescription}
+        layout="compact"
+      />
+      {listBody}
+    </DashboardPage>
   );
 }

@@ -60,7 +60,7 @@ export function AdminUsersManagementView() {
     setSize,
   } = useAdminUsersManagementView();
 
-  if (loading) {
+  if (loading && users.length === 0) {
     return <PageLoadingState label="Đang tải danh sách người dùng…" variant="table" />;
   }
 

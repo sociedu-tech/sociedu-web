@@ -303,7 +303,7 @@ export function AdminModerationReportDetailView({ listSlug }: Props) {
     };
   }, [id]);
 
-  if (loading) {
+  if (loading && !report) {
     return <PageLoadingState label="Đang tải báo cáo…" variant="cards" cardCount={2} />;
   }
 

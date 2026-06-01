@@ -44,8 +44,8 @@ export function EditProfilePage() {
   if (!user) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message="Không tìm thấy người dùng" /></div>;
 
   return (
-    <div className="min-h-screen bg-page pb-20">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="min-h-full w-full bg-page pb-20">
+      <div className="w-full px-4 py-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
           <div className="space-y-1">
             <button
@@ -54,8 +54,6 @@ export function EditProfilePage() {
             >
               <ArrowLeft size={18} /> Quay lại
             </button>
-            <h1 className="text-2xl sm:text-3xl font-black text-airbnb-dark tracking-tighter">Thiết lập hồ sơ</h1>
-            <p className="text-airbnb-gray font-medium text-sm sm:text-base">Cập nhật thông tin cá nhân và chuyên môn của bạn.</p>
           </div>
 
           <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">

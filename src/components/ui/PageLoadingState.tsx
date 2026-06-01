@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { PAGE_LOADING_MIN_HEIGHT } from '@/lib/pageLoading';
 import { LoadingSpinner } from './LoadingSpinner';
 import { LoadingSkeleton } from './LoadingSkeleton';
 
@@ -20,7 +21,7 @@ type PageLoadingStateProps = {
 export function PageLoadingState({
   label = 'Đang tải…',
   className,
-  minHeight = 'min-h-[40vh]',
+  minHeight = PAGE_LOADING_MIN_HEIGHT,
   variant = 'spinner',
   cardCount = 4,
 }: PageLoadingStateProps) {

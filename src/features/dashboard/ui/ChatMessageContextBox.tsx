@@ -7,6 +7,7 @@ import type { ChatMessageContext } from '@/features/dashboard/chat/types';
 import {
   contextTypeLabel,
   fetchMessageContextSummary,
+  getCachedMessageContextSummary,
   type MessageContextSummary,
 } from '@/features/dashboard/chat/messageContextSummary';
 import { cn } from '@/lib/utils';
@@ -21,10 +22,12 @@ type ChatMessageContextBoxProps = {
 export function ChatMessageContextBox({ context, variant }: ChatMessageContextBoxProps) {
   const { hasRole } = useAuth();
   const isMentor = hasRole(ROLES.MENTOR);
-  const [summary, setSummary] = useState<MessageContextSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cached = getCachedMessageContextSummary(context);
+  const [summary, setSummary] = useState<MessageContextSummary | null>(cached ?? null);
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
+    if (cached) return;
     let cancelled = false;
     setLoading(true);
     void fetchMessageContextSummary(context, isMentor)
@@ -45,7 +48,7 @@ export function ChatMessageContextBox({ context, variant }: ChatMessageContextBo
     return () => {
       cancelled = true;
     };
-  }, [context.contextId, context.contextType, isMentor]);
+  }, [cached, context.contextId, context.contextType, isMentor]);
 
   const body = (
     <div className="min-w-0 flex-1 overflow-hidden">

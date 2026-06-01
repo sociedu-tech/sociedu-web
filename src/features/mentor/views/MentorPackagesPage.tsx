@@ -5,7 +5,7 @@ import { MentorPackages } from '@/features/dashboard/ui/mentor/MentorPackages';
 import { useMentorData } from '@/features/mentor/hooks';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useToast } from '@/context/ToastContext';
 
 export const MentorPackagesPage = () => {
@@ -29,7 +29,7 @@ export const MentorPackagesPage = () => {
   if (error) return <ErrorMessage message={error} onRetry={refresh} />;
 
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Mentor"
         title="Gói dịch vụ"
@@ -46,6 +46,6 @@ export const MentorPackagesPage = () => {
           isSaving={isSaving}
         />
       </DashboardSurface>
-    </div>
+    </DashboardPage>
   );
 };

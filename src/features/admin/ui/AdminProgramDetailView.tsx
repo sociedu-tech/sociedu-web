@@ -25,9 +25,6 @@ export function AdminProgramDetailView({ row, onStatusChange }: Props) {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col gap-4 border-b border-slate-200/90 pb-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
-            {ADMIN_PROGRAM.detailEyebrow}
-          </p>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{row.packageTitle}</h1>
           <p className="flex items-center gap-2 text-sm text-slate-600">
             <Users className="size-4 text-slate-400" />

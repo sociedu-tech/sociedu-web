@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
       { source: '/dashboard/product-requests', destination: '/dashboard', permanent: false },
       { source: '/dashboard/update-requests', destination: '/dashboard', permanent: false },
       { source: '/dashboard/admin/:path+', destination: '/dashboard/:path+', permanent: false },
+      // Legacy dashboard routes → mentoring / overview
+      { source: '/dashboard/revenue', destination: '/dashboard', permanent: false },
+      { source: '/dashboard/opportunities', destination: '/dashboard', permanent: false },
+      { source: '/dashboard/my-reports', destination: '/dashboard/mentoring', permanent: false },
+      { source: '/dashboard/projects/:path*', destination: '/dashboard/mentoring', permanent: false },
+      { source: '/dashboard/sessions/:bookingId/report', destination: '/dashboard/mentoring/:bookingId/report', permanent: false },
+      { source: '/dashboard/sessions/:bookingId', destination: '/dashboard/mentoring/:bookingId', permanent: false },
+      { source: '/dashboard/sessions', destination: '/dashboard/mentoring', permanent: false },
+      { source: '/dashboard/schedule/:bookingId/report', destination: '/dashboard/mentoring/:bookingId/report', permanent: false },
+      { source: '/dashboard/schedule/:bookingId', destination: '/dashboard/mentoring/:bookingId', permanent: false },
+      { source: '/dashboard/schedule', destination: '/dashboard/mentoring', permanent: false },
+      { source: '/dashboard/bookings/:id', destination: '/dashboard/mentoring/:id', permanent: false },
     ];
   },
   images: {

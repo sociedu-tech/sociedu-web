@@ -31,12 +31,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     );
   }
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return null;
+  if (!isAuthenticated || (allowedRoles && !allowedRoles.includes(userRole))) {
+    return (
+      <div className="flex min-h-[100dvh] w-full items-center justify-center bg-slate-50">
+        <PageLoadingState label="Đang chuyển hướng…" minHeight="min-h-0" />
+      </div>
+    );
   }
 
   return <>{children}</>;

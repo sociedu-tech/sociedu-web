@@ -7,9 +7,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useChatSubscriptions, type ChatSocketMessage } from '@/hooks/useChatSocket';
 
+const CONV_PAGE_SIZE = 20;
+
 export function useDashboardChatPage() {
   const { user } = useAuth();
-  const toast = useToast();
   const searchParams = useSearchParams();
   const conversationFromUrl = searchParams.get('conversation')?.trim() ?? '';
   const peerNameFromUrl = searchParams.get('peerName')?.trim() ?? '';
@@ -27,9 +28,14 @@ export function useDashboardChatPage() {
   const [query, setQuery] = useState('');
   const [mobileThread, setMobileThread] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [convLoading, setConvLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const loadedMessagesRef = useRef<Set<string>>(new Set());
+  const hasLoadedConversationsRef = useRef(false);
+  const { error: toastError, info: toastInfo } = useToast();
+  const toastErrorRef = useRef(toastError);
+  toastErrorRef.current = toastError;
 
   const active = conversations.find((c) => c.id === activeId) ?? conversations[0];
   const filtered = conversations.filter(
@@ -172,8 +178,6 @@ export function useDashboardChatPage() {
   }, []);
 
   const [convPage, setConvPage] = useState(0);
-  const [convSize, setConvSize] = useState(20);
-  const [convTotal, setConvTotal] = useState(0);
   const [convTotalPages, setConvTotalPages] = useState(0);
 
   const toUiConversation = useCallback(
@@ -200,14 +204,16 @@ export function useDashboardChatPage() {
   useEffect(() => {
     let activeRequest = true;
     const loadConversations = async () => {
-      setLoading(true);
+      if (!hasLoadedConversationsRef.current) {
+        setConvLoading(true);
+      }
       try {
-        const page = await chatService.listConversations(convPage, convSize);
+        const page = await chatService.listConversations(convPage, CONV_PAGE_SIZE);
         const items = page.items;
         if (!activeRequest) return;
-        setConvTotal(page.total);
         setConvTotalPages(page.totalPages);
         const mapped: Conversation[] = dedupeConversationsByPeer(items.map(toUiConversation));
+        hasLoadedConversationsRef.current = true;
         setConversations(mapped);
         if (mapped.length > 0) {
           setActiveId((prev) => {
@@ -218,10 +224,12 @@ export function useDashboardChatPage() {
           });
         }
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Không tải được danh sách hội thoại.');
+        toastErrorRef.current(
+          error instanceof Error ? error.message : 'Không tải được danh sách hội thoại.',
+        );
       } finally {
         if (activeRequest) {
-          setLoading(false);
+          setConvLoading(false);
         }
       }
     };
@@ -229,7 +237,7 @@ export function useDashboardChatPage() {
     return () => {
       activeRequest = false;
     };
-  }, [convPage, convSize, conversationFromUrl, peerNameFromUrl, toast, toUiConversation]);
+  }, [convPage, conversationFromUrl, toUiConversation]);
 
   const fetchedUrlRef = useRef<string | null>(null);
 
@@ -244,7 +252,7 @@ export function useDashboardChatPage() {
     if (conversations.some((c) => c.id === conversationFromUrl)) {
       return;
     }
-    if (fetchedUrlRef.current === conversationFromUrl || loading) {
+    if (fetchedUrlRef.current === conversationFromUrl || convLoading) {
       return;
     }
 
@@ -267,7 +275,9 @@ export function useDashboardChatPage() {
         });
       } catch (error) {
         fetchedUrlRef.current = null;
-        toast.error(error instanceof Error ? error.message : 'Không mở được hội thoại từ liên kết.');
+        toastErrorRef.current(
+          error instanceof Error ? error.message : 'Không mở được hội thoại từ liên kết.',
+        );
       }
     };
 
@@ -275,13 +285,15 @@ export function useDashboardChatPage() {
     return () => {
       cancelled = true;
     };
-  }, [conversationFromUrl, conversations, loading, peerNameFromUrl, toast, toUiConversation]);
+  }, [conversationFromUrl, conversations, convLoading, toUiConversation]);
 
   useEffect(() => {
     if (!activeId || loadedMessagesRef.current.has(activeId)) {
+      setMessagesLoading(false);
       return;
     }
     let cancelled = false;
+    setMessagesLoading(true);
     const loadMessages = async () => {
       try {
         const page = await chatService.listMessages(activeId, 0, 50);
@@ -305,14 +317,19 @@ export function useDashboardChatPage() {
         );
         loadedMessagesRef.current.add(activeId);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Không tải được tin nhắn.');
+        toastErrorRef.current(error instanceof Error ? error.message : 'Không tải được tin nhắn.');
+      } finally {
+        if (!cancelled) {
+          setMessagesLoading(false);
+        }
       }
     };
     void loadMessages();
     return () => {
       cancelled = true;
+      setMessagesLoading(false);
     };
-  }, [activeId, toUiMessage, toast]);
+  }, [activeId, toUiMessage]);
 
   /* ---------- STOMP subscriptions (diff-based, no re-subscribe loop) ---------- */
   const toUiMessageRef = useRef(toUiMessage);
@@ -353,7 +370,7 @@ export function useDashboardChatPage() {
   };
 
   const createConversation = () => {
-    toast.info('Tạo hội thoại mới sẽ được mở từ flow booking/support trên backend.');
+    toastInfo('Tạo hội thoại mới sẽ được mở từ flow booking/support trên backend.');
   };
 
   const send = async () => {
@@ -390,13 +407,14 @@ export function useDashboardChatPage() {
       }
     } catch (error) {
       patchMessage(active.id, clientId, { sendStatus: 'failed' });
-      toast.error(error instanceof Error ? error.message : 'Gửi tin nhắn thất bại.');
+      toastErrorRef.current(error instanceof Error ? error.message : 'Gửi tin nhắn thất bại.');
     }
   };
 
   return {
     conversations,
-    loading,
+    convLoading,
+    messagesLoading,
     active,
     filtered,
     activeId,
@@ -415,11 +433,8 @@ export function useDashboardChatPage() {
     createConversation,
     send,
     convPage,
-    setConvPage,
-    convSize,
-    setConvSize,
-    convTotal,
     convTotalPages,
+    onConvPageChange: setConvPage,
     pendingMessageContext: messageContext,
   };
 }

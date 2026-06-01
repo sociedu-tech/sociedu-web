@@ -45,13 +45,12 @@ export function DashboardNewProjectPage() {
 
   if (!isMentee) {
     return (
-      <div className="mx-auto max-w-lg px-1 py-8">
+      <div className="w-full px-1 py-8">
         <DashboardCard>
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
               <Users className="size-6" strokeWidth={1.75} />
             </div>
-            <h1 className="text-lg font-semibold text-slate-900">Trang dành cho học viên</h1>
             <p className="text-[15px] leading-relaxed text-slate-600">
               Tạo dự án và nhận gợi ý mentor chỉ khả dụng với tài khoản học viên.
             </p>
@@ -73,15 +72,11 @@ export function DashboardNewProjectPage() {
         <div>
           <Link
             href="/dashboard/projects"
-            className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition hover:text-slate-900"
           >
             <ArrowLeft className="size-4" strokeWidth={2} />
             Quay lại danh sách dự án
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Tạo dự án mới</h1>
-          <p className="mt-1.5 max-w-2xl text-[15px] leading-relaxed text-slate-600">
-            Mô tả ngắn mục tiêu và lĩnh vực — hệ thống gợi ý mentor phù hợp để bạn bắt đầu nhanh.
-          </p>
         </div>
       </div>
 

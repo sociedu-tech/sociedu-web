@@ -3,9 +3,20 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle, Flag, ExternalLink } from 'lucide-react';
-import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
+import {
+  DashboardPage,
+  DashboardSurface,
+  DashboardViewHeader,
+  DashboardTabs,
+  DashboardEmptyState,
+  DashboardLoadingBlock,
+  dashboardBtnPrimary,
+  dashboardBtnSecondary,
+  dashboardInput,
+  dashboardLabel,
+} from '@/features/dashboard/ui/DashboardPrimitives';
 import { useUserReportsPage } from '@/features/report/hooks';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -109,67 +120,44 @@ export const UserReportsPage = () => {
   const currentLoading = activeTab === 'moderation' ? loading : academicLoading;
 
   return (
-    <div className="min-h-screen bg-page py-12">
-      <div className="max-w-5xl mx-auto px-4 space-y-6">
-        
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-black text-dark tracking-tight">Báo cáo học tập &amp; vi phạm</h1>
-            <p className="text-gray-500 mt-2 font-medium">Theo dõi tiến độ, gửi báo cáo cho Mentor hoặc báo cáo vi phạm lên Admin.</p>
-          </div>
-          {activeTab === 'moderation' && (
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all hover:-translate-y-0.5"
-            >
-              <Plus size={20} /> Nộp khiếu nại vi phạm
+    <DashboardPage>
+      <DashboardViewHeader
+        eyebrow="Học viên"
+        title="Báo cáo học tập & vi phạm"
+        description="Theo dõi tiến độ, gửi báo cáo cho Mentor hoặc báo cáo vi phạm lên Admin."
+        action={
+          activeTab === 'moderation' ? (
+            <button type="button" onClick={() => setIsModalOpen(true)} className={dashboardBtnPrimary}>
+              <Plus size={18} aria-hidden />
+              Nộp khiếu nại vi phạm
             </button>
-          )}
-        </div>
+          ) : undefined
+        }
+      />
 
-        <div className="flex border-b border-gray-200 bg-white px-4 rounded-xl shadow-sm">
-          <button
-            onClick={() => setActiveTab('academic')}
-            className={cn(
-              "py-3.5 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
-              activeTab === 'academic'
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            )}
-          >
-            <FileText className="size-4" />
-            Báo cáo học tập
-          </button>
-          <button
-            onClick={() => setActiveTab('moderation')}
-            className={cn(
-              "py-3.5 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
-              activeTab === 'moderation'
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            )}
-          >
-            <Flag className="size-4" />
-            Khiếu nại vi phạm
-          </button>
-        </div>
+      <DashboardTabs
+        activeTab={activeTab}
+        onChange={(id) => setActiveTab(id as 'academic' | 'moderation')}
+        tabs={[
+          { id: 'academic', label: 'Báo cáo học tập', icon: FileText },
+          { id: 'moderation', label: 'Khiếu nại vi phạm', icon: Flag },
+        ]}
+      />
 
-        {currentLoading ? (
-          <div className="flex min-h-[30vh] items-center justify-center bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-            <LoadingSpinner size={32} label="Đang tải dữ liệu…" />
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+      {currentLoading ? (
+        <DashboardLoadingBlock />
+      ) : (
+        <DashboardSurface className="overflow-hidden">
             {activeTab === 'academic' ? (
               <>
                 {academicReports.length === 0 ? (
-                  <div className="p-16 text-center text-gray-500">
-                    <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-600">Không có yêu cầu báo cáo nào.</p>
-                    <p className="text-sm mt-1">Yêu cầu từ Mentor sẽ xuất hiện ở đây.</p>
-                  </div>
+                  <DashboardEmptyState
+                    icon={FileText}
+                    title="Không có yêu cầu báo cáo nào"
+                    description="Yêu cầu từ Mentor sẽ xuất hiện ở đây."
+                  />
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-slate-100">
                     {academicReports.map((req) => {
                       const statusColors = {
                         PENDING_SUBMISSION: 'bg-amber-50 text-amber-600 border-amber-200/50',
@@ -186,30 +174,33 @@ export const UserReportsPage = () => {
                       };
 
                       return (
-                        <div key={req.id} className="p-6 hover:bg-gray-50/50 transition-colors">
-                          <div className="flex flex-col md:flex-row justify-between gap-4">
-                            <div className="flex-1 space-y-2">
-                              <div className="flex items-center flex-wrap gap-2.5">
-                                <h3 className="text-xl font-bold text-dark">{req.title}</h3>
+                        <div key={req.id} className="p-5 transition-colors hover:bg-slate-50/80 sm:p-6">
+                          <div className="flex flex-col justify-between gap-4 md:flex-row">
+                            <div className="min-w-0 flex-1 space-y-2">
+                              <div className="flex flex-wrap items-center gap-2.5">
+                                <h3 className="text-lg font-semibold text-slate-900">{req.title}</h3>
                                 <span className={cn("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border", statusColors[req.status])}>
                                   {statusTexts[req.status]}
                                 </span>
                               </div>
-                              {req.description && (
-                                <p className="text-sm text-gray-655">{req.description}</p>
-                              )}
-                              <p className="text-xs font-medium text-gray-400">
-                                Gửi cho Mentor: <span className="font-bold text-dark">Mentor #{req.mentorId.substring(0, 8)}</span>
+                              {req.description ? (
+                                <p className="text-sm text-slate-600">{req.description}</p>
+                              ) : null}
+                              <p className="text-xs font-medium text-slate-400">
+                                Gửi cho Mentor:{' '}
+                                <span className="font-semibold text-slate-700">
+                                  Mentor #{req.mentorId.substring(0, 8)}
+                                </span>
                                 {req.dueDate && ` • Hạn nộp: ${new Date(req.dueDate).toLocaleString('vi-VN')}`}
                                 {` • Yêu cầu lúc: ${new Date(req.createdAt).toLocaleString('vi-VN')}`}
                               </p>
 
-                              {req.menteeContent && (
-                                <div className="mt-3 text-sm text-gray-700 bg-slate-50 border border-slate-100 p-4 rounded-xl space-y-2">
-                                  <div>
-                                    <span className="font-bold text-slate-800 text-xs uppercase tracking-wider block mb-1">Nội dung đã nộp:</span>
-                                    <span className="whitespace-pre-wrap">{req.menteeContent}</span>
-                                  </div>
+                              {req.menteeContent ? (
+                                <div className="mt-3 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">
+                                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                    Nội dung đã nộp
+                                  </span>
+                                  <span className="whitespace-pre-wrap">{req.menteeContent}</span>
                                   {req.menteeAttachmentUrl && (
                                     <div className="pt-1.5">
                                       <a href={req.menteeAttachmentUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-primary hover:underline bg-primary/5 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1">
@@ -218,7 +209,7 @@ export const UserReportsPage = () => {
                                     </div>
                                   )}
                                 </div>
-                              )}
+                              ) : null}
                             </div>
 
                             <div className="flex flex-col gap-3 justify-center md:items-end">
@@ -266,7 +257,7 @@ export const UserReportsPage = () => {
                   </div>
                 )}
                 <DataPagination
-                  className="border-t border-gray-100 p-4"
+                  className="border-t border-slate-100 p-4"
                   page={academicPage}
                   size={academicSize}
                   total={academicTotal}
@@ -279,18 +270,15 @@ export const UserReportsPage = () => {
             ) : (
               <>
                 {reports.length === 0 ? (
-                  <div className="p-16 text-center text-gray-500">
-                    <Flag className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-600">Bạn chưa nộp khiếu nại nào.</p>
-                  </div>
+                  <DashboardEmptyState icon={Flag} title="Bạn chưa nộp khiếu nại nào" />
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-slate-100">
                     {reports.map((report) => (
-                      <div key={report.id} className="p-6 hover:bg-gray-50 transition-colors">
-                        <div className="flex flex-col md:flex-row justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-xl font-bold text-dark">{report.title}</h3>
+                      <div key={report.id} className="p-5 transition-colors hover:bg-slate-50/80 sm:p-6">
+                        <div className="flex flex-col justify-between gap-4 md:flex-row">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex flex-wrap items-center gap-3">
+                              <h3 className="text-lg font-semibold text-slate-900">{report.title}</h3>
                               {report.status === 'PENDING' ? (
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200/50">
                                   <Clock size={14} /> Chờ duyệt
@@ -305,11 +293,12 @@ export const UserReportsPage = () => {
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm font-medium text-gray-500 mb-4 flex items-center gap-2">
-                               Gửi cho Mentor: <span className="font-bold text-dark">{report.mentorName}</span> • Nộp lúc:{' '}
-                               {report.createdAt ? new Date(report.createdAt).toLocaleDateString('vi-VN') : '—'}
+                            <p className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+                              Gửi cho Mentor:{' '}
+                              <span className="font-semibold text-slate-800">{report.mentorName}</span> • Nộp lúc:{' '}
+                              {report.createdAt ? new Date(report.createdAt).toLocaleDateString('vi-VN') : '—'}
                             </p>
-                            <div className="text-gray-700 whitespace-pre-wrap text-sm border-l-2 border-gray-200 pl-4 py-1">
+                            <div className="border-l-2 border-slate-200 py-1 pl-4 text-sm text-slate-700 whitespace-pre-wrap">
                               {report.content}
                             </div>
                             
@@ -337,7 +326,7 @@ export const UserReportsPage = () => {
                   </div>
                 )}
                 <DataPagination
-                  className="border-t border-gray-100 p-4"
+                  className="border-t border-slate-100 p-4"
                   page={page}
                   size={size}
                   total={total}
@@ -348,9 +337,8 @@ export const UserReportsPage = () => {
                 />
               </>
             )}
-          </div>
-        )}
-      </div>
+        </DashboardSurface>
+      )}
 
       {/* Moderation Create Modal */}
       <AnimatePresence>
@@ -360,7 +348,7 @@ export const UserReportsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-dark/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
               onClick={() => setIsModalOpen(false)}
             />
             <motion.div
@@ -369,23 +357,23 @@ export const UserReportsPage = () => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-xl bg-white rounded-2xl overflow-hidden flex flex-col"
             >
-               <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-dark flex items-center gap-2">
-                    <Flag className="text-primary" /> Nộp báo cáo vi phạm
+               <div className="flex items-center justify-between border-b border-slate-100 p-6">
+                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900">
+                    <Flag className="text-primary" aria-hidden /> Nộp báo cáo vi phạm
                   </h2>
-                  <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <X size={20} className="text-gray-500" />
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="rounded-full p-2 transition-colors hover:bg-slate-100">
+                    <X size={20} className="text-slate-500" />
                   </button>
                </div>
 
-               <form onSubmit={handleSubmit} className="p-6 space-y-4">
+               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                  
                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500">Lộ trình học / Mentor (*)</label>
+                    <label className={dashboardLabel}>Lộ trình học / Mentor (*)</label>
                     <select
                       value={selectedBookingId}
                       onChange={(e) => setSelectedBookingId(e.target.value)}
-                      className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm"
+                      className={dashboardInput}
                     >
                       <option value="">-- Chọn lộ trình để báo cáo --</option>
                       {bookings?.map((b: any) => (
@@ -397,48 +385,48 @@ export const UserReportsPage = () => {
                   </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">Tiêu đề báo cáo (*)</label>
+                   <label className={dashboardLabel}>Tiêu đề báo cáo (*)</label>
                    <input 
                      type="text" 
                      value={title}
                      onChange={(e) => setTitle(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm" 
+                     className={dashboardInput}
                      placeholder="Ví dụ: Lỗi không thể liên hệ với Mentor"
                    />
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">Nội dung chi tiết (*)</label>
+                   <label className={dashboardLabel}>Nội dung chi tiết (*)</label>
                    <textarea 
                      value={content}
                      onChange={(e) => setContent(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm resize-none" 
+                     className={cn(dashboardInput, 'min-h-[120px] resize-none')}
                      rows={5}
                      placeholder="Mô tả cụ thể sự việc cần báo cáo cho Admin hỗ trợ..."
                    />
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">Link đính kèm minh chứng (Tùy chọn)</label>
+                   <label className={dashboardLabel}>Link đính kèm minh chứng (Tùy chọn)</label>
                    <input 
                      type="text" 
                      value={attachmentUrl}
                      onChange={(e) => setAttachmentUrl(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm" 
+                     className={dashboardInput}
                      placeholder="Ví dụ: Link ảnh chụp màn hình minh chứng..."
                    />
                  </div>
 
-                 {error && (
-                    <div className="p-3 bg-red-50 text-red-600 font-bold text-sm rounded-xl flex items-center gap-2">
-                       <AlertCircle size={16} /> {error}
+                 {error ? (
+                    <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700">
+                       <AlertCircle size={16} aria-hidden /> {error}
                     </div>
-                 )}
+                 ) : null}
 
                  <button 
                    type="submit"
                    disabled={submitting}
-                   className="w-full py-4 text-white font-bold bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:opacity-50 mt-4 flex items-center justify-center gap-2"
+                   className={cn(dashboardBtnPrimary, 'mt-2 w-full py-3.5')}
                  >
                    {submitting && <LoadingSpinner size={16} />} Gửi báo cáo
                  </button>
@@ -456,7 +444,7 @@ export const UserReportsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-dark/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
               onClick={() => setSubmitReportOpen(false)}
             />
             <motion.div
@@ -465,52 +453,52 @@ export const UserReportsPage = () => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-xl bg-white rounded-2xl overflow-hidden flex flex-col"
             >
-               <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-dark flex items-center gap-2">
-                    <FileText className="text-primary" /> Nộp báo cáo học tập
+               <div className="flex items-center justify-between border-b border-slate-100 p-6">
+                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900">
+                    <FileText className="text-primary" aria-hidden /> Nộp báo cáo học tập
                   </h2>
-                  <button onClick={() => setSubmitReportOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                    <X size={20} className="text-gray-500" />
+                  <button type="button" onClick={() => setSubmitReportOpen(false)} className="rounded-full p-2 transition-colors hover:bg-slate-100">
+                    <X size={20} className="text-slate-500" />
                   </button>
                </div>
 
-               <form onSubmit={handleSubmitAcademicReport} className="p-6 space-y-4">
+               <form onSubmit={handleSubmitAcademicReport} className="space-y-4 p-6">
                  
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">Nội dung báo cáo (*)</label>
+                   <label className={dashboardLabel}>Nội dung báo cáo (*)</label>
                    <textarea 
                      required
                      value={reportContent}
                      onChange={(e) => setReportContent(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm resize-none" 
+                     className={cn(dashboardInput, 'min-h-[120px] resize-none')}
                      rows={5}
                      placeholder="Nhập nội dung tóm tắt buổi học, kết quả đạt được, khó khăn..."
                    />
                  </div>
 
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">Link đính kèm tài liệu (Google Drive, Github, v.v.)</label>
+                   <label className={dashboardLabel}>Link đính kèm tài liệu (Google Drive, Github, v.v.)</label>
                    <input 
                      type="url" 
                      value={reportAttachment}
                      onChange={(e) => setReportAttachment(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm" 
+                     className={dashboardInput}
                      placeholder="https://drive.google.com/..."
                    />
                  </div>
 
-                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 bg-white">
+                 <div className="flex justify-end gap-3 border-t border-slate-100 bg-white pt-4">
                     <button 
                       type="button"
                       onClick={() => setSubmitReportOpen(false)}
-                      className="px-6 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-colors"
+                      className={dashboardBtnSecondary}
                     >
                       Hủy bỏ
                     </button>
                     <button 
                       type="submit"
                       disabled={submittingReport}
-                      className="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                      className={dashboardBtnPrimary}
                     >
                       {submittingReport && <LoadingSpinner size={16} />} Gửi báo cáo
                     </button>
@@ -520,6 +508,6 @@ export const UserReportsPage = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </DashboardPage>
   );
 };

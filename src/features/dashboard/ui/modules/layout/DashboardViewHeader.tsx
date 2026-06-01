@@ -4,15 +4,11 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export function DashboardViewHeader({
-  eyebrow,
-  title,
-  description,
   action,
   className,
-  layout = 'compact',
 }: {
   eyebrow?: string;
-  title: string;
+  title?: string;
   description?: string;
   action?: React.ReactNode;
   className?: string;
@@ -21,8 +17,13 @@ export function DashboardViewHeader({
   if (!action) return null;
 
   return (
-    <header className={cn('mb-4 sm:mb-6 flex w-full justify-end', className)}>
-      <div className="shrink-0 w-full sm:w-auto">{action}</div>
+    <header
+      className={cn(
+        'flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-end',
+        className,
+      )}
+    >
+      <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">{action}</div>
     </header>
   );
 }

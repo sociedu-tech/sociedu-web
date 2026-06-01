@@ -10,13 +10,13 @@ import { USER_PROGRAM } from '@/features/dashboard/lib/programLabels';
 export function UserProgramDetailPage() {
   const params = useParams();
   const bookingId = String(params?.bookingId ?? '');
-  const { item, order, loading, error, refresh } = useProgramDetailPage(bookingId, 'buyer');
+  const { item, order, reportRequests, loading, error, refresh } = useProgramDetailPage(bookingId, 'buyer');
 
   if (!bookingId) {
     return <ErrorMessage message="Không xác định được chương trình học." />;
   }
 
-  if (loading) {
+  if (loading && !item) {
     return <PageLoadingState label="Đang tải chi tiết chương trình…" />;
   }
 
@@ -32,6 +32,7 @@ export function UserProgramDetailPage() {
     <ProgramDetailView
       item={item}
       order={order}
+      reportRequests={reportRequests}
       onRefresh={refresh}
       labels={USER_PROGRAM}
       showChat

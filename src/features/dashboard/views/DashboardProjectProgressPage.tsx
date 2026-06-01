@@ -6,7 +6,7 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useDashboardProjectProgressPage } from '@/features/dashboard/hooks';
 import type { ProjectProgressStatus } from '@/features/dashboard/hooks/useDashboardProjectProgressPage';
 
@@ -20,7 +20,7 @@ export function DashboardProjectProgressPage() {
   const { filter, setFilter, rows, cpHeader, filters, loading, error, refresh } =
     useDashboardProjectProgressPage();
 
-  if (loading) {
+  if (loading && rows.length === 0) {
     return <PageLoadingState label="Đang tải tiến độ…" variant="table" />;
   }
 
@@ -29,7 +29,7 @@ export function DashboardProjectProgressPage() {
   }
 
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         title="Tiến độ dự án"
         description="Theo dõi báo cáo tiến độ và phản hồi từ mentor."
@@ -120,6 +120,6 @@ export function DashboardProjectProgressPage() {
           <p className="px-4 py-8 text-center text-sm text-slate-500">Không có báo cáo phù hợp bộ lọc.</p>
         ) : null}
       </DashboardSurface>
-    </div>
+    </DashboardPage>
   );
 }

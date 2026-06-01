@@ -6,6 +6,8 @@ import {
   AlertCircle,
   ArrowLeft,
   Check,
+  ChevronLeft,
+  ChevronRight,
   FileText,
   ImageIcon,
   Loader2,
@@ -18,7 +20,6 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { DataPagination } from '@/components/ui/DataPagination';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
@@ -83,6 +84,51 @@ function ChatPeerAvatar({
   );
 }
 
+function ChatConversationPager({
+  page,
+  totalPages,
+  onPageChange,
+  disabled,
+}: {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
+}) {
+  if (totalPages <= 1) return null;
+
+  const canPrev = page > 0 && !disabled;
+  const canNext = page + 1 < totalPages && !disabled;
+
+  return (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-t border-slate-200 bg-white px-2 py-2">
+      <button
+        type="button"
+        disabled={!canPrev}
+        onClick={() => onPageChange(page - 1)}
+        className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+        aria-label="Trang trước"
+      >
+        <ChevronLeft className="size-4" />
+        Trước
+      </button>
+      <span className="text-xs tabular-nums text-slate-500">
+        {page + 1}/{totalPages}
+      </span>
+      <button
+        type="button"
+        disabled={!canNext}
+        onClick={() => onPageChange(page + 1)}
+        className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+        aria-label="Trang sau"
+      >
+        Sau
+        <ChevronRight className="size-4" />
+      </button>
+    </div>
+  );
+}
+
 export type DashboardChatPageViewProps = {
   active: Conversation | undefined;
   filtered: Conversation[];
@@ -102,12 +148,10 @@ export type DashboardChatPageViewProps = {
   createConversation: () => void;
   send: () => void;
   convPage?: number;
-  convSize?: number;
-  convTotal?: number;
   convTotalPages?: number;
   onConvPageChange?: (page: number) => void;
-  onConvSizeChange?: (size: number) => void;
   convLoading?: boolean;
+  messagesLoading?: boolean;
   pendingMessageContext?: { contextType: string; contextId: string };
   isAdmin?: boolean;
 };
@@ -131,12 +175,10 @@ export function DashboardChatPageView({
   createConversation,
   send,
   convPage = 0,
-  convSize = 20,
-  convTotal = 0,
   convTotalPages = 0,
   onConvPageChange,
-  onConvSizeChange,
   convLoading = false,
+  messagesLoading = false,
   pendingMessageContext,
   isAdmin = false,
 }: DashboardChatPageViewProps) {
@@ -220,15 +262,11 @@ export function DashboardChatPageView({
             })
             )}
           </ul>
-          {onConvPageChange && onConvSizeChange ? (
-            <DataPagination
-              className="shrink-0 border-t border-slate-200 p-2"
+          {onConvPageChange ? (
+            <ChatConversationPager
               page={convPage}
-              size={convSize}
-              total={convTotal}
               totalPages={convTotalPages}
               onPageChange={onConvPageChange}
-              onSizeChange={onConvSizeChange}
               disabled={convLoading}
             />
           ) : null}
@@ -269,7 +307,9 @@ export function DashboardChatPageView({
               </div>
 
               <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden bg-slate-50/90 p-2.5 sm:space-y-3 sm:p-4">
-                {active.messages.length === 0 ? (
+                {messagesLoading && active.messages.length === 0 ? (
+                  <PageLoadingState label="Đang tải tin nhắn…" variant="chat" minHeight="min-h-[240px]" />
+                ) : active.messages.length === 0 ? (
                   <div className="flex flex-1 flex-col items-center justify-center gap-2 py-16 text-center text-sm text-slate-500">
                     <p>Chưa có tin nhắn. Nhập bên dưới để gửi.</p>
                   </div>

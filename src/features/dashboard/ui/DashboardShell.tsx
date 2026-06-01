@@ -33,7 +33,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  /** Chỉ 2 trạng thái: mở rộng ↔ thu gọn (không ẩn hẳn sidebar — tránh bấm 2 lần là mất menu). */
   const toggleMenuState = useCallback(() => {
     setMenuState((prev) => (prev === 'full' ? 'collapsed' : 'full'));
   }, []);
@@ -53,15 +52,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     /^\/dashboard\/my-orders\/[^/]+$/.test(pathname) ||
     /^\/dashboard\/orders\/[^/]+$/.test(pathname);
 
-  const isFullBleedPage = isChatPage || isOrderDetailPage;
+  const lockMainScroll = isChatPage || isOrderDetailPage;
 
   return (
-    <div
-      className={cn(
-        'flex flex-col bg-slate-50 font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased',
-        isFullBleedPage ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen',
-      )}
-    >
+    <div className="flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-slate-50 font-sans text-[15px] font-normal leading-relaxed text-slate-800 antialiased">
       <DashboardSidebar
         items={navItems}
         pathname={pathname}
@@ -74,10 +68,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       />
 
       <div
-        className={cn(
-          'flex min-h-0 min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out',
-          isFullBleedPage && 'h-[100dvh] overflow-hidden',
-        )}
+        className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden transition-[margin] duration-300 ease-in-out"
         style={{ marginLeft }}
       >
         <DashboardTopBar
@@ -91,15 +82,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         />
         <main
           className={cn(
-            'min-h-0 flex-1 bg-slate-50',
-            isFullBleedPage ? 'flex flex-col overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
+            'flex min-h-0 flex-1 flex-col bg-slate-50',
+            lockMainScroll ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden',
           )}
         >
           <div
             className={cn(
-              isFullBleedPage
-                ? 'flex h-full min-h-0 w-full max-w-none flex-1 flex-col px-0 py-0'
-                : 'min-h-[calc(100dvh-3.5rem)] w-full max-w-none px-4 py-8 sm:px-6 lg:px-8',
+              'flex min-h-0 w-full flex-1 flex-col',
+              lockMainScroll ? 'h-full px-0 py-0' : 'min-h-full px-4 py-8 sm:px-6 lg:px-8',
             )}
           >
             {children}

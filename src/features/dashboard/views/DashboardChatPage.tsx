@@ -2,6 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
+import { PAGE_LOADING_MIN_HEIGHT } from '@/lib/pageLoading';
 import { useDashboardChatPage } from '@/features/dashboard/hooks';
 import { DashboardChatPageView } from '@/features/dashboard/ui/DashboardChatPageView';
 import { useAuth } from '@/context/AuthContext';
@@ -17,7 +18,11 @@ function DashboardChatPageContent() {
 
 export function DashboardChatPage() {
   return (
-    <Suspense fallback={<PageLoadingState label="Đang tải tin nhắn…" variant="chat" minHeight="min-h-[480px]" />}>
+    <Suspense
+      fallback={
+        <PageLoadingState label="Đang tải tin nhắn…" variant="chat" minHeight={PAGE_LOADING_MIN_HEIGHT} />
+      }
+    >
       <DashboardChatPageContent />
     </Suspense>
   );

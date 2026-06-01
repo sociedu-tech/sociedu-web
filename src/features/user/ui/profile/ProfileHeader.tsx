@@ -57,7 +57,7 @@ export function ProfileHeader({
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-5 sm:px-6 lg:px-8 lg:pb-10 lg:pt-6">
+      <div className="relative w-full px-4 pb-8 pt-5 sm:px-6 lg:px-8 lg:pb-10 lg:pt-6">
         <Link
           href={isMentor ? '/mentors' : '/dashboard'}
           className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-white/80 transition hover:text-white"

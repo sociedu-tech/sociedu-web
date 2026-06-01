@@ -46,7 +46,15 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
       if (role === ROLES.MENTOR) {
         return '/dashboard/reports';
       }
-      return '/dashboard/my-reports';
+      const bookingId = meta.bookingId as string | undefined;
+      const entityId = meta.entityId as string | undefined;
+      if (bookingId) {
+        return `/dashboard/mentoring/${bookingId}/report`;
+      }
+      if (entityId) {
+        return `/dashboard/mentoring/${entityId}/report`;
+      }
+      return '/dashboard/mentoring';
     }
 
     /* ---- Booking Review ---- */
@@ -84,7 +92,15 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
     if (role === ROLES.MENTOR) {
       return '/dashboard/reports';
     }
-    return '/dashboard/my-reports';
+    const bookingId = meta.bookingId as string | undefined;
+    const entityId = meta.entityId as string | undefined;
+    if (bookingId) {
+      return `/dashboard/mentoring/${bookingId}/report`;
+    }
+    if (entityId) {
+      return `/dashboard/mentoring/${entityId}/report`;
+    }
+    return '/dashboard/mentoring';
   }
   if (item.type === 'REVIEW') {
     return '/dashboard/mentoring';

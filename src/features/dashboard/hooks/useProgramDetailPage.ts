@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { bookingService } from '@/services/bookingService';
 import { orderService } from '@/services/orderService';
+import { sessionReportService, type SessionReportRequest } from '@/services/sessionReportService';
 import { mapBookingsToProgramItems } from '@/features/dashboard/lib/bookingMappers';
 import type { BookingApi, BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
@@ -52,17 +53,25 @@ async function enrichProgramItem(
 export function useProgramDetailPage(bookingId: string, perspective: 'buyer' | 'mentor') {
   const [item, setItem] = useState<BookingProgramItem | null>(null);
   const [order, setOrder] = useState<ServiceOrderDto | null>(null);
+  const [reportRequests, setReportRequests] = useState<SessionReportRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasLoadedRef = useRef(false);
 
   const refresh = useCallback(async () => {
     if (!bookingId) return;
-    setLoading(true);
+    if (!hasLoadedRef.current) setLoading(true);
     setError(null);
 
     try {
-      const booking = (await bookingService.getById(bookingId)) as BookingApi;
-      const mapped = mapBookingsToProgramItems([{ ...booking, id: bookingId }], perspective)[0];
+      const [bookingRaw, reportsRaw] = await Promise.all([
+        bookingService.getById(bookingId) as Promise<BookingApi>,
+        sessionReportService.listForBooking(bookingId).catch(() => [] as SessionReportRequest[]),
+      ]);
+
+      setReportRequests(Array.isArray(reportsRaw) ? reportsRaw : []);
+
+      const mapped = mapBookingsToProgramItems([{ ...bookingRaw, id: bookingId }], perspective)[0];
       if (!mapped) {
         setError('Không tìm thấy lộ trình.');
         setItem(null);
@@ -91,6 +100,7 @@ export function useProgramDetailPage(bookingId: string, perspective: 'buyer' | '
       setError(err instanceof Error ? err.message : 'Không tải được chi tiết lộ trình.');
       setItem(null);
     } finally {
+      hasLoadedRef.current = true;
       setLoading(false);
     }
   }, [bookingId, perspective]);
@@ -99,7 +109,7 @@ export function useProgramDetailPage(bookingId: string, perspective: 'buyer' | '
     void refresh();
   }, [refresh]);
 
-  return { item, order, loading, error, refresh };
+  return { item, order, reportRequests, loading, error, refresh };
 }
 
 /** @deprecated Use useProgramDetailPage(id, 'mentor') */

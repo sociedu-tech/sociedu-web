@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
+import { AuthRoleGate } from '@/components/auth/AuthRoleGate';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MentorProgramReportPage } from '@/features/mentor/views/MentorProgramReportPage';
 import { UserProgramReportPage } from '@/features/user/views/UserProgramReportPage';
@@ -12,20 +13,20 @@ export function MentoringReportHub() {
   const { userRole } = useAuth();
   const role = normalizeRole(userRole);
 
-  if (role === ROLES.MENTOR) {
-    return <MentorProgramReportPage />;
-  }
-
-  if (role === ROLES.USER) {
-    return <UserProgramReportPage />;
-  }
-
   return (
-    <div className="space-y-4">
-      <ErrorMessage message="Admin không gửi báo cáo từ trang này." />
-      <Link href={MENTORING_PATH} className="inline-block text-sm font-semibold text-primary hover:underline">
-        Về Mentoring
-      </Link>
-    </div>
+    <AuthRoleGate>
+      {role === ROLES.MENTOR ? (
+        <MentorProgramReportPage />
+      ) : role === ROLES.USER ? (
+        <UserProgramReportPage />
+      ) : (
+        <div className="space-y-4">
+          <ErrorMessage message="Admin không gửi báo cáo từ trang này." />
+          <Link href={MENTORING_PATH} className="inline-block text-sm font-semibold text-primary hover:underline">
+            Về Mentoring
+          </Link>
+        </div>
+      )}
+    </AuthRoleGate>
   );
 }

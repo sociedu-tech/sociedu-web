@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { AlertTriangle, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Clock, Loader2 } from 'lucide-react';
 import type { BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ProgramLabels } from '@/features/dashboard/lib/programLabels';
 import { programDetailPath } from '@/features/dashboard/lib/programLabels';
@@ -15,9 +15,36 @@ import {
   submitProgramReport,
   type ProgramReportTargetType,
 } from '@/features/dashboard/lib/programReport';
+import { trustService } from '@/services/trustService';
 import { useToast } from '@/context/ToastContext';
+import { cn } from '@/lib/utils';
 
 type ReportScope = 'all' | 'session';
+
+type TrustReportRow = {
+  id: string;
+  type: string;
+  entityId: string;
+  reason: string;
+  description: string;
+  status: string;
+  createdAt: string;
+  resolutionNote?: string | null;
+};
+
+const TRUST_STATUS_LABEL: Record<string, string> = {
+  open: 'Chờ xử lý',
+  in_review: 'Đang xem xét',
+  resolved: 'Đã xử lý',
+  rejected: 'Từ chối',
+};
+
+const TRUST_STATUS_CLASS: Record<string, string> = {
+  open: 'bg-amber-50 text-amber-800 border-amber-200',
+  in_review: 'bg-blue-50 text-blue-800 border-blue-200',
+  resolved: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+  rejected: 'bg-rose-50 text-rose-800 border-rose-200',
+};
 
 type Props = {
   item: BookingProgramItem;
@@ -39,6 +66,33 @@ export function ProgramReportPageView({ item, labels, orderPackageName }: Props)
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [submittedReports, setSubmittedReports] = useState<TrustReportRow[]>([]);
+  const [loadingSubmitted, setLoadingSubmitted] = useState(true);
+
+  const sessionIds = useMemo(
+    () => new Set(item.sessionRows.map((row) => row.sessionId)),
+    [item.sessionRows],
+  );
+
+  const loadSubmittedReports = async () => {
+    setLoadingSubmitted(true);
+    try {
+      const page = await trustService.myReports(0, 50);
+      const rows = (page.items as TrustReportRow[]).filter((report) => {
+        if (report.entityId === item.bookingId) return true;
+        return report.type === 'session' && sessionIds.has(report.entityId);
+      });
+      setSubmittedReports(rows);
+    } catch {
+      setSubmittedReports([]);
+    } finally {
+      setLoadingSubmitted(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadSubmittedReports();
+  }, [item.bookingId, sessionIds]);
 
   const reportedUserId = getProgramChatPeerId(item);
   const hasSessions = item.sessionRows.length > 0;
@@ -82,6 +136,7 @@ export function ProgramReportPageView({ item, labels, orderPackageName }: Props)
       });
       setDone(true);
       toast.success('Đã gửi báo cáo. Admin sẽ xem xét và xử lý.');
+      void loadSubmittedReports();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Không gửi được báo cáo.');
     } finally {
@@ -92,27 +147,61 @@ export function ProgramReportPageView({ item, labels, orderPackageName }: Props)
   const targetPreview = resolveTarget();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 pb-8">
-      <Link
-        href={detailHref}
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
-      >
-        <ArrowLeft className="size-4" />
-        Quay lại chi tiết lộ trình
-      </Link>
-
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col space-y-6 pb-8">
       <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
         <div className="mb-6 flex items-start gap-3 border-b border-slate-100 pb-5">
           <div className="rounded-xl bg-amber-50 p-2.5 text-amber-700">
             <AlertTriangle className="size-5" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-amber-700">Báo cáo</p>
-            <h1 className="mt-1 text-xl font-semibold text-slate-900">Gửi báo cáo</h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-sm text-slate-600">
               {packageName} · {labels.counterparty}: {item.counterpartyLabel}
             </p>
           </div>
+        </div>
+
+        <div className="mb-6 space-y-3 border-b border-slate-100 pb-6">
+          <h2 className="text-sm font-semibold text-slate-900">Báo cáo vi phạm đã gửi</h2>
+          {loadingSubmitted ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="size-6 animate-spin text-slate-400" />
+            </div>
+          ) : submittedReports.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-6 text-center text-sm text-slate-500">
+              Chưa có báo cáo vi phạm nào cho lộ trình này.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {submittedReports.map((report) => (
+                <li
+                  key={report.id}
+                  className="rounded-xl border border-slate-200 bg-slate-50/50 p-4"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold text-slate-900">{report.reason}</span>
+                    <span
+                      className={cn(
+                        'inline-flex rounded-full border px-2 py-0.5 text-2xs font-semibold',
+                        TRUST_STATUS_CLASS[report.status] ?? 'bg-slate-100 text-slate-700 border-slate-200',
+                      )}
+                    >
+                      {TRUST_STATUS_LABEL[report.status] ?? report.status}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600 whitespace-pre-wrap">{report.description}</p>
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
+                    <Clock className="size-3.5" />
+                    {new Date(report.createdAt).toLocaleString('vi-VN')}
+                  </p>
+                  {report.resolutionNote ? (
+                    <p className="mt-2 rounded-lg border border-indigo-100 bg-indigo-50/60 px-3 py-2 text-xs text-slate-700">
+                      Phản hồi admin: {report.resolutionNote}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {done ? (

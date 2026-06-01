@@ -17,7 +17,7 @@ export function MentorOrderDetailPage() {
     return <ErrorMessage message="Không xác định được đơn hàng." />;
   }
 
-  if (loading) {
+  if (loading && !order) {
     return <PageLoadingState label="Đang tải chi tiết đơn hàng…" />;
   }
 

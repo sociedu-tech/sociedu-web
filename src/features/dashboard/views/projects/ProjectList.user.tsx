@@ -15,7 +15,7 @@ export function ProjectListUser() {
   const { projectRows, loading, error, refresh, page, size, total, totalPages, setPage, setSize } =
     useDashboardProgressReports('mentee');
 
-  if (loading) {
+  if (loading && projectRows.length === 0) {
     return <PageLoadingState label="Đang tải dự án…" variant="cards" />;
   }
 

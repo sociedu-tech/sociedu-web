@@ -144,6 +144,12 @@ async function summarizeSession(contextId: string, isMentor: boolean): Promise<M
   };
 }
 
+export function getCachedMessageContextSummary(
+  context: ChatMessageContext,
+): MessageContextSummary | undefined {
+  return cache.get(cacheKey(context));
+}
+
 export async function fetchMessageContextSummary(
   context: ChatMessageContext,
   isMentor: boolean,

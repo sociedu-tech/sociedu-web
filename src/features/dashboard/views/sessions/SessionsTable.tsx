@@ -1,9 +1,17 @@
  'use client';
 
 import { Video } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
+import {
+  DashboardTableCard,
+  dashboardTableHeadClass,
+  dashboardTableHeadCell,
+  dashboardTableCell,
+  dashboardTableCellTruncate,
+  dashboardTableRowClass,
+} from '@/features/dashboard/ui/DashboardTable';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { SessionConfirmActions } from '@/features/dashboard/views/sessions/SessionConfirmActions';
 import type { DashboardSessionRow } from '@/features/dashboard/types/booking';
@@ -45,7 +53,7 @@ export function SessionsTable({
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  if (loading) {
+  if (loading && rows.length === 0) {
     return <PageLoadingState label="Đang tải buổi học…" variant="table" />;
   }
 
@@ -56,27 +64,31 @@ export function SessionsTable({
   return (
     <div className="space-y-4">
       <DashboardTableCard>
-        <table className="w-full text-left text-sm">
+        <table className="w-full table-fixed text-left text-sm">
           <thead>
             <tr className={dashboardTableHeadClass}>
-              <th className="px-4 py-3">Buổi học</th>
-              <th className="hidden px-4 py-3 sm:table-cell">Thời gian</th>
-              <th className="hidden px-4 py-3 md:table-cell">{counterpartyHeader}</th>
-              <th className="px-4 py-3">Trạng thái</th>
-              <th className="min-w-[180px] px-4 py-3">Xác nhận</th>
+              <th className={dashboardTableHeadCell}>Buổi học</th>
+              <th className={cn(dashboardTableHeadCell, 'hidden sm:table-cell')}>Thời gian</th>
+              <th className={cn(dashboardTableHeadCell, 'hidden md:table-cell')}>{counterpartyHeader}</th>
+              <th className={dashboardTableHeadCell}>Trạng thái</th>
+              <th className={cn(dashboardTableHeadCell, 'min-w-[180px]')}>Xác nhận</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-800">
             {rows.map((row) => (
-              <tr key={`${row.bookingId}-${row.sessionId}`} className="bg-white hover:bg-slate-50/80">
-                <td className="px-4 py-3 font-medium">{row.title}</td>
-                <td className="hidden px-4 py-3 text-slate-600 sm:table-cell">{row.when}</td>
-                <td className="hidden px-4 py-3 text-slate-600 md:table-cell">{row.counterparty}</td>
-                <td className="px-4 py-3">
-                  <span className="badge-primary">{row.status}</span>
+              <tr key={`${row.bookingId}-${row.sessionId}`} className={dashboardTableRowClass}>
+                <td className={dashboardTableCellTruncate} title={row.title}>
+                  <span className="font-medium">{row.title}</span>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
+                <td className={cn(dashboardTableCell, 'hidden text-slate-600 sm:table-cell')}>{row.when}</td>
+                <td className={cn(dashboardTableCellTruncate, 'hidden md:table-cell text-slate-600')} title={row.counterparty}>
+                  {row.counterparty}
+                </td>
+                <td className={dashboardTableCell}>
+                  <span className="badge-primary whitespace-nowrap">{row.status}</span>
+                </td>
+                <td className={dashboardTableCell}>
+                  <div className="flex flex-nowrap items-center gap-2">
                     <SessionConfirmActions row={row} onUpdated={refresh} />
                     {role === 'buyer' && row.status === 'Hoàn thành' ? (
                       <button

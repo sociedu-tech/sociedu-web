@@ -83,6 +83,24 @@ export function programReportPath(bookingId: string): string {
   return `${MENTORING_PATH}/${bookingId}/report`;
 }
 
+export function programSessionReportPath(bookingId: string, requestId: string): string {
+  return `${programDetailPath(bookingId)}/session-reports/${requestId}`;
+}
+
+export function programSessionReportSubmitPath(bookingId: string, requestId: string): string {
+  return `${programSessionReportPath(bookingId, requestId)}/submit`;
+}
+
+export function programSessionReportReviewPath(bookingId: string, requestId: string): string {
+  return `${programSessionReportPath(bookingId, requestId)}/review`;
+}
+
+export function programSessionReportNewPath(bookingId: string, sessionId?: string): string {
+  const base = `${programDetailPath(bookingId)}/session-reports/new`;
+  if (!sessionId) return base;
+  return `${base}?sessionId=${encodeURIComponent(sessionId)}`;
+}
+
 /** @deprecated Use programDetailPath */
 export const mentorProgramDetailPath = programDetailPath;
 

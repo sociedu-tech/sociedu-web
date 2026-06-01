@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { UserOrdersList } from '@/features/dashboard/views/orders/UserOrdersList';
 
 export function UserOrdersPage() {
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Học tập"
         title="Đơn hàng của tôi"
@@ -14,6 +14,6 @@ export function UserOrdersPage() {
         layout="compact"
       />
       <UserOrdersList />
-    </div>
+    </DashboardPage>
   );
 }

@@ -3,19 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Award,
-  BookOpen,
-  Briefcase,
   Github,
   Globe,
-  GraduationCap,
   Linkedin,
   Plus,
   Trash2,
-  User as UserIcon,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { useDashboardProfileEditPage } from '@/features/dashboard/hooks';
+import { DashboardPage, DashboardSurface, DashboardViewHeader, dashboardBtnPrimary, dashboardInput, dashboardLabel } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export function DashboardProfileEditPage() {
   const {
@@ -71,50 +68,45 @@ export function DashboardProfileEditPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Cập nhật hồ sơ</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Thông tin hiển thị với mentor và trên hồ sơ công khai (nếu có).
-          </p>
-        </div>
-        <Link
-          href={profile?.id ? `/profile/${profile.id}` : '/profile'}
-          className="text-sm font-medium text-primary hover:underline"
-        >
-          Xem hồ sơ công khai →
-        </Link>
-      </div>
+    <DashboardPage>
+      <DashboardViewHeader
+        eyebrow="Tài khoản"
+        title="Cập nhật hồ sơ"
+        description="Thông tin hiển thị với mentor và trên hồ sơ công khai (nếu có)."
+        action={
+          <Link
+            href={profile?.id ? `/profile/${profile.id}` : '/profile'}
+            className="text-sm font-semibold text-primary hover:underline"
+          >
+            Xem hồ sơ công khai →
+          </Link>
+        }
+      />
 
       {savedAt ? (
-        <p className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800">
           Đã lưu thay đổi.
         </p>
       ) : null}
       {saveError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">{saveError}</p>
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-800">{saveError}</p>
       ) : null}
 
       <form onSubmit={onSubmit} className="space-y-6">
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <UserIcon className="size-4" strokeWidth={2} />
-            Thông tin cơ bản
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Họ và tên</span>
+              <span className={dashboardLabel}>Họ và tên</span>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="Nguyễn Văn A"
                 required
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Email</span>
+              <span className={dashboardLabel}>Email</span>
               <input
                 value={profile?.email ?? ''}
                 readOnly
@@ -122,67 +114,63 @@ export function DashboardProfileEditPage() {
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Giới thiệu ngắn</span>
+              <span className={dashboardLabel}>Giới thiệu ngắn</span>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows={4}
-                className="w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={cn(dashboardInput, 'resize-y')}
                 placeholder="Mục tiêu học tập, sở thích kỹ thuật, hướng nghiệp…"
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">
+              <span className={dashboardLabel}>
                 Tiêu đề mentor (nếu bạn là mentor)
               </span>
               <input
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="Ví dụ: Lập trình viên full-stack · React và Spring Boot"
               />
             </label>
           </div>
-        </section>
+        </DashboardSurface>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <GraduationCap className="size-4" strokeWidth={2} />
-            Học vấn
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Trường / Đại học</span>
+              <span className={dashboardLabel}>Trường / Đại học</span>
               <input
                 value={university}
                 onChange={(e) => setUniversity(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="Đại học Bách Khoa Hà Nội"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Chuyên ngành</span>
+              <span className={dashboardLabel}>Chuyên ngành</span>
               <input
                 value={major}
                 onChange={(e) => setMajor(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="Công nghệ thông tin"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Năm tốt nghiệp (dự kiến)</span>
+              <span className={dashboardLabel}>Năm tốt nghiệp (dự kiến)</span>
               <input
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
                 type="number"
                 min={1990}
                 max={2040}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="2026"
               />
             </label>
             <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Điểm trung bình (thang 4,0 hoặc hệ trường)</span>
+              <span className={dashboardLabel}>Điểm trung bình (thang 4,0 hoặc hệ trường)</span>
               <input
                 value={gpa}
                 onChange={(e) => setGpa(e.target.value)}
@@ -192,13 +180,9 @@ export function DashboardProfileEditPage() {
               />
             </label>
           </div>
-        </section>
+        </DashboardSurface>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <Briefcase className="size-4" strokeWidth={2} />
-            Kinh nghiệm & công việc
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <div className="space-y-4">
             {experiences.map((row, i) => (
               <div
@@ -226,7 +210,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setExperiences((prev) => prev.map((r, j) => (j === i ? { ...r, company: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                     />
                   </label>
                   <label className="block">
@@ -237,7 +221,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setExperiences((prev) => prev.map((r, j) => (j === i ? { ...r, role: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                     />
                   </label>
                   <label className="block">
@@ -248,7 +232,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setExperiences((prev) => prev.map((r, j) => (j === i ? { ...r, duration: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                       placeholder="2023 — 2024"
                     />
                   </label>
@@ -276,13 +260,9 @@ export function DashboardProfileEditPage() {
               Thêm kinh nghiệm
             </button>
           </div>
-        </section>
+        </DashboardSurface>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <BookOpen className="size-4" strokeWidth={2} />
-            Dự án & nghiên cứu
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <div className="space-y-4">
             {projects.map((row, i) => (
               <div key={i} className="relative rounded-md border border-gray-100 bg-gray-50/80 p-4">
@@ -307,7 +287,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setProjects((prev) => prev.map((r, j) => (j === i ? { ...r, title: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                     />
                   </label>
                   <label className="block">
@@ -318,7 +298,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setProjects((prev) => prev.map((r, j) => (j === i ? { ...r, role: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                     />
                   </label>
                   <label className="block">
@@ -329,7 +309,7 @@ export function DashboardProfileEditPage() {
                         const v = e.target.value;
                         setProjects((prev) => prev.map((r, j) => (j === i ? { ...r, year: v } : r)));
                       }}
-                      className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                      className={dashboardInput}
                       placeholder="2025"
                     />
                   </label>
@@ -357,13 +337,9 @@ export function DashboardProfileEditPage() {
               Thêm dự án
             </button>
           </div>
-        </section>
+        </DashboardSurface>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <Award className="size-4" strokeWidth={2} />
-            Kỹ năng & chứng chỉ
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <label className="block">
             <span className="mb-1 block text-sm font-medium text-gray-700">
               Kỹ năng (phân cách bằng dấu phẩy)
@@ -371,7 +347,7 @@ export function DashboardProfileEditPage() {
             <input
               value={skillsText}
               onChange={(e) => setSkillsText(e.target.value)}
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className={dashboardInput}
               placeholder="JavaScript, React, Tiếng Anh B2, …"
             />
           </label>
@@ -383,17 +359,13 @@ export function DashboardProfileEditPage() {
               value={certsText}
               onChange={(e) => setCertsText(e.target.value)}
               rows={5}
-              className="w-full resize-y rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className={cn(dashboardInput, 'resize-y')}
               placeholder={'Chứng chỉ AWS Cloud Practitioner\nGiải khuyến khích ICPC miền Bắc\n…'}
             />
           </label>
-        </section>
+        </DashboardSurface>
 
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-            <Globe className="size-4" strokeWidth={2} />
-            Liên kết
-          </h2>
+        <DashboardSurface className="p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-1">
             <label className="block">
               <span className="mb-1 flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -403,7 +375,7 @@ export function DashboardProfileEditPage() {
               <input
                 value={github}
                 onChange={(e) => setGithub(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="https://github.com/ten-dang-nhap"
               />
             </label>
@@ -415,7 +387,7 @@ export function DashboardProfileEditPage() {
               <input
                 value={linkedin}
                 onChange={(e) => setLinkedin(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="https://linkedin.com/in/ten-dang-nhap"
               />
             </label>
@@ -427,26 +399,22 @@ export function DashboardProfileEditPage() {
               <input
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className={dashboardInput}
                 placeholder="https://ten-mien-cua-ban.com"
               />
             </label>
           </div>
-        </section>
+        </DashboardSurface>
 
         <div className="flex flex-wrap items-center gap-3 pb-8">
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn-primary min-w-[140px] disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={saving} className={cn(dashboardBtnPrimary, 'min-w-[140px]')}>
             {saving ? 'Đang lưu…' : 'Lưu thay đổi'}
           </button>
-          <Link href="/dashboard" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+          <Link href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900">
             ← Quay lại tổng quan
           </Link>
         </div>
       </form>
-    </div>
+    </DashboardPage>
   );
 }

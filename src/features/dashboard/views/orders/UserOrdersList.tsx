@@ -7,7 +7,14 @@ import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DataPagination } from '@/components/ui/DataPagination';
-import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
+import {
+  DashboardTableCard,
+  dashboardTableHeadClass,
+  dashboardTableHeadCell,
+  dashboardTableCell,
+  dashboardTableCellTruncate,
+  dashboardTableRowClass,
+} from '@/features/dashboard/ui/DashboardTable';
 import { useUserOrders } from '@/features/dashboard/hooks/useUserOrders';
 import { orderStatusBadgeClass, shortOrderId, userOrderDetailPath } from '@/features/dashboard/lib/orderLabels';
 
@@ -38,7 +45,7 @@ export function UserOrdersList() {
     [repay],
   );
 
-  if (loading) {
+  if (loading && orders.length === 0) {
     return <PageLoadingState label="Đang tải đơn hàng…" variant="cards" />;
   }
 
@@ -73,51 +80,51 @@ export function UserOrdersList() {
       ) : (
         <DashboardTableCard>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+            <table className="w-full min-w-[720px] table-fixed text-left text-sm">
               <thead>
                 <tr className={dashboardTableHeadClass}>
-                  <th className="px-4 py-3">Mã đơn</th>
-                  <th className="hidden px-4 py-3 sm:table-cell">Gói dịch vụ</th>
-                  <th className="px-4 py-3">Số tiền</th>
-                  <th className="hidden px-4 py-3 md:table-cell">Ngày tạo</th>
-                  <th className="hidden px-4 py-3 lg:table-cell">Hết hạn / TT</th>
-                  <th className="px-4 py-3">Trạng thái</th>
-                  <th className="px-4 py-3 text-right">Thao tác</th>
+                  <th className={dashboardTableHeadCell}>Mã đơn</th>
+                  <th className={cn(dashboardTableHeadCell, 'hidden sm:table-cell')}>Gói dịch vụ</th>
+                  <th className={dashboardTableHeadCell}>Số tiền</th>
+                  <th className={cn(dashboardTableHeadCell, 'hidden md:table-cell')}>Ngày tạo</th>
+                  <th className={cn(dashboardTableHeadCell, 'hidden lg:table-cell')}>Hết hạn / TT</th>
+                  <th className={dashboardTableHeadCell}>Trạng thái</th>
+                  <th className={cn(dashboardTableHeadCell, 'text-right')}>Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
                 {orders.map((order) => {
                   const isPaying = payingId === order.id;
                   return (
-                    <tr key={order.id} className="bg-white hover:bg-slate-50/80">
-                      <td className="px-4 py-3 font-mono text-xs font-medium text-slate-700">
+                    <tr key={order.id} className={dashboardTableRowClass}>
+                      <td className={cn(dashboardTableCell, 'font-mono text-xs font-medium text-slate-700')}>
                         <Link href={userOrderDetailPath(order.id)} className="hover:text-primary">
                           {shortOrderId(order.id)}
                         </Link>
                       </td>
-                      <td className="hidden max-w-[200px] truncate px-4 py-3 text-slate-600 sm:table-cell">
+                      <td className={cn(dashboardTableCellTruncate, 'hidden sm:table-cell text-slate-600')} title={order.packageLabel}>
                         {order.packageLabel}
                       </td>
-                      <td className="px-4 py-3 font-semibold text-slate-900">
+                      <td className={cn(dashboardTableCell, 'font-semibold text-slate-900')}>
                         {order.amount.toLocaleString('vi-VN')}đ
                       </td>
-                      <td className="hidden px-4 py-3 text-slate-600 md:table-cell">{order.createdAt}</td>
-                      <td className="hidden px-4 py-3 text-slate-600 lg:table-cell">
+                      <td className={cn(dashboardTableCell, 'hidden text-slate-600 md:table-cell')}>{order.createdAt}</td>
+                      <td className={cn(dashboardTableCell, 'hidden text-slate-600 lg:table-cell')}>
                         {order.status === 'pending_payment' && order.paymentExpiresAt
                           ? order.paymentExpiresAt
                           : order.paidAt ?? '—'}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={dashboardTableCell}>
                         <span
                           className={cn(
-                            'inline-flex rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset',
+                            'inline-flex whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset',
                             orderStatusBadgeClass(order.status),
                           )}
                         >
                           {order.statusLabel}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className={cn(dashboardTableCell, 'text-right')}>
                         <div className="flex flex-wrap items-center justify-end gap-2">
                           <Link
                             href={userOrderDetailPath(order.id)}

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
+import { AuthRoleGate } from '@/components/auth/AuthRoleGate';
 import { AdminDashboardHomePage } from '@/features/admin/views/AdminDashboardHomePage';
 import { MentorDashboardHomePage } from '@/features/mentor/views/MentorDashboardHomePage';
 import { UserDashboardHomePage } from '@/features/user/views/UserDashboardHomePage';
@@ -12,13 +13,15 @@ export function DashboardHomePage() {
   const { userRole } = useAuth();
   const r = normalizeRole(userRole);
 
-  if (r === ROLES.MENTOR) {
-    return <MentorDashboardHomePage />;
-  }
-
-  if (r === ROLES.ADMIN) {
-    return <AdminDashboardHomePage />;
-  }
-
-  return <UserDashboardHomePage />;
+  return (
+    <AuthRoleGate>
+      {r === ROLES.MENTOR ? (
+        <MentorDashboardHomePage />
+      ) : r === ROLES.ADMIN ? (
+        <AdminDashboardHomePage />
+      ) : (
+        <UserDashboardHomePage />
+      )}
+    </AuthRoleGate>
+  );
 }

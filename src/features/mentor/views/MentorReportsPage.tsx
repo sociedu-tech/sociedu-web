@@ -6,7 +6,18 @@ import { FileText, Search, CheckCircle, Clock, X, MessageSquare, Flag, ExternalL
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
-import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import {
+  DashboardPage,
+  DashboardSurface,
+  DashboardViewHeader,
+  DashboardTabs,
+  DashboardEmptyState,
+  DashboardLoadingBlock,
+  dashboardTableHead,
+  dashboardTableHeadCell,
+  dashboardTableRow,
+  dashboardTableCell,
+} from '@/features/dashboard/ui/DashboardPrimitives';
 import { useMentorReportsPage } from '@/features/mentor/hooks';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/context/ToastContext';
@@ -37,7 +48,7 @@ export const MentorReportsPage = () => {
   
   // Academic tab states
   const [academicReports, setAcademicReports] = React.useState<SessionReportRequest[]>([]);
-  const [academicLoading, setAcademicLoading] = React.useState(false);
+  const [academicLoading, setAcademicLoading] = React.useState(true);
   const [academicPage, setAcademicPage] = React.useState(0);
   const [academicSize, setAcademicSize] = React.useState(20);
   const [academicTotal, setAcademicTotal] = React.useState(0);
@@ -94,75 +105,56 @@ export const MentorReportsPage = () => {
   const currentLoading = activeTab === 'moderation' ? loading : academicLoading;
 
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Mentor"
-        title="Báo cáo học tập &amp; vi phạm"
+        title="Báo cáo học tập & vi phạm"
         description="Quản lý và chấm báo cáo học tập của mentee, theo dõi khiếu nại."
         layout="compact"
       />
 
-      <div className="flex border-b border-gray-200 bg-white px-4 rounded-xl shadow-sm">
-        <button
-          onClick={() => setActiveTab('academic')}
-          className={cn(
-            "py-3.5 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
-            activeTab === 'academic'
-              ? "border-primary text-primary"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          )}
-        >
-          <FileText className="size-4" />
-          Báo cáo học tập
-        </button>
-        <button
-          onClick={() => setActiveTab('moderation')}
-          className={cn(
-            "py-3.5 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2",
-            activeTab === 'moderation'
-              ? "border-primary text-primary"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          )}
-        >
-          <Flag className="size-4" />
-          Báo cáo vi phạm
-        </button>
-      </div>
+      <DashboardTabs
+        activeTab={activeTab}
+        onChange={(id) => setActiveTab(id as 'academic' | 'moderation')}
+        tabs={[
+          { id: 'academic', label: 'Báo cáo học tập', icon: FileText },
+          { id: 'moderation', label: 'Báo cáo vi phạm', icon: Flag },
+        ]}
+      />
 
       {currentLoading ? (
-        <div className="flex min-h-[30vh] items-center justify-center bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-          <LoadingSpinner size={32} label="Đang tải dữ liệu…" />
-        </div>
+        <DashboardLoadingBlock />
       ) : (
         <DashboardSurface className="overflow-hidden">
           {activeTab === 'academic' ? (
             <>
               {academicReports.length === 0 ? (
-                <div className="p-12 text-center text-gray-500">
-                  <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p>Hiện chưa có yêu cầu báo cáo học tập nào.</p>
-                </div>
+                <DashboardEmptyState
+                  icon={FileText}
+                  title="Chưa có yêu cầu báo cáo học tập"
+                  description="Yêu cầu báo cáo từ học viên sẽ hiển thị tại đây."
+                />
               ) : (
-                <table className="w-full text-left border-collapse">
+                <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-500 tracking-wider">
-                      <th className="px-6 py-4">Học viên</th>
-                      <th className="px-6 py-4">Yêu cầu báo cáo</th>
-                      <th className="px-6 py-4">Trạng thái</th>
-                      <th className="px-6 py-4">Cập nhật lúc</th>
-                      <th className="px-6 py-4 text-right">Thao tác</th>
+                    <tr className={dashboardTableHead}>
+                      <th className={dashboardTableHeadCell}>Học viên</th>
+                      <th className={dashboardTableHeadCell}>Yêu cầu báo cáo</th>
+                      <th className={dashboardTableHeadCell}>Trạng thái</th>
+                      <th className={dashboardTableHeadCell}>Cập nhật lúc</th>
+                      <th className={cn(dashboardTableHeadCell, 'text-right')}>Thao tác</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {academicReports.map((req) => (
-                      <tr key={req.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 font-medium text-dark">
+                      <tr key={req.id} className={dashboardTableRow}>
+                        <td className={cn(dashboardTableCell, 'font-medium text-slate-900')}>
                           Học viên #{req.menteeId.substring(0, 8)}
                         </td>
-                        <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]" title={req.title}>
+                        <td className={cn(dashboardTableCell, 'max-w-[200px] truncate text-slate-600')} title={req.title}>
                           {req.title}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className={dashboardTableCell}>
                           {req.status === 'PENDING_SUBMISSION' ? (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200/50">
                               Chờ nộp
@@ -181,10 +173,10 @@ export const MentorReportsPage = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-500 text-sm">
+                        <td className={cn(dashboardTableCell, 'text-slate-500')}>
                           {req.updatedAt ? new Date(req.updatedAt).toLocaleString('vi-VN') : '—'}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className={cn(dashboardTableCell, 'text-right')}>
                           {req.status === 'SUBMITTED' ? (
                             <button
                               onClick={() => {
@@ -217,7 +209,7 @@ export const MentorReportsPage = () => {
                 </table>
               )}
               <DataPagination
-                className="border-t border-gray-100 p-4"
+                className="border-t border-slate-100 p-4"
                 page={academicPage}
                 size={academicSize}
                 total={academicTotal}
@@ -230,27 +222,24 @@ export const MentorReportsPage = () => {
           ) : (
             <>
               {reports.length === 0 ? (
-                <div className="p-12 text-center text-gray-500">
-                  <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p>Hiện chưa có báo cáo vi phạm nào.</p>
-                </div>
+                <DashboardEmptyState icon={Flag} title="Chưa có báo cáo vi phạm nào" />
               ) : (
-                <table className="w-full text-left border-collapse">
+                <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200 text-sm font-bold text-gray-500 tracking-wider">
-                      <th className="px-6 py-4">Mentee</th>
-                      <th className="px-6 py-4">Tiêu đề báo cáo</th>
-                      <th className="px-6 py-4">Trạng thái</th>
-                      <th className="px-6 py-4">Ngày nộp</th>
-                      <th className="px-6 py-4 text-right">Thao tác</th>
+                    <tr className={dashboardTableHead}>
+                      <th className={dashboardTableHeadCell}>Mentee</th>
+                      <th className={dashboardTableHeadCell}>Tiêu đề báo cáo</th>
+                      <th className={dashboardTableHeadCell}>Trạng thái</th>
+                      <th className={dashboardTableHeadCell}>Ngày nộp</th>
+                      <th className={cn(dashboardTableHeadCell, 'text-right')}>Thao tác</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {reports.map((report) => (
-                      <tr key={report.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 font-medium text-dark">{report.menteeName || `ID: ${report.menteeId}`}</td>
-                        <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{report.title}</td>
-                        <td className="px-6 py-4">
+                      <tr key={report.id} className={dashboardTableRow}>
+                        <td className={cn(dashboardTableCell, 'font-medium text-slate-900')}>{report.menteeName || `ID: ${report.menteeId}`}</td>
+                        <td className={cn(dashboardTableCell, 'max-w-[200px] truncate text-slate-600')}>{report.title}</td>
+                        <td className={dashboardTableCell}>
                           {report.status === 'PENDING' ? (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200/50">
                               <Clock size={14} /> Chờ duyệt
@@ -265,12 +254,12 @@ export const MentorReportsPage = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-500 text-sm">
+                        <td className={cn(dashboardTableCell, 'text-slate-500')}>
                           {report.createdAt
                             ? new Date(report.createdAt).toLocaleDateString('vi-VN')
                             : '—'}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className={cn(dashboardTableCell, 'text-right')}>
                           <button
                             onClick={() => setSelectedReport(report)}
                             className="px-4 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors border border-transparent hover:border-primary/20"
@@ -284,7 +273,7 @@ export const MentorReportsPage = () => {
                 </table>
               )}
               <DataPagination
-                className="border-t border-gray-100 p-4"
+                className="border-t border-slate-100 p-4"
                 page={page}
                 size={size}
                 total={total}
@@ -536,6 +525,6 @@ export const MentorReportsPage = () => {
           </form>
         </div>
       ) : null}
-    </div>
+    </DashboardPage>
   );
 };

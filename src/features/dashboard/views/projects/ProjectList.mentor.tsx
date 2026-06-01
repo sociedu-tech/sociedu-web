@@ -12,7 +12,7 @@ export function ProjectListMentor() {
   const { projectRows, loading, error, refresh, page, size, total, totalPages, setPage, setSize } =
     useDashboardProgressReports('mentor');
 
-  if (loading) {
+  if (loading && projectRows.length === 0) {
     return <PageLoadingState label="Đang tải…" variant="cards" />;
   }
 

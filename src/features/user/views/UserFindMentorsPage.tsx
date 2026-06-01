@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { MentorMarketplace } from '@/features/mentor/views/MentorMarketplace';
 
 export function UserFindMentorsPage() {
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Học tập"
         title="Tìm mentor"
@@ -14,6 +14,6 @@ export function UserFindMentorsPage() {
         layout="compact"
       />
       <MentorMarketplace variant="dashboard" />
-    </div>
+    </DashboardPage>
   );
 }

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { MentorOrders } from '@/features/dashboard/ui/mentor/MentorOrders';
-import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorOrdersPage = () => {
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Mentor"
         title="Đơn hàng"
@@ -14,6 +14,6 @@ export const MentorOrdersPage = () => {
         layout="compact"
       />
       <MentorOrders />
-    </div>
+    </DashboardPage>
   );
 };

@@ -14,7 +14,7 @@ function SkeletonLabel({ label }: { label?: string }) {
 
 function TableSkeleton({ rows = 6, label }: { rows?: number; label?: string }) {
   return (
-    <div className="w-full max-w-5xl space-y-3 px-2">
+    <div className="w-full space-y-3 px-2">
       <SkeletonLabel label={label} />
       <SkeletonBlock className="h-10 w-full" />
       {Array.from({ length: rows }).map((_, i) => (
@@ -26,7 +26,7 @@ function TableSkeleton({ rows = 6, label }: { rows?: number; label?: string }) {
 
 function CardsSkeleton({ count = 4, label }: { count?: number; label?: string }) {
   return (
-    <div className="grid w-full max-w-5xl gap-4 px-2 sm:grid-cols-2">
+    <div className="grid w-full gap-4 px-2 sm:grid-cols-2">
       <SkeletonLabel label={label} />
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="space-y-3 rounded-2xl border border-slate-200/80 bg-white p-5">
@@ -42,7 +42,7 @@ function CardsSkeleton({ count = 4, label }: { count?: number; label?: string })
 
 function StatsSkeleton({ label }: { label?: string }) {
   return (
-    <div className="w-full max-w-5xl space-y-4 px-2">
+    <div className="w-full space-y-4 px-2">
       <SkeletonLabel label={label} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -56,7 +56,7 @@ function StatsSkeleton({ label }: { label?: string }) {
 
 function ChatSkeleton({ label }: { label?: string }) {
   return (
-    <div className="flex h-full min-h-[420px] w-full max-w-5xl overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="flex h-full min-h-[420px] w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
       <SkeletonLabel label={label} />
       <div className="hidden w-72 shrink-0 space-y-3 border-r border-slate-200 p-3 sm:block">
         {Array.from({ length: 5 }).map((_, i) => (

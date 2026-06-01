@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { MentorMentees } from '@/features/dashboard/ui/mentor/MentorMentees';
-import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
+import { DashboardPage, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 
 export const MentorMenteesPage = () => {
   return (
-    <div className="space-y-6 pb-2">
+    <DashboardPage>
       <DashboardViewHeader
         eyebrow="Mentor"
         title="Học viên"
@@ -14,6 +14,6 @@ export const MentorMenteesPage = () => {
         layout="compact"
       />
       <MentorMentees />
-    </div>
+    </DashboardPage>
   );
 };

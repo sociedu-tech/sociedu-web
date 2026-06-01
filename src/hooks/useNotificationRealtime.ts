@@ -1,42 +1,26 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useStomp } from '@/context/StompProvider';
-import { notificationTopicForUser } from '@/lib/wsConfig';
+import { REALTIME_CHANNELS, realtimeEventBus } from '@/lib/realtime/eventBus';
 import type { NotificationItem } from '@/services/notificationService';
 
-type NotificationEnvelope = {
-  eventType?: string;
-  serverTimestamp?: string;
-  payload?: NotificationItem;
-};
-
 type Options = {
-  userId?: string | null;
   onNotification?: (item: NotificationItem) => void;
 };
 
-export function useNotificationRealtime({ userId, onNotification }: Options) {
-  const { connected, subscribe } = useStomp();
+/**
+ * Subscribe to in-app notification events from {@link GlobalRealtimeSubscriptions}.
+ * Does not open a STOMP connection — use for UI widgets (inbox, badge, etc.).
+ */
+export function useNotificationRealtime({ onNotification }: Options) {
   const onNotificationRef = useRef(onNotification);
   onNotificationRef.current = onNotification;
 
   useEffect(() => {
-    if (!connected || !userId) return undefined;
+    if (!onNotificationRef.current) return undefined;
 
-    const destination = notificationTopicForUser(userId);
-    const unsubscribe = subscribe(destination, (body) => {
-      try {
-        const envelope = JSON.parse(body) as NotificationEnvelope;
-        if (envelope.eventType !== 'NEW_NOTIFICATION' || !envelope.payload) {
-          return;
-        }
-        onNotificationRef.current?.(envelope.payload);
-      } catch {
-        // ignore malformed frames
-      }
+    return realtimeEventBus.subscribe(REALTIME_CHANNELS.NOTIFICATION, (payload) => {
+      onNotificationRef.current?.(payload as NotificationItem);
     });
-
-    return unsubscribe;
-  }, [connected, subscribe, userId]);
+  }, []);
 }

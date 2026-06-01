@@ -37,7 +37,7 @@ export function UserProfilePage() {
     handleMessage,
   } = useUserProfilePage();
 
-  if (loading) {
+  if (loading && !user) {
     return (
       <div className="min-h-[60vh] bg-marketing-canvas">
         <PageLoadingState label="Đang tải hồ sơ..." minHeight="min-h-[60vh]" />
@@ -81,7 +81,7 @@ export function UserProfilePage() {
         onMessage={handleMessage}
       />
 
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:space-y-8 lg:py-8 lg:px-8">
+      <div className="w-full space-y-6 px-4 py-6 sm:px-6 lg:space-y-8 lg:py-8 lg:px-8">
         {isMentor ? (
           <ProfileVerificationBanner
             user={user}

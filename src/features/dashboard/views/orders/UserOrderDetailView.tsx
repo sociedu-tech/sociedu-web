@@ -22,8 +22,7 @@ export function UserOrderDetailView({ order, detail, paying, onRepay }: Props) {
           <ShoppingBag className="size-6" />
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Chi tiết đơn hàng</p>
-          <h1 className="mt-1 font-mono text-2xl font-semibold text-slate-900">{shortOrderId(order.id)}</h1>
+          <h1 className="font-mono text-2xl font-semibold text-slate-900">{shortOrderId(order.id)}</h1>
         </div>
       </div>
 
