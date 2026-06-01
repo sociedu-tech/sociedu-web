@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
-import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
+import { MentorReportsPage } from '@/features/mentor/views/MentorReportsPage';
 
-export default function LegacyMentorReportsPage() {
-  redirect(MENTORING_PATH);
+export default function MentorReportsPageWrapper() {
+  return <MentorReportsPage />;
 }

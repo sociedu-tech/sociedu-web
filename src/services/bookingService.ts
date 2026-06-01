@@ -66,4 +66,17 @@ export const bookingService = {
     );
     return res.data;
   },
+
+  createSession: async (
+    bookingId: number | string,
+    body: { title: string; description?: string },
+  ) => {
+    const res = await api.post(`${BASE}/${bookingId}/sessions`, body);
+    return res.data;
+  },
+
+  cancelBooking: async (bookingId: number | string, reason: string) => {
+    const res = await api.post(`${BASE}/${bookingId}/cancel`, { reason });
+    return res.data;
+  },
 };

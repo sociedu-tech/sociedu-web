@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Flag, Loader2, MessageSquare, ShoppingBag, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { BookingProgramItem } from '@/features/dashboard/types/booking';
+import type { BookingProgramItem, DashboardSessionRow } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
 import type { ProgramLabels } from '@/features/dashboard/lib/programLabels';
 import { buildProgramOrderHref, buildProgramReportHref } from '@/features/dashboard/lib/programLabels';
@@ -20,6 +20,7 @@ import { useToast } from '@/context/ToastContext';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { reviewService } from '@/services/reviewService';
 import { pickPackageLabel } from '@/lib/resolveOrderPackageNames';
+import { bookingService } from '@/services/bookingService';
 
 type Props = {
   item: BookingProgramItem;
@@ -48,6 +49,70 @@ export function ProgramDetailView({
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+
+  // States for Scheduling (Xếp lịch)
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleSession, setScheduleSession] = useState<DashboardSessionRow | null>(null);
+  const [scheduledAt, setScheduledAt] = useState('');
+  const [meetingUrl, setMeetingUrl] = useState('');
+  const [scheduling, setScheduling] = useState(false);
+
+  // States for Custom Session Creation (Thêm buổi học mới)
+  const [createSessionOpen, setCreateSessionOpen] = useState(false);
+  const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [newSessionDescription, setNewSessionDescription] = useState('');
+  const [creatingSession, setCreatingSession] = useState(false);
+
+  const handleScheduleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!scheduleSession) return;
+    if (!scheduledAt) {
+      toast.error('Vui lòng chọn ngày giờ học.');
+      return;
+    }
+    setScheduling(true);
+    try {
+      const isoScheduledAt = new Date(scheduledAt).toISOString();
+      await bookingService.updateSession(item.bookingId, scheduleSession.sessionId, {
+        scheduledAt: isoScheduledAt,
+        meetingUrl: meetingUrl.trim() || undefined,
+      });
+      toast.success('Xếp lịch buổi học thành công.');
+      setScheduleOpen(false);
+      setScheduleSession(null);
+      setScheduledAt('');
+      setMeetingUrl('');
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không xếp được lịch học.');
+    } finally {
+      setScheduling(false);
+    }
+  };
+
+  const handleCreateSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSessionTitle.trim()) {
+      toast.error('Vui lòng nhập tiêu đề buổi học.');
+      return;
+    }
+    setCreatingSession(true);
+    try {
+      await bookingService.createSession(item.bookingId, {
+        title: newSessionTitle.trim(),
+        description: newSessionDescription.trim() || undefined,
+      });
+      toast.success('Thêm buổi học mới thành công.');
+      setCreateSessionOpen(false);
+      setNewSessionTitle('');
+      setNewSessionDescription('');
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không tạo được buổi học.');
+    } finally {
+      setCreatingSession(false);
+    }
+  };
 
   const packageName = pickPackageLabel(
     item.orderId,
@@ -150,7 +215,18 @@ export function ProgramDetailView({
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">{labels.sessionList}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-900">{labels.sessionList}</h2>
+          {item.sessionPerspective === 'mentor' && (
+            <button
+              type="button"
+              onClick={() => setCreateSessionOpen(true)}
+              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition"
+            >
+              + Thêm buổi học mới
+            </button>
+          )}
+        </div>
         {item.sessionRows.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center text-sm text-slate-500">
             {labels.sessionEmpty}
@@ -181,6 +257,42 @@ export function ProgramDetailView({
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex flex-wrap items-center justify-end gap-2">
+                          {row.meetingUrl ? (
+                            <a
+                              href={row.meetingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100"
+                            >
+                              Vào phòng học
+                            </a>
+                          ) : null}
+                          {item.sessionPerspective === 'mentor' &&
+                          !['completed', 'canceled', 'cancelled', 'disputed'].includes(
+                            row.rawStatus.toLowerCase(),
+                          ) ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setScheduleSession(row);
+                                if (row.scheduledAtIso) {
+                                  const d = new Date(row.scheduledAtIso);
+                                  const tzOffset = d.getTimezoneOffset() * 60000;
+                                  const localTime = new Date(d.getTime() - tzOffset)
+                                    .toISOString()
+                                    .slice(0, 16);
+                                  setScheduledAt(localTime);
+                                } else {
+                                  setScheduledAt('');
+                                }
+                                setMeetingUrl(row.meetingUrl || '');
+                                setScheduleOpen(true);
+                              }}
+                              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              Xếp lịch
+                            </button>
+                          ) : null}
                           <SessionConfirmActions row={row} onUpdated={onRefresh} />
                           {showReview && row.status === 'Hoàn thành' ? (
                             <button
@@ -258,6 +370,111 @@ export function ProgramDetailView({
               </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {/* Modal Xếp lịch */}
+      {scheduleOpen && scheduleSession ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setScheduleOpen(false)} />
+          <form
+            onSubmit={(e) => void handleScheduleSave(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Lên lịch buổi học</h3>
+            <p className="text-sm text-slate-500 font-medium">Buổi: {scheduleSession.title}</p>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Ngày giờ học (*)</label>
+              <input
+                type="datetime-local"
+                required
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Link phòng họp (Google Meet, Zoom...)</label>
+              <input
+                type="url"
+                value={meetingUrl}
+                onChange={(e) => setMeetingUrl(e.target.value)}
+                placeholder="https://meet.google.com/..."
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setScheduleOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={scheduling}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
+              >
+                {scheduling ? 'Đang lưu…' : 'Lưu lịch'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {/* Modal Thêm buổi học mới */}
+      {createSessionOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCreateSessionOpen(false)} />
+          <form
+            onSubmit={(e) => void handleCreateSession(e)}
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <h3 className="text-lg font-semibold text-slate-900">Thêm buổi học mới</h3>
+            
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Tiêu đề buổi học (*)</label>
+              <input
+                type="text"
+                required
+                value={newSessionTitle}
+                onChange={(e) => setNewSessionTitle(e.target.value)}
+                placeholder="Ví dụ: Hướng dẫn viết Proposal"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Mô tả nội dung</label>
+              <textarea
+                value={newSessionDescription}
+                onChange={(e) => setNewSessionDescription(e.target.value)}
+                placeholder="Mô tả tóm tắt nội dung sẽ trao đổi..."
+                className="w-full h-24 resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                onClick={() => setCreateSessionOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={creatingSession}
+                className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
+              >
+                {creatingSession ? 'Đang tạo…' : 'Tạo buổi học'}
+              </button>
+            </div>
+          </form>
         </div>
       ) : null}
     </div>

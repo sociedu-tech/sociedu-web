@@ -11,6 +11,7 @@ import {
   UserCircle,
   Flag,
   ShieldCheck,
+  Calendar,
 } from 'lucide-react';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { ROUTES } from '@/constants/routes';
@@ -58,6 +59,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       },
       { href: ROUTES.DASHBOARD.ADMIN.USERS.path, label: 'Người dùng', icon: Users, group: 'Quản trị' },
       { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Quản trị' },
+      { href: ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, label: 'Quản lý đặt lịch', icon: Calendar, group: 'Quản trị' },
       {
         href: ROUTES.DASHBOARD.ADMIN.REPORTS.path,
         label: 'Báo cáo & tranh chấp',
@@ -82,6 +84,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
       { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Công việc' },
       { href: '/dashboard/mentees', label: 'Học viên', icon: Users, group: 'Công việc' },
       { href: '/dashboard/orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Công việc' },
+      { href: '/dashboard/reports', label: 'Báo cáo', icon: Flag, group: 'Công việc' },
       ...ACCOUNT_NAV_ITEMS,
     ];
   }
@@ -92,6 +95,7 @@ export function getShellNavItems(role: string, _userId?: string | number): Shell
     { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Học tập' },
     { href: '/dashboard/my-orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Học tập' },
     { href: '/dashboard/find-mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
+    { href: '/dashboard/my-reports', label: 'Báo cáo của tôi', icon: Flag, group: 'Học tập' },
     ...ACCOUNT_NAV_ITEMS,
   ];
 }
@@ -132,6 +136,7 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 const TITLE_ENTRIES: [string, string][] = [
   [ROUTES.DASHBOARD.ADMIN.MENTORS.path, 'Quản lý Mentor'],
   [ROUTES.DASHBOARD.ADMIN.USERS.path, 'Người dùng'],
+  [ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, 'Quản lý đặt lịch'],
   [MENTORING_PATH, MENTORING_NAV],
   [ROUTES.DASHBOARD.ADMIN.REPORTS.path, 'Báo cáo & khiếu nại'],
   ['/dashboard/mentors/', 'Chi tiết Mentor'],
@@ -150,6 +155,7 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/chat') return 'Tin nhắn';
   if (/^\/dashboard\/mentoring\/[^/]+\/report$/.test(normalized)) return 'Gửi báo cáo';
   if (/^\/dashboard\/mentoring\/[^/]+$/.test(normalized)) return 'Chi tiết';
+  if (normalized === ROUTES.DASHBOARD.ADMIN.BOOKINGS.path) return 'Quản lý đặt lịch';
   if (normalized === MENTORING_PATH) return MENTORING_NAV;
   if (/^\/dashboard\/my-orders\/[^/]+$/.test(normalized)) return 'Chi tiết đơn hàng';
   if (normalized === '/dashboard/my-orders') return 'Đơn hàng của tôi';

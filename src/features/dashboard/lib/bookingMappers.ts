@@ -270,5 +270,6 @@ function sessionToRow(
     mentorCompletionAck: session.mentorCompletionAck ?? null,
     canConfirm,
     myAck,
+    meetingUrl: session.meetingUrl ?? null,
   };
 }

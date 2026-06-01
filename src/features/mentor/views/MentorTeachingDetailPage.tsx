@@ -35,6 +35,7 @@ export function MentorTeachingDetailPage() {
       onRefresh={refresh}
       labels={MENTOR_PROGRAM}
       showChat
+      showReport={true}
     />
   );
 }

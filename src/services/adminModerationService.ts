@@ -20,6 +20,7 @@ type AdminModerationApiRow = {
   summary: string;
   status: string;
   priority: string;
+  resolutionNote?: string;
   sessionDispute?: ApiSessionDispute | null;
 };
 
@@ -50,6 +51,7 @@ const toRow = (row: AdminModerationApiRow): AdminModerationReport => ({
     | 'low'
     | 'normal'
     | 'high',
+  resolutionNote: row.resolutionNote,
   sessionDispute: row.sessionDispute ?? undefined,
 });
 

@@ -16,6 +16,7 @@ export type DashboardSessionRow = {
   mentorCompletionAck: boolean | null;
   canConfirm: boolean;
   myAck: boolean | null;
+  meetingUrl?: string | null;
 };
 
 export type DashboardProjectRow = {

@@ -4,12 +4,15 @@ import React, { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useDashboardChatPage } from '@/features/dashboard/hooks';
 import { DashboardChatPageView } from '@/features/dashboard/ui/DashboardChatPageView';
+import { useAuth } from '@/context/AuthContext';
 
 export type { ChatAttachment } from '@/features/dashboard/chat/types';
 
 function DashboardChatPageContent() {
   const p = useDashboardChatPage();
-  return <DashboardChatPageView {...p} />;
+  const { userRole } = useAuth();
+  const isAdmin = userRole === 'admin';
+  return <DashboardChatPageView {...p} isAdmin={isAdmin} />;
 }
 
 export function DashboardChatPage() {

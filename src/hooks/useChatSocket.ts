@@ -1,8 +1,5 @@
-import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { buildSockJsChatUrl } from '@/lib/wsConfig';
-import { useAuth } from '@/context/AuthContext';
+import { useCallback, useEffect, useRef } from 'react';
+import { useStomp } from '@/context/StompProvider';
 
 export interface ChatSocketMessage {
   id: string;
@@ -36,7 +33,7 @@ function parseConversationEvent(body: string, fallbackConversationId: string): C
 
     return {
       id: String(id),
-      conversationId: String(raw.conversationId ?? fallbackConversationId),
+      conversationId: String(payload.conversationId ?? raw.conversationId ?? fallbackConversationId),
       senderId: String(senderId),
       content: String(payload.content ?? raw.content ?? ''),
       type: payload.type != null ? String(payload.type) : raw.type != null ? String(raw.type) : undefined,
@@ -73,87 +70,82 @@ function parseConversationEvent(body: string, fallbackConversationId: string): C
   }
 }
 
-export function useChatSocket() {
-  const { token, isAuthenticated } = useAuth();
-  const clientRef = useRef<Client | null>(null);
-  const subscriptionsRef = useRef<Map<string, StompSubscription>>(new Map());
-  const [connected, setConnected] = useState(false);
+/**
+ * Hook to subscribe to a set of conversation topics via the shared STOMP
+ * connection.  The `onMessage` callback is stored in a ref so it can change
+ * without causing re-subscriptions.
+ *
+ * @param conversationIds — array of conversation UUIDs to subscribe
+ * @param onMessage       — callback invoked for every incoming message
+ */
+export function useChatSubscriptions(
+  conversationIds: string[],
+  onMessage: (conversationId: string, message: ChatSocketMessage) => void,
+) {
+  const { connected, subscribe } = useStomp();
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
+
+  // Track currently-subscribed IDs to do diff-based subscribe/unsubscribe
+  const activeSubsRef = useRef<Map<string, () => void>>(new Map());
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
-      setConnected(false);
-      return undefined;
-    }
+    if (!connected) return;
 
-    const client = new Client({
-      reconnectDelay: 3000,
-      webSocketFactory: () => new SockJS(buildSockJsChatUrl(token)),
+    const currentIds = new Set(conversationIds);
+    const prevMap = activeSubsRef.current;
+
+    // Unsubscribe conversations that are no longer in the list
+    prevMap.forEach((unsub, id) => {
+      if (!currentIds.has(id)) {
+        unsub();
+        prevMap.delete(id);
+      }
     });
-    client.onConnect = () => {
-      setConnected(true);
-    };
-    client.onDisconnect = () => {
-      setConnected(false);
-    };
-    client.onWebSocketClose = () => {
-      setConnected(false);
-    };
-    client.activate();
-    clientRef.current = client;
-    const activeSubscriptions = subscriptionsRef.current;
 
+    // Subscribe new conversations
+    currentIds.forEach((id) => {
+      if (prevMap.has(id)) return; // already subscribed
+
+      const unsub = subscribe(`/topic/conversations/${id}`, (body) => {
+        const message = parseConversationEvent(body, id);
+        if (message) {
+          onMessageRef.current(id, message);
+        }
+      });
+      prevMap.set(id, unsub);
+    });
+  }, [connected, conversationIds, subscribe]);
+
+  // Cleanup all subscriptions on unmount
+  useEffect(() => {
     return () => {
-      activeSubscriptions.forEach((sub) => sub.unsubscribe());
-      activeSubscriptions.clear();
-      client.deactivate();
-      clientRef.current = null;
-      setConnected(false);
+      activeSubsRef.current.forEach((unsub) => unsub());
+      activeSubsRef.current.clear();
     };
-  }, [isAuthenticated, token]);
+  }, []);
 
-  const subscribeConversation = useCallback((conversationId: string, handler: MessageHandler) => {
-    const client = clientRef.current;
-    if (!client || !client.connected || subscriptionsRef.current.has(conversationId)) {
-      return () => {};
-    }
+  return { connected };
+}
 
-    const subscription = client.subscribe(
-      `/topic/conversations/${conversationId}`,
-      (frame: IMessage) => {
-        const message = parseConversationEvent(frame.body, conversationId);
+/**
+ * @deprecated Use `useChatSubscriptions` instead. This hook is kept for
+ * backward compatibility but now delegates to StompProvider.
+ */
+export function useChatSocket() {
+  const { connected, subscribe } = useStomp();
+
+  const subscribeConversation = useCallback(
+    (conversationId: string, handler: MessageHandler) => {
+      return subscribe(`/topic/conversations/${conversationId}`, (body) => {
+        const message = parseConversationEvent(body, conversationId);
         if (message) {
           handler(message);
         }
-      },
-    );
+      });
+    },
+    [subscribe],
+  );
 
-    subscriptionsRef.current.set(conversationId, subscription);
-    return () => {
-      subscription.unsubscribe();
-      subscriptionsRef.current.delete(conversationId);
-    };
-  }, []);
-
-  const publishMessage = useCallback((payload: {
-    conversationId: string;
-    content: string;
-    type?: string;
-    attachmentFileIds?: string[];
-  }) => {
-    const client = clientRef.current;
-    if (!client || !client.connected) {
-      return false;
-    }
-    client.publish({
-      destination: '/app/chat.send',
-      body: JSON.stringify(payload),
-    });
-    return true;
-  }, []);
-
-  return {
-    connected,
-    subscribeConversation,
-    publishMessage,
-  };
+  return { connected, subscribeConversation };
 }

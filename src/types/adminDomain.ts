@@ -101,6 +101,7 @@ export interface AdminModerationReport {
   summary: string;
   status: ModerationReportStatus;
   priority: 'low' | 'normal' | 'high';
+  resolutionNote?: string;
   /** Chỉ khi `targetType === 'session'`: quy trình tranh chấp + minh chứng */
   sessionDispute?: SessionDisputeDetail;
 }

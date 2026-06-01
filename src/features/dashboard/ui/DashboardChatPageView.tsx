@@ -108,6 +108,7 @@ export type DashboardChatPageViewProps = {
   onConvSizeChange?: (size: number) => void;
   convLoading?: boolean;
   pendingMessageContext?: { contextType: string; contextId: string };
+  isAdmin?: boolean;
 };
 
 export function DashboardChatPageView({
@@ -136,6 +137,7 @@ export function DashboardChatPageView({
   onConvSizeChange,
   convLoading = false,
   pendingMessageContext,
+  isAdmin = false,
 }: DashboardChatPageViewProps) {
   return (
     <div
@@ -151,14 +153,16 @@ export function DashboardChatPageView({
           <div className="border-b border-slate-200 p-3">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-slate-900">Hội thoại</h2>
-              <button
-                type="button"
-                onClick={createConversation}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-colors hover:bg-slate-50"
-              >
-                <Plus className="size-3.5" strokeWidth={2} />
-                Tạo mới
-              </button>
+              {!isAdmin && (
+                <button
+                  type="button"
+                  onClick={createConversation}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-colors hover:bg-slate-50"
+                >
+                  <Plus className="size-3.5" strokeWidth={2} />
+                  Tạo mới
+                </button>
+              )}
             </div>
             <div className="relative">
               <Search
@@ -328,55 +332,61 @@ export function DashboardChatPageView({
                 <div ref={bottomRef} />
               </div>
 
-              <footer className="shrink-0 border-t border-slate-200 bg-white p-2.5 sm:p-4">
-                {pendingMessageContext ? (
-                  <p className="mb-2 break-words text-xs leading-relaxed text-slate-500">
-                    Tin tiếp theo sẽ gắn ngữ cảnh{' '}
-                    <span className="font-medium text-slate-700">
-                      {pendingMessageContext.contextType === 'order'
-                        ? 'đơn hàng'
-                        : pendingMessageContext.contextType === 'booking'
-                          ? 'mentoring'
-                          : pendingMessageContext.contextType === 'session'
-                            ? 'buổi học'
-                            : 'liên quan'}
-                    </span>
-                    .
-                  </p>
-                ) : null}
-                <div className="flex items-end gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1.5 focus-within:border-primary focus-within:bg-white sm:gap-2 sm:p-2">
-                  <button
-                    type="button"
-                    className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/80 hover:text-slate-800"
-                    aria-label="Đính kèm"
-                  >
-                    <Paperclip className="size-[18px]" strokeWidth={2} />
-                  </button>
-                  <textarea
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        send();
-                      }
-                    }}
-                    rows={1}
-                    placeholder="Nhập tin nhắn…"
-                    className="max-h-32 min-h-[40px] flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:text-slate-400"
-                  />
-                  <button
-                    type="button"
-                    onClick={send}
-                    disabled={!draft.trim()}
-                    className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
-                    aria-label="Gửi"
-                  >
-                    <Send className="size-[18px]" strokeWidth={2} />
-                  </button>
-                </div>
-                <p className="mt-2 text-center text-[11px] text-slate-400">Enter gửi · Shift+Enter xuống dòng</p>
-              </footer>
+              {isAdmin ? (
+                <footer className="shrink-0 border-t border-slate-200 bg-slate-50 p-4 text-center text-xs font-semibold text-slate-500">
+                  Tài khoản Admin chỉ có quyền xem cuộc hội thoại này (không được phép gửi tin nhắn).
+                </footer>
+              ) : (
+                <footer className="shrink-0 border-t border-slate-200 bg-white p-2.5 sm:p-4">
+                  {pendingMessageContext ? (
+                    <p className="mb-2 break-words text-xs leading-relaxed text-slate-500">
+                      Tin tiếp theo sẽ gắn ngữ cảnh{' '}
+                      <span className="font-medium text-slate-700">
+                        {pendingMessageContext.contextType === 'order'
+                          ? 'đơn hàng'
+                          : pendingMessageContext.contextType === 'booking'
+                            ? 'mentoring'
+                            : pendingMessageContext.contextType === 'session'
+                              ? 'buổi học'
+                              : 'liên quan'}
+                      </span>
+                      .
+                    </p>
+                  ) : null}
+                  <div className="flex items-end gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1.5 focus-within:border-primary focus-within:bg-white sm:gap-2 sm:p-2">
+                    <button
+                      type="button"
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/80 hover:text-slate-800"
+                      aria-label="Đính kèm"
+                    >
+                      <Paperclip className="size-[18px]" strokeWidth={2} />
+                    </button>
+                    <textarea
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          send();
+                        }
+                      }}
+                      rows={1}
+                      placeholder="Nhập tin nhắn…"
+                      className="max-h-32 min-h-[40px] flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:text-slate-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={send}
+                      disabled={!draft.trim()}
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Gửi"
+                    >
+                      <Send className="size-[18px]" strokeWidth={2} />
+                    </button>
+                  </div>
+                  <p className="mt-2 text-center text-[11px] text-slate-400">Enter gửi · Shift+Enter xuống dòng</p>
+                </footer>
+              )}
             </>
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-slate-500">

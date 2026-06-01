@@ -1,25 +1,49 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, Send, CheckCircle2 } from 'lucide-react';
+import { X, AlertTriangle, Send, CheckCircle2, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { trustService } from '@/services/trustService';
 
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetType: 'document' | 'mentor' | 'review';
   targetName: string;
+  targetId: string;
 }
 
-export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targetType, targetName }) => {
+const reasonLabels: Record<string, string> = {
+  spam: 'Nội dung rác / Spam',
+  copyright: 'Vi phạm bản quyền',
+  fake: 'Thông tin giả mạo',
+  toxic: 'Ngôn từ gây thù ghét / Quấy rối',
+  other: 'Lý do khác',
+};
+
+export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targetType, targetName, targetId }) => {
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
+    setSubmitting(true);
+    setError('');
+    try {
+      await trustService.createReport({
+        type: targetType,
+        entityId: targetId,
+        reportedUserId: targetType === 'mentor' ? targetId : undefined,
+        reason: reasonLabels[reason] || reason,
+        description: description,
+      });
       setSubmitted(true);
-    }, 500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không gửi được báo cáo.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -48,7 +72,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onSubmit={handleSubmit} 
+                onSubmit={(e) => void handleSubmit(e)} 
                 className="space-y-6"
               >
                 <p className="text-sm text-airbnb-gray">
@@ -59,6 +83,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                   <label className="block text-xs font-bold tracking-widest text-airbnb-gray mb-2">Lý do báo cáo</label>
                   <select 
                     required
+                    disabled={submitting}
                     className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-airbnb-red/20 outline-none transition-all"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -76,6 +101,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                   <label className="block text-xs font-bold tracking-widest text-airbnb-gray mb-2">Mô tả chi tiết</label>
                   <textarea 
                     required
+                    disabled={submitting}
                     rows={4}
                     placeholder="Vui lòng cung cấp thêm thông tin để chúng tôi xử lý nhanh hơn..."
                     className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-airbnb-red/20 outline-none transition-all resize-none"
@@ -84,11 +110,18 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
                   />
                 </div>
 
+                {error && (
+                  <div className="p-3 bg-red-50 text-red-600 font-bold text-sm rounded-xl">
+                    {error}
+                  </div>
+                )}
+
                 <button 
                   type="submit"
-                  className="w-full py-4 bg-airbnb-red text-white rounded-2xl font-bold hover:bg-airbnb-red/90 transition-all flex items-center justify-center gap-2"
+                  disabled={submitting}
+                  className="w-full py-4 bg-airbnb-red text-white rounded-2xl font-bold hover:bg-airbnb-red/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Send size={18} /> Gửi báo cáo
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send size={18} />} Gửi báo cáo
                 </button>
               </motion.form>
             ) : (
@@ -117,3 +150,4 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, targe
     </div>
   );
 };
+

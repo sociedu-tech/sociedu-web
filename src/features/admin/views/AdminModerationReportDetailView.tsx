@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 import { adminBtnGhost, adminSelect } from '@/features/admin/ui/adminClasses';
 import { DisputeProcessStepper } from '@/features/admin/ui/DisputeProcessStepper';
 import { SessionDisputePanel } from '@/features/admin/ui/SessionDisputePanel';
@@ -40,20 +41,23 @@ type Props = { listSlug: ModerationListSlug };
 function ModerationReportDetailInner({
   initial,
   listSlug,
+  onRefresh,
 }: {
   initial: AdminModerationReport;
   listSlug: ModerationListSlug;
+  onRefresh?: () => void;
 }) {
+  const toast = useToast();
   const [status, setStatus] = useState(initial.status);
   const [resolutionNote, setResolutionNote] = useState(
-    initial.sessionDispute?.adminResolutionNote ?? '',
+    initial.sessionDispute?.adminResolutionNote ?? initial.resolutionNote ?? '',
   );
   const [savingNote, setSavingNote] = useState(false);
 
   useEffect(() => {
     setStatus(initial.status);
-    setResolutionNote(initial.sessionDispute?.adminResolutionNote ?? '');
-  }, [initial.id, initial.status, initial.sessionDispute?.adminResolutionNote]);
+    setResolutionNote(initial.sessionDispute?.adminResolutionNote ?? initial.resolutionNote ?? '');
+  }, [initial.id, initial.status, initial.sessionDispute?.adminResolutionNote, initial.resolutionNote]);
 
   const {
     dispute,
@@ -65,6 +69,7 @@ function ModerationReportDetailInner({
   } = useSessionDisputeAdjudication({
     initialReport: initial,
     onReportMetaChange: ({ status: s }) => setStatus(s),
+    onRefresh,
   });
 
   const expectedSlug = listSlugForReport(initial);
@@ -131,7 +136,15 @@ function ModerationReportDetailInner({
               onChange={(e) => {
                 const next = e.target.value as ModerationReportStatus;
                 setStatus(next);
-                void adminModerationService.resolve(initial.id, { status: next }).catch(() => undefined);
+                adminModerationService
+                  .resolve(initial.id, { status: next })
+                  .then(() => {
+                    toast.success('Đã cập nhật trạng thái');
+                    if (onRefresh) onRefresh();
+                  })
+                  .catch(() => {
+                    toast.error('Không cập nhật được trạng thái.');
+                  });
               }}
               className={adminSelect}
             >
@@ -184,10 +197,15 @@ function ModerationReportDetailInner({
                 disabled={savingNote}
                 onClick={() => {
                   setSavingNote(true);
-                  void adminModerationService
+                  adminModerationService
                     .resolve(initial.id, { status, resolutionNote: resolutionNote.trim() || undefined })
-                    .then(() => undefined)
-                    .catch(() => undefined)
+                    .then(() => {
+                      toast.success('Đã lưu ghi chú & trạng thái');
+                      if (onRefresh) onRefresh();
+                    })
+                    .catch(() => {
+                      toast.error('Lỗi khi lưu ghi chú.');
+                    })
                     .finally(() => setSavingNote(false));
                 }}
                 className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60"
@@ -218,10 +236,15 @@ function ModerationReportDetailInner({
                 disabled={savingNote}
                 onClick={() => {
                   setSavingNote(true);
-                  void adminModerationService
+                  adminModerationService
                     .resolve(initial.id, { status, resolutionNote: resolutionNote.trim() || undefined })
-                    .then(() => undefined)
-                    .catch(() => undefined)
+                    .then(() => {
+                      toast.success('Đã lưu ghi chú & trạng thái');
+                      if (onRefresh) onRefresh();
+                    })
+                    .catch(() => {
+                      toast.error('Lỗi khi lưu ghi chú.');
+                    })
                     .finally(() => setSavingNote(false));
                 }}
                 className="mt-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60"
@@ -242,6 +265,16 @@ export function AdminModerationReportDetailView({ listSlug }: Props) {
   const [report, setReport] = useState<AdminModerationReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const refreshReport = useCallback(async () => {
+    if (!id) return;
+    try {
+      const row = await adminModerationService.getById(id);
+      setReport(row);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Không tải được báo cáo.');
+    }
+  }, [id]);
 
   useEffect(() => {
     if (!id) {
@@ -287,5 +320,5 @@ export function AdminModerationReportDetailView({ listSlug }: Props) {
     );
   }
 
-  return <ModerationReportDetailInner initial={report} listSlug={listSlug} />;
+  return <ModerationReportDetailInner initial={report} listSlug={listSlug} onRefresh={refreshReport} />;
 }

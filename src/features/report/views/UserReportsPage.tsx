@@ -20,8 +20,9 @@ export const UserReportsPage = () => {
     isModalOpen,
     setIsModalOpen,
     submitting,
-    mentorId,
-    setMentorId,
+    bookings,
+    selectedBookingId,
+    setSelectedBookingId,
     title,
     setTitle,
     content,
@@ -157,15 +158,20 @@ export const UserReportsPage = () => {
                <form onSubmit={handleSubmit} className="p-6 space-y-4">
                  
                  <div className="space-y-1">
-                   <label className="text-xs font-bold text-gray-500">ID Mentor (*)</label>
-                   <input 
-                     type="number" 
-                     value={mentorId}
-                     onChange={(e) => setMentorId(e.target.value)}
-                     className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white" 
-                     placeholder="Ví dụ: 1"
-                   />
-                 </div>
+                    <label className="text-xs font-bold text-gray-500">Lộ trình học / Mentor (*)</label>
+                    <select
+                      value={selectedBookingId}
+                      onChange={(e) => setSelectedBookingId(e.target.value)}
+                      className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:border-primary transition-colors bg-gray-50 focus:bg-white text-sm"
+                    >
+                      <option value="">-- Chọn lộ trình để báo cáo --</option>
+                      {bookings?.map((b: any) => (
+                        <option key={b.bookingId} value={b.bookingId}>
+                          {b.packageLabel} - Mentor: {b.counterpartyLabel}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                  <div className="space-y-1">
                    <label className="text-xs font-bold text-gray-500">Tiêu đề báo cáo (*)</label>
