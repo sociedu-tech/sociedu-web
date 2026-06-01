@@ -79,9 +79,4 @@ export const bookingService = {
     const res = await api.post(`${BASE}/${bookingId}/cancel`, { reason });
     return res.data;
   },
-
-  updateProgress: async (bookingId: number | string, progressPercent: number) => {
-    const res = await api.patch(`${BASE}/${bookingId}/progress`, { progressPercent });
-    return res.data;
-  },
 };

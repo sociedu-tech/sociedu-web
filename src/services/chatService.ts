@@ -86,7 +86,7 @@ export const chatService = {
     return (res.data ?? null) as ChatMessageDto | null;
   },
   markConversationRead: async (conversationId: string): Promise<void> => {
-    await api.patch(`${BASE}/conversations/${conversationId}/read`);
+    await api.patch(`${BASE}/conversations/${conversationId}/read`, {});
   },
 };
 

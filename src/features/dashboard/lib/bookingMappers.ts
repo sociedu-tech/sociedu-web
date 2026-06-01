@@ -11,13 +11,15 @@ export const reportStatusLabel = (status?: string | null): string => {
 };
 
 export const sessionStatusLabel = (status?: string | null): string => {
-  const s = String(status ?? '').toUpperCase();
-  if (s === 'COMPLETED' || s === 'DONE') return 'Hoàn thành';
-  if (s === 'DISPUTED') return 'Tranh chấp';
-  if (s === 'AWAITING_CONFIRMATION') return 'Chờ xác nhận';
-  if (s === 'CANCELLED' || s === 'CANCELED') return 'Đã hủy';
-  if (s === 'IN_PROGRESS' || s === 'ONGOING') return 'Đang diễn ra';
-  if (s === 'SCHEDULED' || s === 'CONFIRMED' || s === 'PENDING') return 'Sắp diễn ra';
+  const s = String(status ?? '').toLowerCase();
+  if (s === 'completed' || s === 'done') return 'Hoàn thành';
+  if (s === 'disputed') return 'Tranh chấp';
+  if (s === 'awaiting_confirmation') return 'Chờ xác nhận';
+  if (s === 'cancelled' || s === 'canceled') return 'Đã hủy';
+  if (s === 'in_progress' || s === 'ongoing') return 'Đang diễn ra';
+  if (s === 'scheduled' || s === 'confirmed') return 'Đã lên lịch';
+  if (s === 'pending') return 'Chờ xếp lịch';
+  if (s === 'no_show') return 'Vắng mặt';
   return status?.trim() || '—';
 };
 
@@ -91,7 +93,7 @@ export function flattenBookingsToSessions(
   return rows;
 }
 
-const UPCOMING_SESSION_LABELS = new Set(['Sắp diễn ra', 'Đang diễn ra']);
+const UPCOMING_SESSION_LABELS = new Set(['Chờ xếp lịch', 'Đã lên lịch', 'Đang diễn ra', 'Chờ xác nhận']);
 
 /** Buổi sắp tới gần nhất theo scheduledAt (ưu tiên thời điểm >= hiện tại). */
 export function pickNextUpcomingSession(sessions: DashboardSessionRow[]): DashboardSessionRow | null {
