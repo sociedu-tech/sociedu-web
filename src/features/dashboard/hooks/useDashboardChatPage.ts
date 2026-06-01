@@ -352,10 +352,6 @@ export function useDashboardChatPage() {
     setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, unread: undefined } : c)));
   };
 
-  const createConversation = () => {
-    toast.info('Tạo hội thoại mới sẽ được mở từ flow booking/support trên backend.');
-  };
-
   const send = async () => {
     const text = draft.trim();
     if (!text || !active) return;
@@ -412,7 +408,6 @@ export function useDashboardChatPage() {
     sharedImages,
     sharedFiles,
     openThread,
-    createConversation,
     send,
     convPage,
     setConvPage,

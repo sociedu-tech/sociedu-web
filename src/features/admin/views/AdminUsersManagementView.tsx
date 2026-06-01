@@ -8,6 +8,7 @@ import type { User } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminUsersManagementView } from '@/features/admin/hooks';
 import { adminSelect, adminBtnPrimary, adminBtnGhost } from '@/features/admin/ui/adminClasses';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { DataPagination } from '@/components/ui/DataPagination';
 
 function roleLabel(role: User['role']) {
@@ -60,7 +61,7 @@ export function AdminUsersManagementView() {
   } = useAdminUsersManagementView();
 
   if (loading) {
-    return <div className="px-6 py-16 text-center text-sm text-slate-500">Đang tải danh sách người dùng...</div>;
+    return <PageLoadingState label="Đang tải danh sách người dùng…" variant="table" />;
   }
 
   if (!loading && total === 0) {

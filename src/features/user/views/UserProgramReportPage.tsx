@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useProgramDetailPage } from '@/features/dashboard/hooks/useProgramDetailPage';
 import { ProgramReportPageView } from '@/features/dashboard/ui/programs/ProgramReportPageView';
@@ -16,8 +16,8 @@ export function UserProgramReportPage() {
     return <ErrorMessage message="Không xác định được chương trình học." />;
   }
 
-  if (loading && !item) {
-    return <LoadingSpinner label="Đang tải thông tin lộ trình…" />;
+  if (loading) {
+    return <PageLoadingState label="Đang tải thông tin lộ trình…" />;
   }
 
   if (error && !item) {

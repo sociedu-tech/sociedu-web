@@ -17,6 +17,7 @@ import {
 } from '@/lib/moderationDetailRoutes';
 import { useSessionDisputeAdjudication } from '@/features/admin/hooks/useSessionDisputeAdjudication';
 import { adminModerationService } from '@/services/adminModerationService';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 
 const REPORT_STATUS: { value: ModerationReportStatus; label: string }[] = [
   { value: 'open', label: 'Mới' },
@@ -303,7 +304,7 @@ export function AdminModerationReportDetailView({ listSlug }: Props) {
   }, [id]);
 
   if (loading) {
-    return <p className="text-sm text-slate-500">Đang tải báo cáo…</p>;
+    return <PageLoadingState label="Đang tải báo cáo…" variant="cards" cardCount={2} />;
   }
 
   if (error || !report) {

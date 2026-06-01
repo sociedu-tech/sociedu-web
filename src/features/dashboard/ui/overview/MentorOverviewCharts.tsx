@@ -1,6 +1,6 @@
 'use client';
 
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MentorOverviewChartRows } from '@/features/dashboard/ui/overview/mentor/MentorOverviewChartRows';
 import { MentorOverviewKpiStrip } from '@/features/dashboard/ui/overview/mentor/MentorOverviewKpiStrip';
@@ -18,7 +18,7 @@ type ViewProps = {
 
 function MentorOverviewChartsView({ hideKpiStrip = false, data, showNextSession = true }: ViewProps) {
   if (data.loading) {
-    return <LoadingSpinner label="Đang tải tổng quan…" />;
+    return <PageLoadingState label="Đang tải tổng quan…" variant="stats" />;
   }
 
   if (data.error) {

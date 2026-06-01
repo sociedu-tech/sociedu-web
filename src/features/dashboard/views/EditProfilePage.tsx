@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useEditProfilePage } from '@/features/dashboard/hooks';
 
@@ -40,7 +40,7 @@ export function EditProfilePage() {
     removeExperience,
   } = useEditProfilePage();
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner size={48} /></div>;
+  if (loading) return <PageLoadingState label="Đang tải hồ sơ…" minHeight="min-h-screen" />;
   if (!user) return <div className="min-h-screen flex items-center justify-center"><ErrorMessage message="Không tìm thấy người dùng" /></div>;
 
   return (

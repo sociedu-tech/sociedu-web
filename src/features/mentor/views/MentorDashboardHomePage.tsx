@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MentorRevenue, MentorRevenueToolbar } from '@/features/dashboard/ui/mentor/MentorRevenue';
 import { MentorOverviewCharts } from '@/features/dashboard/ui/overview/MentorOverviewCharts';
@@ -12,16 +12,18 @@ import { DashboardSection } from '@/features/dashboard/ui/DashboardPrimitives';
 export function MentorDashboardHomePage() {
   const overview = useMentorDashboardOverview();
 
+  if (overview.loading) {
+    return <PageLoadingState label="Đang tải bảng điều khiển…" variant="stats" minHeight="min-h-[50vh]" />;
+  }
+
+  if (overview.error) {
+    return <ErrorMessage message={overview.error} />;
+  }
+
   return (
     <div className="space-y-8 pb-2">
       <DashboardSection>
-        {overview.loading ? (
-          <LoadingSpinner label="Đang tải lịch buổi dạy…" />
-        ) : overview.error ? (
-          <ErrorMessage message={overview.error} />
-        ) : (
-          <MentorNextSessionBanner nextSession={overview.nextSession} />
-        )}
+        <MentorNextSessionBanner nextSession={overview.nextSession} />
       </DashboardSection>
 
       <DashboardSection action={<MentorRevenueToolbar />}>

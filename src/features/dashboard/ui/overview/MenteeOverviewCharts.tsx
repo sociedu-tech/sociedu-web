@@ -1,6 +1,6 @@
 'use client';
 
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MenteeNextSessionBanner } from '@/features/dashboard/ui/overview/mentee/MenteeNextSessionBanner';
 import { MenteeOverviewKpiGrid } from '@/features/dashboard/ui/overview/mentee/MenteeOverviewKpiGrid';
@@ -13,7 +13,7 @@ export function MenteeOverviewCharts() {
   const data = useMenteeDashboardOverview();
 
   if (data.loading) {
-    return <LoadingSpinner label="Đang tải tổng quan…" />;
+    return <PageLoadingState label="Đang tải tổng quan…" variant="stats" />;
   }
 
   if (data.error) {

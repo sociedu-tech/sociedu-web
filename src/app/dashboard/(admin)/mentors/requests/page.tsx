@@ -5,7 +5,7 @@ import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/Dashboa
 import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
 import { useAdminMentorRequestsPage } from '@/features/admin/hooks/useAdminMentorRequestsPage';
 import { DataPagination } from '@/components/ui/DataPagination';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 
 export default function AdminMentorRequestsPage() {
   const {
@@ -29,9 +29,7 @@ export default function AdminMentorRequestsPage() {
       />
       <DashboardSurface>
         {loading ? (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner label="Đang tải…" />
-          </div>
+          <PageLoadingState label="Đang tải…" variant="cards" cardCount={3} />
         ) : (
           <>
             <AdminMentorRequests requests={requests} onApprove={approveMentor} />

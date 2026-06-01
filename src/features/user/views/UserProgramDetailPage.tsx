@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useProgramDetailPage } from '@/features/dashboard/hooks/useProgramDetailPage';
 import { ProgramDetailView } from '@/features/dashboard/ui/programs/ProgramDetailView';
@@ -16,8 +16,8 @@ export function UserProgramDetailPage() {
     return <ErrorMessage message="Không xác định được chương trình học." />;
   }
 
-  if (loading && !item) {
-    return <LoadingSpinner label="Đang tải chi tiết chương trình…" />;
+  if (loading) {
+    return <PageLoadingState label="Đang tải chi tiết chương trình…" />;
   }
 
   if (error && !item) {

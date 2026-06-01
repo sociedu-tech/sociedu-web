@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, CheckCircle, Clock, X, MessageSquare } from 'lucide-react';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
@@ -31,7 +32,7 @@ export const MentorReportsPage = () => {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <LoadingSpinner size={32} label="Đang tải…" />
+        <PageLoadingState label="Đang tải…" variant="table" />
       </div>
     );
   }

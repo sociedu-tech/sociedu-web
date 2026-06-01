@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Search, Mail, MessageSquare, MoreHorizontal, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useDashboardBookings } from '@/features/dashboard/hooks/useDashboardBookings';
 
@@ -31,7 +31,7 @@ export const MentorMentees = () => {
   }, [rows]);
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải học viên…" />;
+    return <PageLoadingState label="Đang tải học viên…" variant="table" />;
   }
 
   if (error) {

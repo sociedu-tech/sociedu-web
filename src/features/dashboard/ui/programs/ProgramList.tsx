@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { useProgramBookings } from '@/features/dashboard/hooks/useProgramBookings';
@@ -37,7 +37,7 @@ export function ProgramList({ perspective, labels, detailPath }: Props) {
   );
 
   if (loading && items.length === 0) {
-    return <LoadingSpinner label={`Đang tải ${labels.nav.toLowerCase()}…`} />;
+    return <PageLoadingState label={`Đang tải ${labels.nav.toLowerCase()}…`} variant="cards" />;
   }
 
   if (error) {

@@ -12,13 +12,13 @@ import {
   Paperclip,
   PanelRightClose,
   PanelRightOpen,
-  Plus,
   Search,
   Send,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DataPagination } from '@/components/ui/DataPagination';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
 import { initials } from '@/features/dashboard/chat/utils';
@@ -98,7 +98,6 @@ export type DashboardChatPageViewProps = {
   sharedImages: ChatAttachment[];
   sharedFiles: ChatAttachment[];
   openThread: (id: string) => void;
-  createConversation: () => void;
   send: () => void;
   convPage?: number;
   convSize?: number;
@@ -127,7 +126,6 @@ export function DashboardChatPageView({
   sharedImages,
   sharedFiles,
   openThread,
-  createConversation,
   send,
   convPage = 0,
   convSize = 20,
@@ -180,7 +178,12 @@ export function DashboardChatPageView({
             </div>
           </div>
           <ul className="min-h-0 flex-1 overflow-y-auto" role="listbox" aria-label="Danh sách hội thoại">
-            {filtered.map((c) => {
+            {convLoading && filtered.length === 0 ? (
+              <li className="p-4">
+                <PageLoadingState label="Đang tải hội thoại…" minHeight="min-h-[200px]" />
+              </li>
+            ) : (
+            filtered.map((c) => {
               const selected = c.id === activeId;
               return (
                 <li key={c.id}>
@@ -211,7 +214,8 @@ export function DashboardChatPageView({
                   </button>
                 </li>
               );
-            })}
+            })
+            )}
           </ul>
           {onConvPageChange && onConvSizeChange ? (
             <DataPagination
@@ -388,6 +392,8 @@ export function DashboardChatPageView({
                 </footer>
               )}
             </>
+          ) : convLoading ? (
+            <PageLoadingState label="Đang tải hội thoại…" minHeight="min-h-[320px]" />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-slate-500">
               <p className="text-sm font-medium">Chưa có hội thoại</p>
