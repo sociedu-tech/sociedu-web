@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Flag, Loader2, MessageSquare, ShoppingBag, User, FileText, CheckCircle2, XCircle, Plus, AlertCircle, Calendar, ExternalLink } from 'lucide-react';
+import { Flag, Loader2, MessageSquare, ShoppingBag, User, FileText, CheckCircle2, XCircle, Plus, AlertCircle, Calendar, ExternalLink, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BookingProgramItem, DashboardSessionRow } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
@@ -48,6 +48,7 @@ export function ProgramDetailView({
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
 
@@ -503,15 +504,43 @@ export function ProgramDetailView({
           <div className="absolute inset-0 bg-black/40" onClick={() => setReviewOpen(false)} />
           <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="mb-3 text-lg font-semibold text-slate-900">Đánh giá buổi học</h3>
-            <label className="block text-sm text-slate-600">Điểm (1–5)</label>
-            <input
-              type="number"
-              min={1}
-              max={5}
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              className="mb-3 mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"
-            />
+            <label className="block text-sm font-semibold text-slate-700">Điểm đánh giá (*)</label>
+            <div className="flex flex-col items-center gap-1 py-2">
+              <div className="flex items-center gap-2.5">
+                {[1, 2, 3, 4, 5].map((starValue) => {
+                  const isFilled = hoverRating !== null ? starValue <= hoverRating : starValue <= rating;
+                  return (
+                    <button
+                      key={starValue}
+                      type="button"
+                      onClick={() => setRating(starValue)}
+                      onMouseEnter={() => setHoverRating(starValue)}
+                      onMouseLeave={() => setHoverRating(null)}
+                      className="transition-transform duration-100 active:scale-95 hover:scale-110 p-0.5"
+                      aria-label={`${starValue} sao`}
+                    >
+                      <Star
+                        className={cn(
+                          'size-8 transition-colors duration-100',
+                          isFilled ? 'fill-amber-400 text-amber-450' : 'text-slate-350'
+                        )}
+                        style={{
+                          fill: isFilled ? '#fbbf24' : 'transparent', // Tailwind amber-400
+                          stroke: isFilled ? '#fbbf24' : '#cbd5e1', // Tailwind slate-300
+                        }}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+              <span className="text-xs font-bold text-amber-500 h-4 mt-1">
+                {rating === 1 && 'Rất tệ'}
+                {rating === 2 && 'Không hài lòng'}
+                {rating === 3 && 'Bình thường'}
+                {rating === 4 && 'Hài lòng'}
+                {rating === 5 && 'Tuyệt vời!'}
+              </span>
+            </div>
             <label className="block text-sm text-slate-600">Bình luận</label>
             <textarea
               value={comment}
