@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2, MessageSquare, ShoppingBag } from 'lucide-react';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { cn } from '@/lib/utils';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
 import type { MentorOrderRow } from '@/features/dashboard/hooks/useMentorOrders';
@@ -67,7 +68,7 @@ export function MentorOrderDetailView({ order, detail, messaging, onMessage }: P
 
         {detail?.paymentExpiresAt ? (
           <p className="mt-6 max-w-xl rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Hết hạn thanh toán: {new Date(detail.paymentExpiresAt).toLocaleString('vi-VN')}
+            Hết hạn thanh toán: {formatDisplayDate(detail.paymentExpiresAt)}
           </p>
         ) : null}
       </div>

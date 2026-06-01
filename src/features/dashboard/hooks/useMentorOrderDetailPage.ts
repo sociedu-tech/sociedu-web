@@ -23,6 +23,7 @@ function mapOrderDetail(raw: ServiceOrderDto): MentorOrderRow {
     package: packageName,
     amount: Number(raw.totalAmount ?? 0),
     date: formatViDateTime(raw.createdAt ?? undefined),
+    sortAt: String(raw.createdAt ?? raw.paidAt ?? ''),
     paidAt: raw.paidAt ? formatViDateTime(raw.paidAt) : null,
     rawStatus,
     status: orderStatusLabel(rawStatus),

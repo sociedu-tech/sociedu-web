@@ -14,6 +14,7 @@ export type MentorOrderRow = {
   package: string;
   amount: number;
   date: string;
+  sortAt: string;
   paidAt: string | null;
   rawStatus: string;
   status: string;
@@ -47,6 +48,7 @@ function mapRawOrder(raw: Record<string, unknown>): MentorOrderRow {
     package: packageName,
     amount: Number(raw.totalAmount ?? 0),
     date: formatViDateTime(raw.createdAt as string | undefined),
+    sortAt: String(raw.createdAt ?? raw.paidAt ?? ''),
     paidAt: raw.paidAt ? formatViDateTime(raw.paidAt as string) : null,
     rawStatus,
     status: orderStatusLabel(rawStatus),

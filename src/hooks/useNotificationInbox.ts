@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNotificationRealtime } from '@/hooks/useNotificationRealtime';
+import { filterActionNotifications, isActionNotification } from '@/lib/notificationFilter';
 import { notificationService, type NotificationItem } from '@/services/notificationService';
 
 export function useNotificationInbox() {
@@ -10,7 +11,7 @@ export function useNotificationInbox() {
 
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -21,7 +22,7 @@ export function useNotificationInbox() {
         notificationService.list(0, 30),
         notificationService.unreadCount(),
       ]);
-      setItems(page.items);
+      setItems(filterActionNotifications(page.items));
       setUnreadCount(count);
     } finally {
       setLoading(false);
@@ -34,6 +35,8 @@ export function useNotificationInbox() {
 
   useNotificationRealtime({
     onNotification: (item) => {
+      if (!isActionNotification(item)) return;
+
       setItems((prev) => {
         const without = prev.filter((p) => p.id !== item.id);
         return [item, ...without];

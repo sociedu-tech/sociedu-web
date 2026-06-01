@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 import type { AdminUserRow, UserAccountStatus } from '@/types';
 import { normalizeRole, ROLES } from '@/constants/roles';
@@ -30,12 +31,7 @@ const statusFromApi = (status?: string | null): UserAccountStatus => {
   return 'active';
 };
 
-const joinDateFromApi = (createdAt?: string | null): string => {
-  if (!createdAt) return '—';
-  const d = new Date(createdAt);
-  if (Number.isNaN(d.getTime())) return String(createdAt);
-  return d.toLocaleDateString('vi-VN');
-};
+const joinDateFromApi = (createdAt?: string | null): string => formatDisplayDate(createdAt);
 
 const fullName = (row: AdminUserApiRow): string => {
   const name = [row.lastName, row.firstName].filter(Boolean).join(' ').trim();

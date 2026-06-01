@@ -1,5 +1,7 @@
 /** Helpers for Spring `ApiResponse` + `Page` payloads from sociedu-api. */
 
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
+
 export type PagePayload<T> = {
   items: T[];
   page: number;
@@ -107,18 +109,9 @@ export const unwrapPage = <T>(payload: unknown): { items: T[]; total: number } =
   return { items, total };
 };
 
-export const formatViDateTime = (raw?: string | null): string => {
-  if (!raw) return '—';
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return String(raw);
-  return d.toLocaleString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+export { formatDisplayDate } from '@/lib/formatDisplayDate';
+
+export const formatViDateTime = (raw?: string | null): string => formatDisplayDate(raw);
 
 export const shortId = (id?: string | null, len = 8): string => {
   if (!id) return '—';

@@ -2,57 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Bell,
-  MessageSquare,
-  ShoppingBag,
-  CalendarCheck,
-  UserCheck,
-  Flag,
-  Star,
-  X,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import type { NotificationItem } from '@/services/notificationService';
 import { resolveNotificationUrl } from '@/lib/notificationRouter';
+import { isActionNotification } from '@/lib/notificationFilter';
+import { NotificationTypeIcon } from '@/lib/notificationUi';
 import { useAuth } from '@/context/AuthContext';
-
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
 
 interface ToastEntry {
   id: string;
   item: NotificationItem;
-  /** Controls exit animation */
   exiting: boolean;
 }
-
-/* ------------------------------------------------------------------ */
-/*  Icon resolver                                                      */
-/* ------------------------------------------------------------------ */
-
-function notificationIcon(type: string) {
-  switch (type) {
-    case 'CHAT':
-      return <MessageSquare className="size-5 text-indigo-500" />;
-    case 'ORDER':
-      return <ShoppingBag className="size-5 text-emerald-500" />;
-    case 'BOOKING':
-      return <CalendarCheck className="size-5 text-sky-500" />;
-    case 'MENTOR_APPLICATION':
-      return <UserCheck className="size-5 text-amber-500" />;
-    case 'MODERATION':
-      return <Flag className="size-5 text-rose-500" />;
-    case 'REVIEW':
-      return <Star className="size-5 text-amber-500" />;
-    default:
-      return <Bell className="size-5 text-slate-500" />;
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/*  Component                                                          */
-/* ------------------------------------------------------------------ */
 
 const TOAST_DURATION_MS = 5000;
 const EXIT_ANIMATION_MS = 400;
@@ -64,45 +25,38 @@ export function NotificationToastContainer() {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  /* ---------- dismiss a toast ---------- */
   const dismiss = useCallback((id: string) => {
-    // Clear auto-dismiss timer
     const timer = timersRef.current.get(id);
     if (timer) {
       clearTimeout(timer);
       timersRef.current.delete(id);
     }
 
-    // Start exit animation
     setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)));
 
-    // Remove after animation completes
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, EXIT_ANIMATION_MS);
   }, []);
 
-  /* ---------- push a new toast ---------- */
   const push = useCallback(
     (item: NotificationItem) => {
+      if (!isActionNotification(item)) return;
+
       const id = item.id || `nt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
       setToasts((prev) => {
-        // Avoid duplicate
         if (prev.some((t) => t.id === id)) return prev;
         const next = [{ id, item, exiting: false }, ...prev];
-        // Trim to max
         return next.slice(0, MAX_TOASTS);
       });
 
-      // Schedule auto-dismiss
       const timer = setTimeout(() => dismiss(id), TOAST_DURATION_MS);
       timersRef.current.set(id, timer);
     },
     [dismiss],
   );
 
-  /* ---------- expose push via window event ---------- */
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<NotificationItem>).detail;
@@ -112,7 +66,6 @@ export function NotificationToastContainer() {
     return () => window.removeEventListener('notification:toast', handler);
   }, [push]);
 
-  /* ---------- click handler ---------- */
   const handleClick = useCallback(
     (entry: ToastEntry) => {
       const url = resolveNotificationUrl(entry.item, userRole);
@@ -121,10 +74,9 @@ export function NotificationToastContainer() {
         router.push(url);
       }
     },
-    [dismiss, router],
+    [dismiss, router, userRole],
   );
 
-  /* ---------- cleanup timers on unmount ---------- */
   useEffect(() => {
     return () => {
       timersRef.current.forEach((timer) => clearTimeout(timer));
@@ -157,22 +109,17 @@ export function NotificationToastContainer() {
             if (e.key === 'Enter' || e.key === ' ') handleClick(entry);
           }}
         >
-          {/* Icon */}
           <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-50 to-slate-100">
-            {notificationIcon(entry.item.type)}
+            <NotificationTypeIcon type={entry.item.type} className="size-5" />
           </div>
 
-          {/* Content */}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
-              {entry.item.title}
-            </p>
+            <p className="truncate text-sm font-semibold text-slate-900">{entry.item.title}</p>
             <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-600">
               {entry.item.content}
             </p>
           </div>
 
-          {/* Close button */}
           <button
             type="button"
             onClick={(e) => {
@@ -190,11 +137,7 @@ export function NotificationToastContainer() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helper to fire toast from anywhere                                 */
-/* ------------------------------------------------------------------ */
-
 export function fireNotificationToast(item: NotificationItem) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !isActionNotification(item)) return;
   window.dispatchEvent(new CustomEvent('notification:toast', { detail: item }));
 }

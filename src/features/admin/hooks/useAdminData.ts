@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { User } from '@/types';
 import { adminService } from '@/services/adminService';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { mentorRequestService, type MentorRequest } from '@/services/mentorRequestService';
 
 const EMPTY_ADMIN_DATA: {
@@ -25,9 +26,7 @@ const mentorRequestToUser = (req: MentorRequest): User => {
     email: req.applicant?.email ?? '',
     avatar: `https://i.pravatar.cc/300?u=${encodeURIComponent(req.userId || req.id)}`,
     role: 'mentor',
-    joinedDate: req.createdAt
-      ? new Date(req.createdAt).toLocaleDateString('vi-VN')
-      : '—',
+    joinedDate: formatDisplayDate(req.createdAt),
     mentorInfo: {
       headline: req.headline,
       expertise: req.expertise ?? [],

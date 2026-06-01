@@ -27,6 +27,7 @@ export function useMentorRevenue() {
           package: 'Rút tiền',
           amount: -Number(p.amount ?? 0),
           date: formatViDateTime(p.createdAt),
+          sortAt: p.createdAt ?? '',
           paidAt: p.createdAt ?? null,
           rawStatus: String(p.status ?? ''),
           status: String(p.status ?? 'Đang xử lý'),

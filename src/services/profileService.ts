@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { buildPageQuery, normalizePagePayload } from '@/lib/apiUtils';
 import { userService } from '@/services/userService';
 import { mentorService } from '@/services/mentorService';
@@ -37,10 +38,7 @@ const mapReview = (raw: unknown): ProfileReview | null => {
   const id = r.id != null ? String(r.id) : '';
   if (!id) return null;
   const createdAt = r.createdAt ?? r.created_at;
-  const date =
-    typeof createdAt === 'string'
-      ? new Date(createdAt).toLocaleDateString('vi-VN')
-      : '—';
+  const date = typeof createdAt === 'string' ? formatDisplayDate(createdAt) : '—';
   return {
     id,
     reviewerName: String(r.reviewerName ?? r.reviewer_name ?? 'Học viên'),

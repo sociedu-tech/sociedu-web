@@ -1,71 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {
-  Bell,
-  CheckCheck,
-  Loader2,
-  MessageSquare,
-  ShoppingBag,
-  CalendarCheck,
-  UserCheck,
-  Flag,
-  Star,
-} from 'lucide-react';
+import { Bell, CheckCheck, Loader2 } from 'lucide-react';
 import { useNotificationInbox } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/context/AuthContext';
 import { resolveNotificationUrl } from '@/lib/notificationRouter';
+import { NotificationTypeIcon, notificationRelativeTime } from '@/lib/notificationUi';
 import { cn } from '@/lib/utils';
 import type { NotificationItem } from '@/services/notificationService';
-
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-function notificationIcon(type: string) {
-  switch (type) {
-    case 'CHAT':
-      return <MessageSquare className="size-4 text-indigo-500" />;
-    case 'ORDER':
-      return <ShoppingBag className="size-4 text-emerald-500" />;
-    case 'BOOKING':
-      return <CalendarCheck className="size-4 text-sky-500" />;
-    case 'MENTOR_APPLICATION':
-      return <UserCheck className="size-4 text-amber-500" />;
-    case 'MODERATION':
-      return <Flag className="size-4 text-rose-500" />;
-    case 'REVIEW':
-      return <Star className="size-4 text-amber-500" />;
-    default:
-      return <Bell className="size-4 text-slate-400" />;
-  }
-}
-
-function relativeTime(dateStr: string | undefined): string {
-  if (!dateStr) return '';
-  const now = Date.now();
-  const diff = now - new Date(dateStr).getTime();
-  if (diff < 0 || Number.isNaN(diff)) return '';
-
-  const minutes = Math.floor(diff / 60_000);
-  if (minutes < 1) return 'Vừa xong';
-  if (minutes < 60) return `${minutes} phút trước`;
-
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} giờ trước`;
-
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} ngày trước`;
-
-  return new Date(dateStr).toLocaleDateString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-  });
-}
-
-/* ------------------------------------------------------------------ */
-/*  Component                                                          */
-/* ------------------------------------------------------------------ */
 
 export function NotificationBell() {
   const router = useRouter();
@@ -73,10 +15,8 @@ export function NotificationBell() {
   const { userRole } = useAuth();
 
   const handleItemClick = (item: NotificationItem) => {
-    // Mark as read
     if (!item.isRead) void markRead(item.id);
 
-    // Navigate
     const url = resolveNotificationUrl(item, userRole);
     if (url) {
       setOpen(false);
@@ -140,12 +80,10 @@ export function NotificationBell() {
                       !item.isRead && 'bg-primary/5',
                     )}
                   >
-                    {/* Icon */}
                     <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition-colors group-hover:bg-slate-100">
-                      {notificationIcon(item.type)}
+                      <NotificationTypeIcon type={item.type} className="size-4" />
                     </div>
 
-                    {/* Content */}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm font-medium text-slate-900">{item.title}</p>
@@ -154,7 +92,7 @@ export function NotificationBell() {
                         )}
                       </div>
                       <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">{item.content}</p>
-                      <p className="mt-1 text-[10px] text-slate-400">{relativeTime(item.createdAt)}</p>
+                      <p className="mt-1 text-[10px] text-slate-400">{notificationRelativeTime(item.createdAt)}</p>
                     </div>
                   </button>
                 ))

@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle, Flag, ExternalLink } from 'lucide-react';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
 import {
@@ -191,8 +192,8 @@ export const UserReportsPage = () => {
                                 <span className="font-semibold text-slate-700">
                                   Mentor #{req.mentorId.substring(0, 8)}
                                 </span>
-                                {req.dueDate && ` • Hạn nộp: ${new Date(req.dueDate).toLocaleString('vi-VN')}`}
-                                {` • Yêu cầu lúc: ${new Date(req.createdAt).toLocaleString('vi-VN')}`}
+                                {req.dueDate && ` • Hạn nộp: ${formatDisplayDate(req.dueDate)}`}
+                                {` • Yêu cầu lúc: ${formatDisplayDate(req.createdAt)}`}
                               </p>
 
                               {req.menteeContent ? (
@@ -296,7 +297,7 @@ export const UserReportsPage = () => {
                             <p className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
                               Gửi cho Mentor:{' '}
                               <span className="font-semibold text-slate-800">{report.mentorName}</span> • Nộp lúc:{' '}
-                              {report.createdAt ? new Date(report.createdAt).toLocaleDateString('vi-VN') : '—'}
+                              {formatDisplayDate(report.createdAt)}
                             </p>
                             <div className="border-l-2 border-slate-200 py-1 pl-4 text-sm text-slate-700 whitespace-pre-wrap">
                               {report.content}

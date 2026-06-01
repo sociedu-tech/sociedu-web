@@ -64,7 +64,7 @@ export function MentorRevenue({
   const transactions: MentorOrderRow[] = [
     ...orders,
     ...payouts,
-  ].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+  ].sort((a, b) => (Date.parse(b.sortAt) || 0) - (Date.parse(a.sortAt) || 0));
 
   if (loading || ordersLoading) {
     return <PageLoadingState label="Đang tải doanh thu…" variant="stats" />;

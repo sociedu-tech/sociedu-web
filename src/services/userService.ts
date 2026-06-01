@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import type { User } from '@/types';
 
 const BASE_URL = '/api/v1/users/me';
@@ -24,11 +25,7 @@ const displayName = (profile: Record<string, unknown>): string => {
 
 const formatJoined = (iso: unknown): string => {
   if (!iso || typeof iso !== 'string') return '—';
-  try {
-    return new Date(iso).toLocaleDateString('vi-VN');
-  } catch {
-    return iso;
-  }
+  return formatDisplayDate(iso);
 };
 
 const avatarUrlFor = (userId: string, avatarFileId: unknown): string => {

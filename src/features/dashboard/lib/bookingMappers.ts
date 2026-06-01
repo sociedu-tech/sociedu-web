@@ -81,8 +81,8 @@ export function flattenBookingsToSessions(
   }
 
   rows.sort((a, b) => {
-    const ta = Date.parse(a.when) || 0;
-    const tb = Date.parse(b.when) || 0;
+    const ta = a.scheduledAtIso ? Date.parse(a.scheduledAtIso) : 0;
+    const tb = b.scheduledAtIso ? Date.parse(b.scheduledAtIso) : 0;
     return tb - ta;
   });
 

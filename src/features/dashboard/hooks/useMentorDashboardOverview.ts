@@ -78,7 +78,8 @@ export function useMentorDashboardOverview(): MentorOverviewData {
         const now = new Date();
         const thisMonth = monthKey(now);
         const sessionsThisMonth = sessions.filter((s) => {
-          const d = new Date(s.when);
+          if (!s.scheduledAtIso) return false;
+          const d = new Date(s.scheduledAtIso);
           return !Number.isNaN(d.getTime()) && monthKey(d) === thisMonth;
         }).length;
 

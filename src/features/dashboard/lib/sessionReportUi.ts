@@ -14,7 +14,8 @@ export const SESSION_REPORT_STATUS_CLASS: Record<SessionReportRequestStatus, str
   REJECTED: 'bg-rose-50 text-rose-800 border-rose-200',
 };
 
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
+
 export function formatSessionReportDate(value?: string | null): string {
-  if (!value) return '—';
-  return new Date(value).toLocaleString('vi-VN');
+  return formatDisplayDate(value);
 }

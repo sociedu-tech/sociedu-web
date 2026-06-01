@@ -1,5 +1,6 @@
 import { api } from '@/lib/api';
 import type { AdminBookingRow, BookingStatus } from '@/types';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 
 type AdminBookingApiRow = {
@@ -24,12 +25,12 @@ const toRow = (row: AdminBookingApiRow): AdminBookingRow => ({
   learnerId: row.learnerId,
   mentorName: row.mentorName,
   mentorId: row.mentorId,
-  scheduledAt: row.scheduledAt,
+  scheduledAt: formatDisplayDate(row.scheduledAt),
   durationMin: row.durationMin,
   status: row.status as BookingStatus,
   packageTitle: row.packageTitle,
   amountVnd: Number(row.amountVnd ?? 0),
-  createdAt: row.createdAt,
+  createdAt: formatDisplayDate(row.createdAt),
 });
 
 export const adminBookingService = {

@@ -7,6 +7,8 @@ import { User, Zap, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import type { ShellNavItem } from '@/lib/dashboardNav';
 import { groupShellNavItems, isNavActive } from '@/lib/dashboardNav';
+import { useChatUnreadTotal } from '@/hooks/useChatUnreadTotal';
+import { ROUTES } from '@/constants/routes';
 
 export type DashboardMenuState = 'full' | 'collapsed';
 
@@ -43,6 +45,8 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const showText = menuState === 'full' || (isMobile && isMobileMenuOpen);
   const groups = groupShellNavItems(items);
+  const chatUnreadTotal = useChatUnreadTotal();
+  const chatPath = ROUTES.DASHBOARD.SHARED.CHAT.path;
   const [collapsedGroups, setCollapsedGroups] = React.useState<Record<string, boolean>>({});
 
   const toggleGroup = (title: string) => {
@@ -114,6 +118,7 @@ export function DashboardSidebar({
               {section.items.map((item) => {
                 const active = isNavActive(pathname, item);
                 const hasChildren = item.children && item.children.length > 0;
+                const navBadge = item.href === chatPath ? chatUnreadTotal : 0;
                 
                 return (
                   <div key={item.href + item.label} className="flex flex-col">
@@ -123,7 +128,7 @@ export function DashboardSidebar({
                       onClick={handleNav}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'group flex items-center rounded-xl py-2.5 text-[13px] font-medium transition-colors',
+                        'group relative flex items-center rounded-xl py-2.5 text-[13px] font-medium transition-colors',
                         showText ? 'gap-3 px-3' : 'justify-center px-2',
                         active && !hasChildren
                           ? 'bg-slate-800 font-semibold text-white'
@@ -132,15 +137,26 @@ export function DashboardSidebar({
                           : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-100',
                       )}
                     >
-                      <item.icon
-                        size={18}
-                        strokeWidth={2}
-                        className={cn(
-                          'shrink-0',
-                          active ? 'text-white' : 'text-slate-500 group-hover:text-slate-300',
-                        )}
-                      />
+                      <span className="relative shrink-0">
+                        <item.icon
+                          size={18}
+                          strokeWidth={2}
+                          className={cn(
+                            active ? 'text-white' : 'text-slate-500 group-hover:text-slate-300',
+                          )}
+                        />
+                        {!showText && navBadge > 0 ? (
+                          <span className="absolute -right-1.5 -top-1.5 flex min-h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
+                            {navBadge > 99 ? '99+' : navBadge}
+                          </span>
+                        ) : null}
+                      </span>
                       {showText ? <span className="min-w-0 flex-1 truncate">{item.label}</span> : null}
+                      {showText && navBadge > 0 ? (
+                        <span className="flex min-h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                          {navBadge > 99 ? '99+' : navBadge}
+                        </span>
+                      ) : null}
                       {showText && hasChildren && (
                         <ChevronDown 
                           className={cn("size-3.5 text-slate-500 shrink-0 transition-transform duration-200", !active && "-rotate-90")} 

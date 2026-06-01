@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2, ShoppingBag } from 'lucide-react';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { cn } from '@/lib/utils';
 import type { ServiceOrderDto, UserOrderRow } from '@/features/dashboard/types/serviceOrder';
 import { orderStatusBadgeClass, shortOrderId } from '@/features/dashboard/lib/orderLabels';
@@ -61,7 +62,7 @@ export function UserOrderDetailView({ order, detail, paying, onRepay }: Props) {
 
         {detail?.paymentExpiresAt ? (
           <p className="mt-6 max-w-xl rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Hết hạn thanh toán: {new Date(detail.paymentExpiresAt).toLocaleString('vi-VN')}
+            Hết hạn thanh toán: {formatDisplayDate(detail.paymentExpiresAt)}
           </p>
         ) : null}
       </div>

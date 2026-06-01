@@ -8,6 +8,7 @@ import { REALTIME_CHANNELS, realtimeEventBus } from '@/lib/realtime/eventBus';
 import { parseNotificationEvent } from '@/lib/realtime/parse';
 import { userNotificationsTopic } from '@/lib/realtime/topics';
 import { fireNotificationToast } from '@/components/dashboard/NotificationToast';
+import { isActionNotification } from '@/lib/notificationFilter';
 import type { NotificationItem } from '@/services/notificationService';
 
 /**
@@ -29,7 +30,9 @@ export function GlobalRealtimeSubscriptions() {
 
       const item = payload as NotificationItem;
       realtimeEventBus.emit(REALTIME_CHANNELS.NOTIFICATION, item);
-      fireNotificationToast(item);
+      if (isActionNotification(item)) {
+        fireNotificationToast(item);
+      }
     });
   }, [connected, isAuthenticated, subscribe, userId]);
 

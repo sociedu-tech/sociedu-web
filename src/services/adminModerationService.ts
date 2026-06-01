@@ -4,6 +4,7 @@ import type {
   ModerationReportStatus,
   ModerationTargetType,
 } from '@/types';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 import type { AdminReportSegment } from '@/features/admin/hooks/useAdminModerationReportsView';
 
@@ -39,7 +40,7 @@ const toTargetType = (t: string): ModerationTargetType => {
 
 const toRow = (row: AdminModerationApiRow): AdminModerationReport => ({
   id: row.id,
-  createdAt: row.createdAt,
+  createdAt: formatDisplayDate(row.createdAt),
   reporterName: row.reporterName,
   reporterId: row.reporterId,
   targetType: toTargetType(row.targetType),

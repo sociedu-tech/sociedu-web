@@ -5,7 +5,10 @@ import { avatarUrlForUser, collectAttachments, dedupeConversationsByPeer, sortCo
 import { chatService, type ChatContextType, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { useChatSubscriptions, type ChatSocketMessage } from '@/hooks/useChatSocket';
+import { chatPresence } from '@/lib/chatPresence';
+import { chatUnreadStore } from '@/lib/chatUnreadStore';
 
 const CONV_PAGE_SIZE = 20;
 
@@ -53,15 +56,25 @@ export function useDashboardChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeId, conversations]);
 
+  useEffect(() => {
+    chatPresence.setOnChatPage(true);
+    return () => chatPresence.setOnChatPage(false);
+  }, []);
+
+  useEffect(() => {
+    chatPresence.setActive(activeId || null);
+    if (activeId) {
+      chatUnreadStore.clearConversation(activeId);
+    }
+    return () => chatPresence.setActive(null);
+  }, [activeId]);
+
   const formatTime = useCallback((raw?: string) => {
     if (!raw) {
       return 'Vừa xong';
     }
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) {
-      return 'Vừa xong';
-    }
-    return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    const formatted = formatDisplayDate(raw, { empty: '' });
+    return formatted || 'Vừa xong';
   }, []);
 
   const conversationTitle = useCallback(
@@ -149,6 +162,9 @@ export function useDashboardChatPage() {
           const nowIso = new Date().toISOString();
           const shouldBumpUnread =
             uiMessage.role !== 'me' && activeId !== conversationId && nextMessages.length > c.messages.length;
+          if (shouldBumpUnread) {
+            chatUnreadStore.bump(conversationId);
+          }
           return {
             ...c,
             messages: nextMessages,
@@ -363,6 +379,7 @@ export function useDashboardChatPage() {
 
   const openThread = (id: string) => {
     setActiveId(id);
+    chatUnreadStore.clearConversation(id);
     if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
       setMobileThread(true);
     }

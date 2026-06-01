@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { AlertTriangle, CheckCircle2, Clock, Loader2 } from 'lucide-react';
 import type { BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ProgramLabels } from '@/features/dashboard/lib/programLabels';
@@ -191,7 +192,7 @@ export function ProgramReportPageView({ item, labels, orderPackageName }: Props)
                   <p className="mt-2 text-sm text-slate-600 whitespace-pre-wrap">{report.description}</p>
                   <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
                     <Clock className="size-3.5" />
-                    {new Date(report.createdAt).toLocaleString('vi-VN')}
+                    {formatDisplayDate(report.createdAt)}
                   </p>
                   {report.resolutionNote ? (
                     <p className="mt-2 rounded-lg border border-indigo-100 bg-indigo-50/60 px-3 py-2 text-xs text-slate-700">

@@ -9,6 +9,7 @@ import type { ChatMessageContext } from '@/features/dashboard/chat/types';
 import type { BookingApi } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
 import { resolveOrderPackageName } from '@/lib/resolveOrderPackageNames';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { bookingService } from '@/services/bookingService';
 import { orderService } from '@/services/orderService';
 
@@ -120,14 +121,7 @@ async function summarizeSession(contextId: string, isMentor: boolean): Promise<M
 
     const title = await resolvePackageNameFromBooking(booking);
     const sessionTitle = session.title?.trim();
-    const when = session.scheduledAt
-      ? new Date(session.scheduledAt).toLocaleString('vi-VN', {
-          day: '2-digit',
-          month: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      : '';
+    const when = session.scheduledAt ? formatDisplayDate(session.scheduledAt, { empty: '' }) : '';
     const subtitle = [sessionTitle || 'Buổi học', when].filter(Boolean).join(' · ');
 
     return {

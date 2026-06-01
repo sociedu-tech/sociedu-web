@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, CheckCircle, Clock, X, MessageSquare, Flag, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
@@ -174,7 +175,7 @@ export const MentorReportsPage = () => {
                           )}
                         </td>
                         <td className={cn(dashboardTableCell, 'text-slate-500')}>
-                          {req.updatedAt ? new Date(req.updatedAt).toLocaleString('vi-VN') : '—'}
+                          {formatDisplayDate(req.updatedAt)}
                         </td>
                         <td className={cn(dashboardTableCell, 'text-right')}>
                           {req.status === 'SUBMITTED' ? (
@@ -255,9 +256,7 @@ export const MentorReportsPage = () => {
                           )}
                         </td>
                         <td className={cn(dashboardTableCell, 'text-slate-500')}>
-                          {report.createdAt
-                            ? new Date(report.createdAt).toLocaleDateString('vi-VN')
-                            : '—'}
+                          {formatDisplayDate(report.createdAt)}
                         </td>
                         <td className={cn(dashboardTableCell, 'text-right')}>
                           <button
