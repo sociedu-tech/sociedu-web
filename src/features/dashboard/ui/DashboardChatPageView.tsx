@@ -12,6 +12,7 @@ import {
   Paperclip,
   PanelRightClose,
   PanelRightOpen,
+  Plus,
   Search,
   Send,
   X,
@@ -98,6 +99,7 @@ export type DashboardChatPageViewProps = {
   sharedImages: ChatAttachment[];
   sharedFiles: ChatAttachment[];
   openThread: (id: string) => void;
+  createConversation: () => void;
   send: () => void;
   convPage?: number;
   convSize?: number;
@@ -126,6 +128,7 @@ export function DashboardChatPageView({
   sharedImages,
   sharedFiles,
   openThread,
+  createConversation,
   send,
   convPage = 0,
   convSize = 20,
