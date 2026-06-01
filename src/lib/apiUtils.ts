@@ -12,6 +12,15 @@ export type PagePayload<T> = {
 export const DEFAULT_PAGE_SIZE = 20;
 
 export const normalizePagePayload = <T>(payload: unknown, fallbackSize = DEFAULT_PAGE_SIZE): PagePayload<T> => {
+  if (Array.isArray(payload)) {
+    return {
+      items: payload as T[],
+      page: 0,
+      size: fallbackSize,
+      total: payload.length,
+      totalPages: payload.length > 0 ? 1 : 0,
+    };
+  }
   if (!isRecord(payload)) {
     return { items: [], page: 0, size: fallbackSize, total: 0, totalPages: 0 };
   }

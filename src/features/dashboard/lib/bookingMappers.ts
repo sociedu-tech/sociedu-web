@@ -26,8 +26,9 @@ const counterpartyLabel = (id?: string | null): string =>
 
 const readBookingField = (booking: BookingApi, ...keys: string[]): string | null => {
   if (!isRecord(booking)) return null;
+  const record = booking as Record<string, unknown>;
   for (const key of keys) {
-    const value = booking[key];
+    const value = record[key];
     if (value != null && String(value).trim()) return String(value).trim();
   }
   return null;
@@ -117,13 +118,17 @@ const isSessionCompleted = (status?: string | null): boolean => {
 };
 
 const pickMinIso = (dates: (string | null | undefined)[]): string | null => {
-  const valid = dates.filter((d): d is string => Boolean(d) && !Number.isNaN(Date.parse(d)));
+  const valid = dates.filter(
+    (d): d is string => typeof d === 'string' && d.length > 0 && !Number.isNaN(Date.parse(d)),
+  );
   if (!valid.length) return null;
   return valid.reduce((min, d) => (Date.parse(d) < Date.parse(min) ? d : min));
 };
 
 const pickMaxIso = (dates: (string | null | undefined)[]): string | null => {
-  const valid = dates.filter((d): d is string => Boolean(d) && !Number.isNaN(Date.parse(d)));
+  const valid = dates.filter(
+    (d): d is string => typeof d === 'string' && d.length > 0 && !Number.isNaN(Date.parse(d)),
+  );
   if (!valid.length) return null;
   return valid.reduce((max, d) => (Date.parse(d) > Date.parse(max) ? d : max));
 };

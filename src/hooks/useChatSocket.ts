@@ -55,6 +55,18 @@ function parseConversationEvent(body: string, fallbackConversationId: string): C
       attachmentFileIds: Array.isArray(attachmentFileIds)
         ? attachmentFileIds.map((fileId) => String(fileId))
         : null,
+      contextType:
+        payload.contextType != null
+          ? String(payload.contextType)
+          : raw.contextType != null
+            ? String(raw.contextType)
+            : undefined,
+      contextId:
+        payload.contextId != null
+          ? String(payload.contextId)
+          : raw.contextId != null
+            ? String(raw.contextId)
+            : undefined,
     };
   } catch {
     return null;

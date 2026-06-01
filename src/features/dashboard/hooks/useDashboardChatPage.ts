@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { ChatMessage, Conversation } from '@/features/dashboard/chat/types';
-import { collectAttachments } from '@/features/dashboard/chat/utils';
+import { avatarUrlForUser, collectAttachments, dedupeConversationsByPeer, sortConversationsByRecent } from '@/features/dashboard/chat/utils';
 import { chatService, type ChatContextType, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -59,37 +59,39 @@ export function useDashboardChatPage() {
 
   const conversationTitle = useCallback(
     (c: ChatConversationDto) => {
+      if (c.peerDisplayName?.trim()) {
+        return c.peerDisplayName.trim();
+      }
+      if (peerNameFromUrl && c.id === conversationFromUrl) {
+        return peerNameFromUrl;
+      }
       const shortId = c.id.slice(0, 8);
-      if (c.type === 'general') {
-        if (peerNameFromUrl && c.id === conversationFromUrl) {
-          return peerNameFromUrl;
-        }
-        return 'Tin nhắn';
-      }
-      if (c.type === 'booking' && c.bookingId) {
-        return `Booking #${String(c.bookingId).slice(0, 8)}`;
-      }
       if (c.type === 'support') {
         return `Hỗ trợ #${shortId}`;
       }
-      return `Hội thoại #${shortId}`;
+      return 'Tin nhắn';
     },
     [conversationFromUrl, peerNameFromUrl],
   );
 
   const conversationRole = useCallback((c: ChatConversationDto) => {
-    if (c.type === 'general') return 'Tin nhắn';
-    if (c.type === 'booking') return 'Chat theo booking';
     if (c.type === 'support') return 'CSKH';
+    if (c.peerUserId) return 'Tin nhắn';
+    if (c.type === 'booking') return 'Mentoring';
     return 'Trò chuyện';
   }, []);
 
   const toUiMessage = useCallback(
-    (m: ChatMessageDto): ChatMessage => ({
+    (m: ChatMessageDto, sendStatus?: ChatMessage['sendStatus']): ChatMessage => ({
       id: String(m.id || `${m.senderId}-${m.createdAt ?? ''}`),
       role: String(m.senderId) === user?.id ? 'me' : 'them',
       text: m.content || '',
       time: formatTime(m.createdAt),
+      sendStatus: String(m.senderId) === user?.id ? sendStatus ?? 'sent' : undefined,
+      context:
+        m.contextType && m.contextId && m.contextType !== 'general'
+          ? { contextType: m.contextType as ChatContextType, contextId: String(m.contextId) }
+          : undefined,
       attachments: (m.attachmentFileIds ?? []).map((fileId) => ({
         id: String(fileId),
         kind: 'file',
@@ -99,28 +101,74 @@ export function useDashboardChatPage() {
     [formatTime, user?.id],
   );
 
+  const mergeMessages = useCallback(
+    (messages: ChatMessage[], uiMessage: ChatMessage, pendingClientId?: string) => {
+      if (pendingClientId) {
+        const pendingIdx = messages.findIndex((m) => m.id === pendingClientId);
+        if (pendingIdx >= 0) {
+          const next = [...messages];
+          next[pendingIdx] = uiMessage;
+          return next;
+        }
+      }
+
+      if (uiMessage.role === 'me') {
+        const pendingIdx = messages.findIndex(
+          (m) => m.sendStatus === 'sending' && m.text === uiMessage.text,
+        );
+        if (pendingIdx >= 0 && messages[pendingIdx].id !== uiMessage.id) {
+          const next = [...messages];
+          next[pendingIdx] = uiMessage;
+          return next;
+        }
+      }
+
+      const exists = messages.some((m) => m.id === uiMessage.id);
+      if (exists) {
+        return messages.map((m) => (m.id === uiMessage.id ? uiMessage : m));
+      }
+      return [...messages, uiMessage];
+    },
+    [],
+  );
+
   const upsertMessage = useCallback(
-    (conversationId: string, uiMessage: ChatMessage) => {
-      setConversations((prev) =>
-        prev.map((c) => {
+    (conversationId: string, uiMessage: ChatMessage, options?: { pendingClientId?: string }) => {
+      setConversations((prev) => {
+        const next = prev.map((c) => {
           if (c.id !== conversationId) return c;
           if (!uiMessage.id) return c;
-          const exists = c.messages.some((m) => m.id === uiMessage.id);
-          const nextMessages = exists
-            ? c.messages.map((m) => (m.id === uiMessage.id ? uiMessage : m))
-            : [...c.messages, uiMessage];
+          const nextMessages = mergeMessages(c.messages, uiMessage, options?.pendingClientId);
+          const nowIso = new Date().toISOString();
+          const shouldBumpUnread =
+            uiMessage.role !== 'me' && activeId !== conversationId && nextMessages.length > c.messages.length;
           return {
             ...c,
             messages: nextMessages,
             lastMessage: uiMessage.text || 'Đã gửi tệp đính kèm',
             time: uiMessage.time,
-            unread: activeId === conversationId ? undefined : (c.unread ?? 0) + (exists ? 0 : 1),
+            sortAt: nowIso,
+            unread: activeId === conversationId ? undefined : shouldBumpUnread ? (c.unread ?? 0) + 1 : c.unread,
           };
-        }),
-      );
+        });
+        return sortConversationsByRecent(next);
+      });
     },
-    [activeId],
+    [activeId, mergeMessages],
   );
+
+  const patchMessage = useCallback((conversationId: string, messageId: string, patch: Partial<ChatMessage>) => {
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === conversationId
+          ? {
+              ...c,
+              messages: c.messages.map((m) => (m.id === messageId ? { ...m, ...patch } : m)),
+            }
+          : c,
+      ),
+    );
+  }, []);
 
   const [convPage, setConvPage] = useState(0);
   const [convSize, setConvSize] = useState(20);
@@ -128,15 +176,23 @@ export function useDashboardChatPage() {
   const [convTotalPages, setConvTotalPages] = useState(0);
 
   const toUiConversation = useCallback(
-    (c: ChatConversationDto): Conversation => ({
-      id: c.id,
-      name: conversationTitle(c),
-      roleLabel: conversationRole(c),
-      lastMessage: 'Chưa có tin nhắn',
-      time: formatTime(c.createdAt),
-      unread: undefined,
-      messages: [],
-    }),
+    (c: ChatConversationDto): Conversation => {
+      const sortAt = c.lastMessageAt || c.createdAt;
+      const lastMessage = c.lastMessageContent?.trim() || 'Chưa có tin nhắn';
+      return {
+        id: c.id,
+        type: c.type,
+        name: conversationTitle(c),
+        roleLabel: conversationRole(c),
+        lastMessage,
+        time: formatTime(sortAt),
+        sortAt,
+        peerUserId: c.peerUserId ?? undefined,
+        avatarUrl: avatarUrlForUser(c.peerUserId, c.peerAvatarFileId),
+        unread: undefined,
+        messages: [],
+      };
+    },
     [conversationRole, conversationTitle, formatTime],
   );
 
@@ -150,7 +206,7 @@ export function useDashboardChatPage() {
         if (!activeRequest) return;
         setConvTotal(page.total);
         setConvTotalPages(page.totalPages);
-        const mapped: Conversation[] = items.map(toUiConversation);
+        const mapped: Conversation[] = dedupeConversationsByPeer(items.map(toUiConversation));
         setConversations(mapped);
         if (mapped.length > 0) {
           setActiveId((prev) => {
@@ -201,7 +257,12 @@ export function useDashboardChatPage() {
         const mapped = toUiConversation(remote);
         setConversations((prev) => {
           if (prev.some((c) => c.id === mapped.id)) return prev;
-          return [mapped, ...prev];
+          const merged = dedupeConversationsByPeer([mapped, ...prev]);
+          const canonical = mapped.peerUserId
+            ? merged.find((c) => c.peerUserId === mapped.peerUserId) ?? mapped
+            : mapped;
+          setActiveId(canonical.id);
+          return merged;
         });
       } catch (error) {
         fetchedUrlRef.current = null;
@@ -224,18 +285,21 @@ export function useDashboardChatPage() {
       try {
         const page = await chatService.listMessages(activeId, 0, 50);
         if (cancelled) return;
-        const uiMessages = [...page.items].reverse().map(toUiMessage);
+        const uiMessages = [...page.items].reverse().map((m) => toUiMessage(m));
         setConversations((prev) =>
-          prev.map((c) =>
-            c.id === activeId
-              ? {
-                  ...c,
-                  messages: uiMessages,
-                  lastMessage: uiMessages[uiMessages.length - 1]?.text || c.lastMessage,
-                  time: uiMessages[uiMessages.length - 1]?.time || c.time,
-                  unread: undefined,
-                }
-              : c,
+          sortConversationsByRecent(
+            prev.map((c) =>
+              c.id === activeId
+                ? {
+                    ...c,
+                    messages: uiMessages,
+                    lastMessage: uiMessages[uiMessages.length - 1]?.text || c.lastMessage,
+                    time: uiMessages[uiMessages.length - 1]?.time || c.time,
+                    sortAt: page.items[0]?.createdAt || c.sortAt,
+                    unread: undefined,
+                  }
+                : c,
+            ),
           ),
         );
         loadedMessagesRef.current.add(activeId);
@@ -264,8 +328,10 @@ export function useDashboardChatPage() {
           edited: message.edited,
           createdAt: message.createdAt,
           attachmentFileIds: message.attachmentFileIds ?? [],
+          contextType: message.contextType != null ? String(message.contextType) : null,
+          contextId: message.contextId != null ? String(message.contextId) : null,
         });
-        upsertMessage(c.id, uiMessage);
+        upsertMessage(c.id, { ...uiMessage, sendStatus: uiMessage.role === 'me' ? 'sent' : undefined });
       }),
     );
     return () => {
@@ -288,6 +354,23 @@ export function useDashboardChatPage() {
   const send = async () => {
     const text = draft.trim();
     if (!text || !active) return;
+
+    const clientId =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? `pending-${crypto.randomUUID()}`
+        : `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const optimistic: ChatMessage = {
+      id: clientId,
+      role: 'me',
+      text,
+      time: formatTime(new Date().toISOString()),
+      sendStatus: 'sending',
+      context: messageContext,
+    };
+
+    setDraft('');
+    upsertMessage(active.id, optimistic);
+
     try {
       const saved = await chatService.sendMessage(active.id, {
         content: text,
@@ -296,10 +379,12 @@ export function useDashboardChatPage() {
         contextId: messageContext?.contextId,
       });
       if (saved) {
-        upsertMessage(active.id, toUiMessage(saved));
+        upsertMessage(active.id, toUiMessage(saved, 'sent'), { pendingClientId: clientId });
+      } else {
+        patchMessage(active.id, clientId, { sendStatus: 'failed' });
       }
-      setDraft('');
     } catch (error) {
+      patchMessage(active.id, clientId, { sendStatus: 'failed' });
       toast.error(error instanceof Error ? error.message : 'Gửi tin nhắn thất bại.');
     }
   };
@@ -330,5 +415,6 @@ export function useDashboardChatPage() {
     setConvSize,
     convTotal,
     convTotalPages,
+    pendingMessageContext: messageContext,
   };
 }

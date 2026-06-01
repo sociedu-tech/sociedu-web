@@ -22,10 +22,13 @@ export function useMentorRevenue() {
       setTransactions(
         finance.payouts.map((p) => ({
           id: String(p.id),
+          buyerId: null,
           mentee: '',
           package: 'Rút tiền',
           amount: -Number(p.amount ?? 0),
           date: formatViDateTime(p.createdAt),
+          paidAt: p.createdAt ?? null,
+          rawStatus: String(p.status ?? ''),
           status: String(p.status ?? 'Đang xử lý'),
           type: 'withdrawal' as const,
           bank: p.bankAccountMasked ?? undefined,

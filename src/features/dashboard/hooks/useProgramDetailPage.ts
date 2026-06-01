@@ -7,7 +7,11 @@ import { mapBookingsToProgramItems } from '@/features/dashboard/lib/bookingMappe
 import type { BookingApi, BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ServiceOrderDto } from '@/features/dashboard/types/serviceOrder';
 import { pickDisplayName, resolveUserNames } from '@/lib/resolveUserNames';
-import { pickPackageLabel, resolveOrderPackageName } from '@/lib/resolveOrderPackageNames';
+import {
+  pickPackageLabel,
+  resolveOrderPackageName,
+  resolveOrderPackageNames,
+} from '@/lib/resolveOrderPackageNames';
 import { getProgramChatPeerId } from '@/features/dashboard/lib/programChat';
 
 async function enrichProgramItem(

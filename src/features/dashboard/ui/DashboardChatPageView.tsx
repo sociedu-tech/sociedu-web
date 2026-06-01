@@ -2,13 +2,13 @@
 
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { MENTORING_PATH } from '@/features/dashboard/lib/programLabels';
 import {
+  AlertCircle,
   ArrowLeft,
-  CalendarPlus,
+  Check,
   FileText,
   ImageIcon,
+  Loader2,
   Paperclip,
   PanelRightClose,
   PanelRightOpen,
@@ -19,8 +19,68 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DataPagination } from '@/components/ui/DataPagination';
-import type { ChatAttachment, Conversation } from '@/features/dashboard/chat/types';
+import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
+import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
 import { initials } from '@/features/dashboard/chat/utils';
+
+function ChatSendStatusIcon({ message }: { message: ChatMessage }) {
+  if (message.role !== 'me' || !message.sendStatus) {
+    return null;
+  }
+
+  if (message.sendStatus === 'sending') {
+    return (
+      <Loader2
+        className="size-3 shrink-0 animate-spin opacity-80"
+        strokeWidth={2}
+        aria-label="Đang gửi"
+      />
+    );
+  }
+
+  if (message.sendStatus === 'failed') {
+    return (
+      <AlertCircle
+        className="size-3 shrink-0 text-red-300"
+        strokeWidth={2}
+        aria-label="Gửi thất bại"
+      />
+    );
+  }
+
+  return (
+    <Check className="size-3 shrink-0 opacity-80" strokeWidth={2.5} aria-label="Đã gửi" />
+  );
+}
+
+function ChatPeerAvatar({
+  name,
+  avatarUrl,
+  className,
+}: {
+  name: string;
+  avatarUrl?: string;
+  className?: string;
+}) {
+  if (avatarUrl) {
+    return (
+      <span className={cn('relative block shrink-0 overflow-hidden rounded-full', className)}>
+        <Image src={avatarUrl} alt="" fill className="object-cover" sizes="44px" unoptimized />
+      </span>
+    );
+  }
+  return (
+    <span
+      className={cn(
+        'flex shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white',
+        className,
+      )}
+      aria-hidden
+    >
+      {initials(name)}
+    </span>
+  );
+}
 
 export type DashboardChatPageViewProps = {
   active: Conversation | undefined;
@@ -47,6 +107,7 @@ export type DashboardChatPageViewProps = {
   onConvPageChange?: (page: number) => void;
   onConvSizeChange?: (size: number) => void;
   convLoading?: boolean;
+  pendingMessageContext?: { contextType: string; contextId: string };
 };
 
 export function DashboardChatPageView({
@@ -74,6 +135,7 @@ export function DashboardChatPageView({
   onConvPageChange,
   onConvSizeChange,
   convLoading = false,
+  pendingMessageContext,
 }: DashboardChatPageViewProps) {
   return (
     <div
@@ -126,15 +188,7 @@ export function DashboardChatPageView({
                       selected && 'bg-slate-100/90',
                     )}
                   >
-                    <span
-                      className={cn(
-                        'flex size-11 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white',
-                        c.id === '2' ? 'bg-slate-600' : 'bg-primary',
-                      )}
-                      aria-hidden
-                    >
-                      {initials(c.name)}
-                    </span>
+                    <ChatPeerAvatar name={c.name} avatarUrl={c.avatarUrl} className="size-11" />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-start justify-between gap-2">
                         <span className="truncate font-semibold text-slate-900">{c.name}</span>
@@ -187,27 +241,11 @@ export function DashboardChatPageView({
                 >
                   <ArrowLeft className="size-5" strokeWidth={2} />
                 </button>
-                <span
-                  className={cn(
-                    'flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white',
-                    active.id === '2' ? 'bg-slate-600' : 'bg-primary',
-                  )}
-                  aria-hidden
-                >
-                  {initials(active.name)}
-                </span>
+                <ChatPeerAvatar name={active.name} avatarUrl={active.avatarUrl} className="size-10" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-slate-900">{active.name}</p>
                   <p className="truncate text-xs text-slate-500">{active.roleLabel}</p>
                 </div>
-                <Link
-                  href={MENTORING_PATH}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:opacity-95 sm:px-3 sm:text-sm"
-                  title="Lên lịch hẹn"
-                >
-                  <CalendarPlus className="size-4 shrink-0" strokeWidth={2} />
-                  <span className="hidden sm:inline">Lên lịch hẹn</span>
-                </Link>
                 <button
                   type="button"
                   onClick={() => setRightPanelOpen((o) => !o)}
@@ -219,24 +257,29 @@ export function DashboardChatPageView({
                 </button>
               </div>
 
-              <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-slate-50/90 p-3 sm:p-4">
+              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden bg-slate-50/90 p-2.5 sm:space-y-3 sm:p-4">
                 {active.messages.length === 0 ? (
                   <div className="flex flex-1 flex-col items-center justify-center gap-2 py-16 text-center text-sm text-slate-500">
                     <p>Chưa có tin nhắn. Nhập bên dưới để gửi.</p>
                   </div>
                 ) : (
                   active.messages.map((m) => (
-                    <div key={m.id}>
-                      <div className={cn('flex', m.role === 'me' ? 'justify-end' : 'justify-start')}>
+                    <div key={m.id} className="w-full min-w-0">
+                      <div className={cn('flex w-full min-w-0', m.role === 'me' ? 'justify-end' : 'justify-start')}>
                         <div
                           className={cn(
-                            'max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed sm:max-w-[70%]',
+                            'w-fit min-w-0 max-w-[min(100%,18.75rem)] rounded-2xl px-3 py-2.5 text-sm leading-relaxed sm:max-w-md sm:px-3.5',
                             m.role === 'me'
                               ? 'rounded-br-md bg-primary text-white'
                               : 'rounded-bl-md border border-slate-200 bg-white text-slate-800',
                           )}
                         >
-                          <p className="whitespace-pre-wrap">{m.text}</p>
+                          {m.context ? (
+                            <ChatMessageContextBox context={m.context} variant={m.role === 'me' ? 'me' : 'them'} />
+                          ) : null}
+                          {m.text ? (
+                            <p className="break-words whitespace-pre-wrap [overflow-wrap:anywhere]">{m.text}</p>
+                          ) : null}
                           {m.attachments && m.attachments.length > 0 ? (
                             <ul className="mt-2 space-y-2">
                               {m.attachments.map((a) =>
@@ -268,14 +311,15 @@ export function DashboardChatPageView({
                               )}
                             </ul>
                           ) : null}
-                          <p
+                          <div
                             className={cn(
-                              'mt-1 text-right text-[10px]',
+                              'mt-1 flex items-center justify-end gap-1 text-[10px]',
                               m.role === 'me' ? 'text-white/80' : 'text-slate-400',
                             )}
                           >
-                            {m.time}
-                          </p>
+                            <span>{m.time}</span>
+                            <ChatSendStatusIcon message={m} />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -284,8 +328,23 @@ export function DashboardChatPageView({
                 <div ref={bottomRef} />
               </div>
 
-              <footer className="shrink-0 border-t border-slate-200 bg-white p-3 sm:p-4">
-                <div className="flex items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2 focus-within:border-primary focus-within:bg-white">
+              <footer className="shrink-0 border-t border-slate-200 bg-white p-2.5 sm:p-4">
+                {pendingMessageContext ? (
+                  <p className="mb-2 break-words text-xs leading-relaxed text-slate-500">
+                    Tin tiếp theo sẽ gắn ngữ cảnh{' '}
+                    <span className="font-medium text-slate-700">
+                      {pendingMessageContext.contextType === 'order'
+                        ? 'đơn hàng'
+                        : pendingMessageContext.contextType === 'booking'
+                          ? 'mentoring'
+                          : pendingMessageContext.contextType === 'session'
+                            ? 'buổi học'
+                            : 'liên quan'}
+                    </span>
+                    .
+                  </p>
+                ) : null}
+                <div className="flex items-end gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1.5 focus-within:border-primary focus-within:bg-white sm:gap-2 sm:p-2">
                   <button
                     type="button"
                     className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/80 hover:text-slate-800"
