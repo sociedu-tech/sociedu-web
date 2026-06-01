@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   ArrowRight,
   CalendarDays,
@@ -94,6 +94,10 @@ export function PaymentResultPage() {
   const orderId = searchParams.get('orderId')?.trim() ?? null;
   const transactionRef = searchParams.get('transactionRef')?.trim() ?? null;
 
+  const rawParams = useMemo(() => {
+    return Object.fromEntries(searchParams.entries());
+  }, [searchParams]);
+
   const {
     initialLoading,
     syncing,
@@ -101,7 +105,7 @@ export function PaymentResultPage() {
     failed,
     expired,
     syncTimedOut,
-  } = usePaymentResultStatus(orderId, urlStatus, urlCode);
+  } = usePaymentResultStatus(orderId, urlStatus, urlCode, rawParams);
 
   useEffect(() => {
     void reloadSession();

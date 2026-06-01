@@ -20,6 +20,7 @@ export function usePaymentResultStatus(
   orderId: string | null,
   urlStatus: string | null,
   urlCode: string | null,
+  rawParams?: Record<string, string> | null,
 ) {
   const urlSuccess = isUrlPaymentSuccess(urlStatus, urlCode);
   const urlFailure = isUrlPaymentFailure(urlStatus, urlCode);
@@ -73,12 +74,23 @@ export function usePaymentResultStatus(
       attempts += 1;
       if (cancelled) return;
 
-      const needBackgroundSync = urlSuccess || (!urlSuccess && !urlFailure);
+      const hasVnPay = rawParams && Object.keys(rawParams).some((key) => key.startsWith('vnp_'));
+
       if (attempts === 1) {
-        if (needBackgroundSync && !urlSuccess && !urlFailure) {
-          setInitialLoading(true);
-        } else if (urlSuccess) {
+        if (hasVnPay) {
           setSyncing(true);
+          try {
+            await paymentService.handleVNPayReturn(rawParams);
+          } catch (err) {
+            console.error('Error processing VNPay return:', err);
+          }
+        } else {
+          const needBackgroundSync = urlSuccess || (!urlSuccess && !urlFailure);
+          if (needBackgroundSync && !urlSuccess && !urlFailure) {
+            setInitialLoading(true);
+          } else if (urlSuccess) {
+            setSyncing(true);
+          }
         }
       }
 
@@ -105,7 +117,7 @@ export function usePaymentResultStatus(
       cancelled = true;
       if (timer) clearTimeout(timer);
     };
-  }, [orderId, urlFailure, urlSuccess]);
+  }, [orderId, urlFailure, urlSuccess, rawParams]);
 
   const paid = useMemo(() => {
     if (urlSuccess) return true;
