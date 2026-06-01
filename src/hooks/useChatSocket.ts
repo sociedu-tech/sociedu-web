@@ -18,6 +18,49 @@ export interface ChatSocketMessage {
 
 type MessageHandler = (message: ChatSocketMessage) => void;
 
+function parseConversationEvent(body: string, fallbackConversationId: string): ChatSocketMessage | null {
+  try {
+    const raw = JSON.parse(body) as Record<string, unknown>;
+    const payload =
+      raw.payload && typeof raw.payload === 'object' && !Array.isArray(raw.payload)
+        ? (raw.payload as Record<string, unknown>)
+        : raw;
+
+    const id = payload.id ?? raw.id;
+    const senderId = payload.senderId ?? raw.senderId;
+    if (id == null || senderId == null) {
+      return null;
+    }
+
+    const attachmentFileIds = payload.attachmentFileIds ?? raw.attachmentFileIds;
+
+    return {
+      id: String(id),
+      conversationId: String(raw.conversationId ?? fallbackConversationId),
+      senderId: String(senderId),
+      content: String(payload.content ?? raw.content ?? ''),
+      type: payload.type != null ? String(payload.type) : raw.type != null ? String(raw.type) : undefined,
+      edited:
+        typeof payload.edited === 'boolean'
+          ? payload.edited
+          : typeof raw.edited === 'boolean'
+            ? raw.edited
+            : undefined,
+      createdAt:
+        payload.createdAt != null
+          ? String(payload.createdAt)
+          : raw.createdAt != null
+            ? String(raw.createdAt)
+            : undefined,
+      attachmentFileIds: Array.isArray(attachmentFileIds)
+        ? attachmentFileIds.map((fileId) => String(fileId))
+        : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function useChatSocket() {
   const { token, isAuthenticated } = useAuth();
   const clientRef = useRef<Client | null>(null);
@@ -65,11 +108,9 @@ export function useChatSocket() {
     const subscription = client.subscribe(
       `/topic/conversations/${conversationId}`,
       (frame: IMessage) => {
-        try {
-          const parsed = JSON.parse(frame.body) as Omit<ChatSocketMessage, 'conversationId'>;
-          handler({ ...parsed, conversationId } as ChatSocketMessage);
-        } catch {
-          // Ignore malformed payload so stream stays alive.
+        const message = parseConversationEvent(frame.body, conversationId);
+        if (message) {
+          handler(message);
         }
       },
     );

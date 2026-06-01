@@ -86,7 +86,7 @@ export function useDashboardChatPage() {
 
   const toUiMessage = useCallback(
     (m: ChatMessageDto): ChatMessage => ({
-      id: m.id,
+      id: String(m.id || `${m.senderId}-${m.createdAt ?? ''}`),
       role: String(m.senderId) === user?.id ? 'me' : 'them',
       text: m.content || '',
       time: formatTime(m.createdAt),
@@ -104,6 +104,7 @@ export function useDashboardChatPage() {
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id !== conversationId) return c;
+          if (!uiMessage.id) return c;
           const exists = c.messages.some((m) => m.id === uiMessage.id);
           const nextMessages = exists
             ? c.messages.map((m) => (m.id === uiMessage.id ? uiMessage : m))
@@ -254,6 +255,7 @@ export function useDashboardChatPage() {
     }
     const unsubscribers = conversations.map((c) =>
       subscribeConversation(c.id, (message) => {
+        if (!message.id) return;
         const uiMessage = toUiMessage({
           id: message.id,
           senderId: message.senderId,
@@ -261,7 +263,7 @@ export function useDashboardChatPage() {
           type: message.type || 'text',
           edited: message.edited,
           createdAt: message.createdAt,
-          attachmentFileIds: (message.attachmentFileIds as string[] | null | undefined) ?? [],
+          attachmentFileIds: message.attachmentFileIds ?? [],
         });
         upsertMessage(c.id, uiMessage);
       }),
