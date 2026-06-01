@@ -8,9 +8,17 @@ interface MentorPackagesProps {
   onRemove: (id: string | number) => void;
   onUpdate: (id: string | number, field: keyof MentorPackage, value: any) => void;
   onSave: () => void;
+  isSaving?: boolean;
 }
 
-export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: MentorPackagesProps) => {
+export const MentorPackages = ({ 
+  packages, 
+  onAdd, 
+  onRemove, 
+  onUpdate, 
+  onSave, 
+  isSaving = false 
+}: MentorPackagesProps) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-end gap-3">
@@ -24,9 +32,10 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
         <button
           type="button"
           onClick={onSave}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95"
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Save size={16} /> Lưu
+          <Save size={16} /> {isSaving ? 'Đang lưu...' : 'Lưu'}
         </button>
       </div>
 
@@ -63,8 +72,11 @@ export const MentorPackages = ({ packages, onAdd, onRemove, onUpdate, onSave }: 
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wider">Giá (VNĐ)</label>
                 <input 
                   type="number" 
-                  value={pkg.price}
-                  onChange={(e) => onUpdate(pkg.id, 'price', parseInt(e.target.value))}
+                  value={Number.isNaN(pkg.price) || pkg.price === undefined || pkg.price === null ? '' : pkg.price}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    onUpdate(pkg.id, 'price', val === '' ? NaN : parseInt(val, 10));
+                  }}
                   className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none font-medium text-primary text-sm transition-all"
                 />
               </div>

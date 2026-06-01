@@ -69,8 +69,25 @@ export const useMentorData = (_mentorId: string) => {
   };
 
   const savePackages = async () => {
+    for (const pkg of data.packages) {
+      if (!pkg.title || !pkg.title.trim()) {
+        throw new Error('Tên gói dịch vụ không được để trống.');
+      }
+      if (!pkg.duration || !pkg.duration.trim()) {
+        throw new Error('Thời lượng gói dịch vụ không được để trống.');
+      }
+    }
+
+    const sanitizedPackages = data.packages.map((pkg) => {
+      const parsedPrice = Number.isNaN(pkg.price) || pkg.price === null || pkg.price === undefined ? 0 : pkg.price;
+      return {
+        ...pkg,
+        price: Math.max(0, parsedPrice),
+      };
+    });
+
     try {
-      await mentorService.savePackagesForMentor(_mentorId, data.packages);
+      await mentorService.savePackagesForMentor(_mentorId, sanitizedPackages);
       await fetchData();
     } catch (err: unknown) {
       throw new Error(err instanceof Error ? err.message : 'Lỗi khi lưu gói dịch vụ');
