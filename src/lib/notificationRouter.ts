@@ -33,8 +33,8 @@ function resolveOrderUrl(item: NotificationItem, role: string | null): string {
 
 function resolveBookingUrl(
   meta: Record<string, unknown>,
-  referenceId: string | null,
-  referenceType: string | null,
+  referenceId: string | null | undefined,
+  referenceType: string | null | undefined,
 ): string {
   const bookingId =
     metaStr(meta, 'bookingId') ?? (referenceType === 'booking' ? referenceId : null);

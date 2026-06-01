@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Shield, UserCircle, UserPlus, Ban, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { Shield, UserPlus, Ban, CheckCircle2, BookOpen } from 'lucide-react';
 import type { UserAccountStatus } from '@/types';
 import type { User } from '@/types';
 import { cn } from '@/lib/utils';
@@ -39,7 +40,7 @@ const accountStyles: Record<UserAccountStatus, string> = {
   pending: 'bg-slate-100 text-slate-800 ring-slate-200',
 };
 
-export function AdminUsersManagementView() {
+export function AdminUsersManagementView({ defaultRole = 'user' }: { defaultRole?: string }) {
   const {
     users,
     loading,
@@ -58,35 +59,21 @@ export function AdminUsersManagementView() {
     totalPages,
     setPage,
     setSize,
-  } = useAdminUsersManagementView();
+  } = useAdminUsersManagementView(defaultRole);
+
+  // Sync role filter with route parameter
+  React.useEffect(() => {
+    setRoleFilter(defaultRole);
+  }, [defaultRole, setRoleFilter]);
 
   if (loading && users.length === 0) {
     return <PageLoadingState label="Đang tải danh sách người dùng…" variant="table" />;
-  }
-
-  if (!loading && total === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 px-6 py-20 text-center">
-        <UserCircle className="size-12 text-slate-300" strokeWidth={1.25} />
-        <p className="text-sm text-slate-500">Chưa có người dùng.</p>
-      </div>
-    );
   }
 
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className={adminSelect}
-          >
-            <option value="all">Mọi vai trò</option>
-            <option value="user">Học viên</option>
-            <option value="mentor">Mentor</option>
-            <option value="admin">Quản trị</option>
-          </select>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -98,158 +85,200 @@ export function AdminUsersManagementView() {
             <option value="pending">Chờ duyệt</option>
           </select>
         </div>
-        <p className="text-xs text-slate-500">Dữ liệu đồng bộ từ backend admin users API.</p>
+        <p className="text-xs text-slate-500 italic">Dữ liệu đồng bộ hệ thống.</p>
       </div>
       {error ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>
       ) : null}
 
-      <div className="overflow-x-auto rounded-xl border border-slate-100">
-        <table className="hidden min-w-[880px] w-full text-left text-sm md:table">
-          <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-              <th className="px-4 py-3">Người dùng</th>
-              <th className="px-4 py-3">Vai trò</th>
-              <th className="px-4 py-3">Tài khoản</th>
-              <th className="px-4 py-3">Tham gia</th>
-              <th className="px-4 py-3 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filtered.map((u) => (
-              <tr key={u.id} className="hover:bg-slate-50/80">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
-                      <Image src={u.avatar} alt="" width={40} height={40} className="size-full object-cover" unoptimized />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-semibold text-slate-900">{u.name}</p>
-                      <p className="truncate text-xs text-slate-500">{u.email}</p>
-                      {u.adminNote ? <p className="mt-1 line-clamp-1 text-[11px] text-slate-400">{u.adminNote}</p> : null}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={cn(
-                      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1',
-                      u.role === 'mentor' && 'bg-primary/10 text-primary ring-primary/20',
-                      u.role === 'admin' && 'bg-slate-900 text-white ring-slate-800',
-                      u.role === 'user' && 'bg-slate-100 text-slate-800 ring-slate-200',
-                    )}
-                  >
-                    {u.role === 'admin' ? <Shield className="size-3" /> : null}
-                    {roleLabel(u.role)}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={cn(
-                      'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1',
-                      accountStyles[u.accountStatus],
-                    )}
-                  >
-                    {accountLabel(u.accountStatus)}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-slate-600">{u.joinedDate}</td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-wrap justify-end gap-1.5">
-                    {u.role === 'user' && u.accountStatus === 'active' ? (
-                      <button
-                        type="button"
-                        disabled={updatingRoleId === u.id}
-                        onClick={() => void promoteToMentor(u.id)}
-                        className={adminBtnPrimary}
+      {total === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-3 px-6 py-20 text-center">
+          <Shield className="size-12 text-slate-300" strokeWidth={1.25} />
+          <p className="text-sm text-slate-500">Chưa có người dùng ở nhóm này.</p>
+        </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto rounded-xl border border-slate-100">
+            <table className="hidden min-w-[880px] w-full text-left text-sm md:table">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="px-4 py-3">Người dùng</th>
+                  <th className="px-4 py-3">Vai trò</th>
+                  <th className="px-4 py-3">Tài khoản</th>
+                  <th className="px-4 py-3">Tham gia</th>
+                  <th className="px-4 py-3 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map((u) => (
+                  <tr key={u.id} className="hover:bg-slate-50/80">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
+                          <Image src={u.avatar} alt="" width={40} height={40} className="size-full object-cover" unoptimized />
+                        </div>
+                        <div className="min-w-0">
+                          <Link
+                            href={`/profile/${u.id}`}
+                            className="font-semibold text-primary hover:underline text-left text-[14px]"
+                          >
+                            {u.name}
+                          </Link>
+                          <p className="truncate text-xs text-slate-500">{u.email}</p>
+                          {u.adminNote ? <p className="mt-1 line-clamp-1 text-[11px] text-slate-400">{u.adminNote}</p> : null}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={cn(
+                          'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1',
+                          u.role === 'mentor' && 'bg-primary/10 text-primary ring-primary/20',
+                          u.role === 'admin' && 'bg-slate-900 text-white ring-slate-800',
+                          u.role === 'user' && 'bg-slate-100 text-slate-800 ring-slate-200',
+                        )}
                       >
-                        <UserPlus className="size-3.5" />
-                        {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
-                      </button>
-                    ) : null}
-                    {u.accountStatus !== 'suspended' ? (
-                      <button
-                        type="button"
-                        onClick={() => setStatus(u.id, 'suspended')}
-                        className={adminBtnGhost}
+                        {u.role === 'admin' ? <Shield className="size-3" /> : null}
+                        {roleLabel(u.role)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={cn(
+                          'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1',
+                          accountStyles[u.accountStatus],
+                        )}
                       >
-                        <Ban className="size-3.5" />
-                        Khóa
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setStatus(u.id, 'active')}
-                        className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/15"
-                      >
-                        <CheckCircle2 className="size-3.5" />
-                        Mở khóa
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                        {accountLabel(u.accountStatus)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{u.joinedDate}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap justify-end gap-1.5">
+                        {u.role !== 'admin' && (
+                          <Link
+                            href={`/dashboard/users/${u.id}/courses?role=${u.role}`}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                          >
+                            <BookOpen className="size-3.5" />
+                            Quản lý khóa học
+                          </Link>
+                        )}
+                        {u.role === 'user' && u.accountStatus === 'active' ? (
+                          <button
+                            type="button"
+                            disabled={updatingRoleId === u.id}
+                            onClick={() => void promoteToMentor(u.id)}
+                            className={adminBtnPrimary}
+                          >
+                            <UserPlus className="size-3.5" />
+                            {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
+                          </button>
+                        ) : null}
+                        {u.accountStatus !== 'suspended' ? (
+                          <button
+                            type="button"
+                            onClick={() => setStatus(u.id, 'suspended')}
+                            className={adminBtnGhost}
+                          >
+                            <Ban className="size-3.5" />
+                            Khóa
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setStatus(u.id, 'active')}
+                            className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/15"
+                          >
+                            <CheckCircle2 className="size-3.5" />
+                            Mở khóa
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="divide-y divide-slate-100 md:hidden">
-        {filtered.map((u) => (
-          <div key={u.id} className="space-y-3 p-4">
-            <div className="flex gap-3">
-              <div className="relative size-12 shrink-0 overflow-hidden rounded-full border border-slate-200">
-                <Image src={u.avatar} alt="" width={48} height={48} className="size-full object-cover" unoptimized />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-slate-900">{u.name}</p>
-                <p className="truncate text-xs text-slate-500">{u.email}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <span className="text-xs text-slate-600">{roleLabel(u.role)}</span>
-                  <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-medium ring-1', accountStyles[u.accountStatus])}>
-                    {accountLabel(u.accountStatus)}
-                  </span>
+          {/* Mobile view list */}
+          <div className="divide-y divide-slate-100 md:hidden">
+            {filtered.map((u) => (
+              <div key={u.id} className="space-y-3 p-4">
+                <div className="flex gap-3">
+                  <div className="relative size-12 shrink-0 overflow-hidden rounded-full border border-slate-200">
+                    <Image src={u.avatar} alt="" width={48} height={48} className="size-full object-cover" unoptimized />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/profile/${u.id}`}
+                      className="font-semibold text-primary hover:underline text-left text-sm"
+                    >
+                      {u.name}
+                    </Link>
+                    <p className="truncate text-xs text-slate-500">{u.email}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="text-xs text-slate-600">{roleLabel(u.role)}</span>
+                      <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-medium ring-1', accountStyles[u.accountStatus])}>
+                        {accountLabel(u.accountStatus)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {u.role !== 'admin' && (
+                    <Link
+                      href={`/dashboard/users/${u.id}/courses?role=${u.role}`}
+                      className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center gap-1"
+                    >
+                      <BookOpen className="size-3.5" />
+                      Quản lý khóa học
+                    </Link>
+                  )}
+                  {u.role === 'user' && u.accountStatus === 'active' ? (
+                    <button
+                      type="button"
+                      disabled={updatingRoleId === u.id}
+                      onClick={() => void promoteToMentor(u.id)}
+                      className={`${adminBtnPrimary} px-3 py-2`}
+                    >
+                      {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
+                    </button>
+                  ) : null}
+                  {u.accountStatus !== 'suspended' ? (
+                    <button
+                      type="button"
+                      onClick={() => setStatus(u.id, 'suspended')}
+                      className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium"
+                    >
+                      Khóa
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setStatus(u.id, 'active')}
+                      className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary"
+                    >
+                      Mở khóa
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {u.role === 'user' && u.accountStatus === 'active' ? (
-                <button
-                  type="button"
-                  disabled={updatingRoleId === u.id}
-                  onClick={() => void promoteToMentor(u.id)}
-                  className={`${adminBtnPrimary} px-3 py-2`}
-                >
-                  {updatingRoleId === u.id ? 'Đang cấp...' : 'Cấp mentor'}
-                </button>
-              ) : null}
-              {u.accountStatus !== 'suspended' ? (
-                <button type="button" onClick={() => setStatus(u.id, 'suspended')} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium">
-                  Tạm khóa
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setStatus(u.id, 'active')}
-                  className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary"
-                >
-                  Mở khóa
-                </button>
-              )}
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <DataPagination
-        page={page}
-        size={size}
-        total={total}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        onSizeChange={setSize}
-        disabled={loading}
-      />
+          <DataPagination
+            page={page}
+            size={size}
+            total={total}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onSizeChange={setSize}
+            disabled={loading}
+          />
+        </>
+      )}
     </div>
   );
 }

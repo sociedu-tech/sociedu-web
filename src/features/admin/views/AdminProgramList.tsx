@@ -13,6 +13,8 @@ export function AdminProgramList() {
   const {
     statusFilter,
     setStatusFilter,
+    searchQuery,
+    setSearchQuery,
     filtered,
     loading,
     page,
@@ -29,19 +31,28 @@ export function AdminProgramList() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className={`w-full max-w-xs sm:w-auto ${adminSelect}`}
-        >
-          <option value="all">Tất cả trạng thái</option>
-          {ADMIN_BOOKING_STATUS_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-1 max-w-md w-full">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Tìm theo tên học viên, mentor..."
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className={`w-full sm:w-auto shrink-0 ${adminSelect}`}
+          >
+            <option value="all">Tất cả trạng thái</option>
+            {ADMIN_BOOKING_STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <p className="text-xs text-slate-500">
           Lọc và theo dõi lộ trình mentoring trên toàn hệ thống.
         </p>

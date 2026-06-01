@@ -71,6 +71,8 @@ export function flattenBookingsToSessions(
         mentorCompletionAck: null,
         canConfirm: false,
         myAck: null,
+        meetingUrl: null,
+        scheduledAtEnd: null,
       });
       continue;
     }
@@ -280,5 +282,6 @@ function sessionToRow(
     canConfirm,
     myAck,
     meetingUrl: session.meetingUrl ?? null,
+    scheduledAtEnd: session.scheduledAtEnd ?? null,
   };
 }

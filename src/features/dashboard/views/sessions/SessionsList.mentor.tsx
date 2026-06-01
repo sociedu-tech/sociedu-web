@@ -20,6 +20,7 @@ export function SessionsListMentor() {
       totalPages={totalPages}
       setPage={setPage}
       setSize={setSize}
+      role="mentor"
     />
   );
 }

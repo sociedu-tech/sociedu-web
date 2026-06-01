@@ -1,14 +1,24 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { AdminBookingRow, BookingStatus } from '@/types';
 import { adminBookingService } from '@/services/adminBookingService';
 import { bookingService } from '@/services/bookingService';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
 
 export function useAdminBookingsView() {
+  const searchParams = useSearchParams();
+  const qParam = searchParams.get('q') || '';
+
   const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState(qParam);
   const [overrides, setOverrides] = useState<Record<string, BookingStatus>>({});
+
+  // Sync searchQuery with qParam when qParam changes
+  useEffect(() => {
+    setSearchQuery(qParam);
+  }, [qParam]);
 
   const paginated = usePaginatedList<AdminBookingRow>({
     fetchPage: useCallback(
@@ -17,10 +27,11 @@ export function useAdminBookingsView() {
           page,
           size,
           status: statusFilter === 'all' ? undefined : statusFilter,
+          q: searchQuery || undefined,
         }),
-      [statusFilter],
+      [statusFilter, searchQuery],
     ),
-    resetKey: statusFilter,
+    resetKey: `${statusFilter}-${searchQuery}`,
   });
 
   const filtered = paginated.items.map((r) =>
@@ -50,6 +61,8 @@ export function useAdminBookingsView() {
     error: paginated.error,
     statusFilter,
     setStatusFilter,
+    searchQuery,
+    setSearchQuery,
     filtered,
     updateStatus,
     page: paginated.page,
@@ -61,3 +74,4 @@ export function useAdminBookingsView() {
     refresh: paginated.refresh,
   };
 }
+

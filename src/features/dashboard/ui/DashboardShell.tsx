@@ -39,7 +39,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const marginLeft = (() => {
     if (isMobile) return '0';
-    return menuState === 'collapsed' ? '4.25rem' : '17.5rem';
+    return menuState === 'collapsed' ? '3.5rem' : '17.5rem';
   })();
 
   const profileHref =

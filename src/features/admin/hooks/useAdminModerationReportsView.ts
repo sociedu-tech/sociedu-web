@@ -10,7 +10,18 @@ export type AdminReportSegment = 'all' | 'people' | 'review' | 'session';
 export function useAdminModerationReportsView(segment: AdminReportSegment) {
   const paginated = usePaginatedList<AdminModerationReport>({
     fetchPage: useCallback(
-      (page, size) => adminModerationService.list({ segment, page, size }),
+      async (page, size) => {
+        if (segment === 'people') {
+          const res = await adminModerationService.list({ segment: 'all', page, size });
+          const filteredItems = res.items.filter((item) => item.targetType !== 'review');
+          return {
+            ...res,
+            items: filteredItems,
+            total: res.total - (res.items.length - filteredItems.length),
+          };
+        }
+        return adminModerationService.list({ segment, page, size });
+      },
       [segment],
     ),
     resetKey: segment,

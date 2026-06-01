@@ -1,6 +1,6 @@
  'use client';
 
-import { Video } from 'lucide-react';
+import { Video, Edit, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
@@ -17,6 +17,8 @@ import { SessionConfirmActions } from '@/features/dashboard/views/sessions/Sessi
 import type { DashboardSessionRow } from '@/features/dashboard/types/booking';
 import { useState } from 'react';
 import { reviewService } from '@/services/reviewService';
+import { bookingService } from '@/services/bookingService';
+import { useToast } from '@/context/ToastContext';
 
 type Props = {
   counterpartyHeader: string;
@@ -48,6 +50,18 @@ export function SessionsTable({
   role,
 }: Props) {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const toast = useToast();
+  const handleUpdateMeetingUrl = async (bookingId: string, sessionId: string, currentUrl: string | null) => {
+    const newUrl = window.prompt('Nhập link phòng học mới (Google Meet, Zoom, ...):', currentUrl || '');
+    if (newUrl === null) return;
+    try {
+      await bookingService.updateSession(bookingId, sessionId, { meetingUrl: newUrl.trim() });
+      toast.success('Cập nhật link phòng học thành công.');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không cập nhật được link.');
+    }
+  };
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
   const [rating, setRating] = useState<number>(5);
   const [comment, setComment] = useState('');
@@ -71,6 +85,7 @@ export function SessionsTable({
               <th className={cn(dashboardTableHeadCell, 'hidden sm:table-cell')}>Thời gian</th>
               <th className={cn(dashboardTableHeadCell, 'hidden md:table-cell')}>{counterpartyHeader}</th>
               <th className={dashboardTableHeadCell}>Trạng thái</th>
+              <th className={dashboardTableHeadCell}>Phòng học</th>
               <th className={cn(dashboardTableHeadCell, 'min-w-[180px]')}>Xác nhận</th>
             </tr>
           </thead>
@@ -86,6 +101,33 @@ export function SessionsTable({
                 </td>
                 <td className={dashboardTableCell}>
                   <span className="badge-primary whitespace-nowrap">{row.status}</span>
+                </td>
+                <td className={dashboardTableCell}>
+                  <div className="flex items-center gap-1.5">
+                    {row.meetingUrl ? (
+                      <a
+                        href={row.meetingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors"
+                      >
+                        <span>Vào phòng</span>
+                        <ExternalLink className="size-3" />
+                      </a>
+                    ) : (
+                      <span className="text-slate-400 text-xs italic">Chưa có link</span>
+                    )}
+                    {role === 'mentor' && (
+                      <button
+                        type="button"
+                        onClick={() => void handleUpdateMeetingUrl(row.bookingId, row.sessionId, row.meetingUrl || '')}
+                        className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors"
+                        title="Cập nhật link phòng học"
+                      >
+                        <Edit className="size-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </td>
                 <td className={dashboardTableCell}>
                   <div className="flex flex-nowrap items-center gap-2">

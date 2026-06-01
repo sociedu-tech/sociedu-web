@@ -5,9 +5,9 @@ import type { AdminUserRow, UserAccountStatus } from '@/types';
 import { adminService } from '@/services/adminService';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
 
-export function useAdminUsersManagementView() {
+export function useAdminUsersManagementView(defaultRole: string = 'user') {
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState(defaultRole);
   const [statusFilter, setStatusFilter] = useState('all');
   const [localStatus, setLocalStatus] = useState<Record<string, UserAccountStatus>>({});
 

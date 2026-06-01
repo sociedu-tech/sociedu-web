@@ -64,7 +64,7 @@ export const ADMIN_PROGRAM = {
   progress: 'Tiến độ ước tính',
   sessionsCompleted: 'buổi đã hoàn thành',
   sessionList: 'Lịch buổi học',
-  sessionEmpty: 'Chi tiết từng buổi sẽ được bổ sung khi API admin hỗ trợ đầy đủ.',
+  sessionEmpty: 'Chưa có buổi học nào được lên lịch.',
   orderSection: 'Thông tin giao dịch',
   counterparty: 'Học viên — mentor',
   listPath: MENTORING_PATH,
