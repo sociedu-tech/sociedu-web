@@ -6,8 +6,10 @@ import { useNotificationInbox } from '@/hooks/useNotificationInbox';
 import { useAuth } from '@/context/AuthContext';
 import { resolveNotificationUrl } from '@/lib/notificationRouter';
 import { NotificationTypeIcon, notificationRelativeTime } from '@/lib/notificationUi';
+import { bookingStatusLabel, bookingStatusBadgeClass } from '@/lib/bookingNotificationUi';
 import { cn } from '@/lib/utils';
 import type { NotificationItem } from '@/services/notificationService';
+
 
 export function NotificationBell() {
   const router = useRouter();
@@ -70,32 +72,53 @@ export function NotificationBell() {
               ) : items.length === 0 ? (
                 <p className="px-4 py-10 text-center text-sm text-slate-500">Chưa có thông báo.</p>
               ) : (
-                items.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleItemClick(item)}
-                    className={cn(
-                      'group flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-left transition-colors hover:bg-slate-50',
-                      !item.isRead && 'bg-primary/5',
-                    )}
-                  >
-                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition-colors group-hover:bg-slate-100">
-                      <NotificationTypeIcon type={item.type} className="size-4" />
-                    </div>
+                items.map((item) => {
+                  const type = item.type?.toUpperCase();
+                  const ref = item.referenceType?.toLowerCase();
+                  const isBooking = type === 'BOOKING' || ref === 'booking' || ref === 'booking_session';
+                  const meta = (item.metadata ?? {}) as Record<string, unknown>;
+                  const status = isBooking ? String(meta.bookingStatus ?? meta.status ?? '') : '';
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium text-slate-900">{item.title}</p>
-                        {!item.isRead && (
-                          <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
-                        )}
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleItemClick(item)}
+                      className={cn(
+                        'group flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-left transition-colors hover:bg-slate-50',
+                        !item.isRead && 'bg-primary/5',
+                      )}
+                    >
+                      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 transition-colors group-hover:bg-slate-100">
+                        <NotificationTypeIcon type={item.type} className="size-4" />
                       </div>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">{item.content}</p>
-                      <p className="mt-1 text-[10px] text-slate-400">{notificationRelativeTime(item.createdAt)}</p>
-                    </div>
-                  </button>
-                ))
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                          {!item.isRead && (
+                            <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
+                          )}
+                        </div>
+                        <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">{item.content}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                          <span className="text-[10px] text-slate-400">{notificationRelativeTime(item.createdAt)}</span>
+                          {status ? (
+                            <>
+                              <span className="text-[10px] text-slate-300">•</span>
+                              <span className={cn(
+                                'inline-flex rounded-full px-1.5 py-0.25 text-[9px] font-semibold ring-1 ring-inset',
+                                bookingStatusBadgeClass(status),
+                              )}>
+                                {bookingStatusLabel(status)}
+                              </span>
+                            </>
+                          ) : null}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>

@@ -35,9 +35,13 @@ function resolveBookingUrl(
   meta: Record<string, unknown>,
   referenceId: string | null | undefined,
   referenceType: string | null | undefined,
+  role: string | null,
 ): string {
   const bookingId =
     metaStr(meta, 'bookingId') ?? (referenceType === 'booking' ? referenceId : null);
+  if (role === ROLES.ADMIN) {
+    return bookingId ? `/dashboard/mentoring/${bookingId}` : '/dashboard/bookings';
+  }
   if (bookingId) return programDetailPath(bookingId);
   return '/dashboard/mentoring';
 }
@@ -94,7 +98,7 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
 
     case 'booking':
     case 'booking_session':
-      return resolveBookingUrl(meta, item.referenceId, item.referenceType);
+      return resolveBookingUrl(meta, item.referenceId, item.referenceType, role);
 
     case 'report_request':
       return resolveReportRequestUrl(item);
@@ -119,7 +123,7 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
     case 'ORDER':
       return resolveOrderUrl(item, role);
     case 'BOOKING':
-      return resolveBookingUrl(meta, item.referenceId, item.referenceType);
+      return resolveBookingUrl(meta, item.referenceId, item.referenceType, role);
     case 'REPORT_REQUEST':
       return resolveReportRequestUrl(item);
     case 'MENTOR_APPLICATION':

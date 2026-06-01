@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { UserPlus, Activity, CalendarCheck, GraduationCap, Users } from 'lucide-react';
 import { useAdminDashboardHomePage } from '@/features/admin/hooks';
+import { AdminBookingActivityFeed } from '@/features/admin/ui';
 import {
   StatsTimeRangeFilter,
   StatsKpiCard,
@@ -13,6 +14,7 @@ import {
   StatsBarChart,
   StatsDonutChart,
 } from '@/features/dashboard/ui/stats';
+
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ROUTES } from '@/constants/routes';
 
@@ -79,9 +81,12 @@ export function AdminDashboardHomePage() {
           </StatsChartCard>
         </div>
 
-        <StatsChartCard title="Cơ cấu người dùng" subtitle="Theo vai trò trong hệ thống">
-          <StatsDonutChart data={analytics.bookingMix} />
-        </StatsChartCard>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <StatsChartCard title="Cơ cấu người dùng" subtitle="Theo vai trò trong hệ thống">
+            <StatsDonutChart data={analytics.bookingMix} />
+          </StatsChartCard>
+          <AdminBookingActivityFeed />
+        </div>
       </section>
 
       <section className="space-y-5" aria-label="Quan ly nguoi dung">
