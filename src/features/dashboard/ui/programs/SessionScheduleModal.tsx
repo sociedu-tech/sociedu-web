@@ -13,8 +13,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DashboardSessionRow } from '@/features/dashboard/types/booking';
+import { googleIntegrationService } from '@/services/googleIntegrationService';
 
 export type MeetingLinkMode = 'google' | 'manual';
+
+export type ScheduleSaveOptions = {
+  regenerateMeet?: boolean;
+};
 
 type Props = {
   session: DashboardSessionRow;
@@ -27,8 +32,7 @@ type Props = {
   onScheduledAt: (v: string) => void;
   onScheduledAtEnd: (v: string) => void;
   onMeetingUrl: (v: string) => void;
-  onSaveManual: () => void;
-  onCreateGoogleMeet: () => void;
+  onSave: (mode: MeetingLinkMode, options?: ScheduleSaveOptions) => void | Promise<void>;
 };
 
 const DURATION_PRESETS = [
@@ -52,23 +56,37 @@ export function SessionScheduleModal({
   onScheduledAt,
   onScheduledAtEnd,
   onMeetingUrl,
-  onSaveManual,
-  onCreateGoogleMeet,
+  onSave,
 }: Props) {
   const busy = scheduling || creatingMeet;
-  const [mode, setMode] = useState<MeetingLinkMode>(() =>
-    session.meetingUrl?.trim() ? 'manual' : 'google',
-  );
+  const [mode, setMode] = useState<MeetingLinkMode>(() => resolveInitialMeetingMode(session.meetingUrl));
   const [durationMinutes, setDurationMinutes] = useState(60);
   const [copied, setCopied] = useState(false);
+  const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
+  const [connectingGoogle, setConnectingGoogle] = useState(false);
 
   useEffect(() => {
     if (scheduledAt && !scheduledAtEnd) {
       onScheduledAtEnd(addMinutesToLocalInput(scheduledAt, durationMinutes));
     }
-    // Chỉ chạy khi mở modal (key theo sessionId ở parent)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (mode !== 'google') return;
+    let cancelled = false;
+    void googleIntegrationService
+      .getStatus()
+      .then((connected) => {
+        if (!cancelled) setGoogleConnected(connected);
+      })
+      .catch(() => {
+        if (!cancelled) setGoogleConnected(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [mode]);
 
   const schedulePreview = useMemo(
     () => formatSchedulePreview(scheduledAt, scheduledAtEnd),
@@ -104,15 +122,31 @@ export function SessionScheduleModal({
     }
   };
 
+  const handleConnectGoogle = async () => {
+    setConnectingGoogle(true);
+    try {
+      const returnUrl = `${window.location.pathname}${window.location.search}`;
+      const url = await googleIntegrationService.getAuthorizationUrl(returnUrl);
+      window.location.href = url;
+    } catch {
+      setConnectingGoogle(false);
+    }
+  };
+
   const handlePrimary = (e: React.FormEvent) => {
     e.preventDefault();
     if (!timeValid) return;
-    if (mode === 'google') {
-      onCreateGoogleMeet();
-    } else {
-      onSaveManual();
-    }
+    void onSave(mode);
   };
+
+  const handleRegenerateMeet = () => {
+    if (!timeValid || busy) return;
+    void onSave('google', { regenerateMeet: true });
+  };
+
+  const hasLink = Boolean(meetingUrl.trim());
+  const hasGoogleMeetLink = isGoogleMeetUrl(meetingUrl);
+  const canRegenerateMeet = mode === 'google' && hasGoogleMeetLink && googleConnected === true;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
@@ -221,39 +255,48 @@ export function SessionScheduleModal({
                 />
               </div>
 
+              {mode === 'google' ? (
+                googleConnected === false ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                    <p className="text-sm font-medium text-amber-950">Chưa kết nối Google Calendar</p>
+                    <p className="mt-1 text-xs text-amber-800/90">
+                      Liên kết tài khoản Google một lần để tạo phòng Meet tự động.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={connectingGoogle || busy}
+                      onClick={() => void handleConnectGoogle()}
+                      className="mt-3 inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-amber-950 ring-1 ring-amber-200 transition hover:bg-amber-100/80 disabled:opacity-60"
+                    >
+                      {connectingGoogle ? <Loader2 className="size-4 animate-spin" /> : <Video className="size-4" />}
+                      Kết nối Google Calendar
+                    </button>
+                  </div>
+                ) : googleConnected ? (
+                  <p className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    <Check className="size-4 shrink-0" aria-hidden />
+                    Đã kết nối Google Calendar
+                  </p>
+                ) : (
+                  <p className="text-sm text-slate-400">Đang kiểm tra kết nối Google…</p>
+                )
+              ) : null}
+
+              {hasLink ? (
+                <MeetingLinkPreview
+                  url={meetingUrl.trim()}
+                  copied={copied}
+                  onCopy={() => void handleCopyLink()}
+                  hint={
+                    mode === 'google' && hasGoogleMeetLink
+                      ? 'Link đã được tạo. Bấm Lưu để chỉ cập nhật giờ học, hoặc Tạo lại link nếu cần phòng Meet mới.'
+                      : undefined
+                  }
+                />
+              ) : null}
+
               {mode === 'manual' ? (
                 <div className="space-y-3">
-                  {meetingUrl.trim() ? (
-                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/60 px-3 py-2.5">
-                      <span className="text-xs font-semibold text-emerald-800">Link hiện tại</span>
-                      <a
-                        href={meetingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="min-w-0 flex-1 truncate text-sm font-medium text-primary hover:underline"
-                      >
-                        {meetingUrl}
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => void handleCopyLink()}
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
-                      >
-                        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-                        {copied ? 'Đã copy' : 'Copy'}
-                      </button>
-                      <a
-                        href={meetingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
-                      >
-                        <ExternalLink className="size-3" />
-                        Mở
-                      </a>
-                    </div>
-                  ) : null}
-
                   <label className="block space-y-1.5">
                     <span className="text-sm font-medium text-slate-700">URL phòng họp</span>
                     <input
@@ -264,39 +307,109 @@ export function SessionScheduleModal({
                       className={inputClass}
                     />
                   </label>
-                  <p className="text-xs text-slate-500">
-                    Dán link Meet, Zoom hoặc Teams. Có thể chỉ cập nhật lịch mà không đổi link.
-                  </p>
                 </div>
               ) : null}
             </section>
           </div>
 
-          <div className="mt-auto flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/80 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={busy}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-200/60 disabled:opacity-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={busy || !timeValid || (mode === 'manual' && !scheduledAt)}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {busy ? <Loader2 className="size-4 animate-spin" /> : mode === 'google' ? <Video className="size-4" /> : null}
-              {creatingMeet
-                ? 'Đang tạo Google Meet…'
-                : scheduling
-                  ? 'Đang lưu…'
-                  : mode === 'google'
-                    ? 'Tạo Google Meet & lưu'
-                    : 'Lưu lịch & link'}
-            </button>
+          <div className="mt-auto flex flex-col gap-2 border-t border-slate-100 bg-slate-50/80 px-5 py-4 sm:px-6">
+            {canRegenerateMeet ? (
+              <button
+                type="button"
+                disabled={busy || !timeValid}
+                onClick={handleRegenerateMeet}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:self-end"
+              >
+                {creatingMeet ? <Loader2 className="size-4 animate-spin" /> : <Video className="size-4" />}
+                {creatingMeet ? 'Đang tạo link…' : 'Tạo lại link Meet'}
+              </button>
+            ) : null}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={busy}
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-200/60 disabled:opacity-50"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                disabled={
+                  busy ||
+                  !timeValid ||
+                  (mode === 'google' && googleConnected !== true)
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {busy ? <Loader2 className="size-4 animate-spin" /> : null}
+                {busy
+                  ? mode === 'google' && !hasGoogleMeetLink
+                    ? 'Đang tạo link…'
+                    : 'Đang lưu…'
+                  : mode === 'google' && !hasGoogleMeetLink
+                    ? 'Lưu & tạo link'
+                    : 'Lưu'}
+              </button>
+            </div>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function resolveInitialMeetingMode(meetingUrl?: string | null): MeetingLinkMode {
+  const url = meetingUrl?.trim();
+  if (!url) return 'google';
+  return isGoogleMeetUrl(url) ? 'google' : 'manual';
+}
+
+function isGoogleMeetUrl(url: string): boolean {
+  return /meet\.google\.com/i.test(url.trim());
+}
+
+function MeetingLinkPreview({
+  url,
+  copied,
+  onCopy,
+  hint,
+}: {
+  url: string;
+  copied: boolean;
+  onCopy: () => void;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-2 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Link phòng học</p>
+      {hint ? <p className="text-xs text-emerald-900/80">{hint}</p> : null}
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block break-all text-sm font-medium text-primary hover:underline"
+      >
+        {url}
+      </a>
+      <div className="flex flex-wrap gap-2 pt-1">
+        <button
+          type="button"
+          onClick={onCopy}
+          className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
+        >
+          {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+          {copied ? 'Đã copy' : 'Copy link'}
+        </button>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
+        >
+          <ExternalLink className="size-3" />
+          Vào phòng học
+        </a>
       </div>
     </div>
   );

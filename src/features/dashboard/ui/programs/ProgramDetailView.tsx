@@ -24,6 +24,7 @@ import {
 import { reviewService } from '@/services/reviewService';
 import { pickPackageLabel } from '@/lib/resolveOrderPackageNames';
 import { bookingService } from '@/services/bookingService';
+import type { MeetingLinkMode } from '@/features/dashboard/ui/programs/SessionScheduleModal';
 import type { SessionReportRequest } from '@/services/sessionReportService';
 import { ProgramSessionList } from '@/features/dashboard/ui/programs/ProgramSessionList';
 import { SessionScheduleModal } from '@/features/dashboard/ui/programs/SessionScheduleModal';
@@ -89,7 +90,15 @@ export function ProgramDetailView({
     setScheduleOpen(true);
   }, []);
 
-  const handleScheduleSave = async () => {
+  const closeScheduleModal = () => {
+    setScheduleOpen(false);
+    setScheduleSession(null);
+  };
+
+  const handleScheduleSubmit = async (
+    mode: MeetingLinkMode,
+    options?: { regenerateMeet?: boolean },
+  ) => {
     if (!scheduleSession) return;
     if (!scheduledAt) {
       toast.error('Vui lòng chọn ngày giờ học.');
@@ -99,49 +108,67 @@ export function ProgramDetailView({
       toast.error('Thời gian kết thúc phải sau thời gian bắt đầu.');
       return;
     }
+
+    const body = {
+      scheduledAt: new Date(scheduledAt).toISOString(),
+      scheduledAtEnd: scheduledAtEnd ? new Date(scheduledAtEnd).toISOString() : undefined,
+    };
+
+    const existingMeetUrl = (scheduleSession.meetingUrl || meetingUrl).trim();
+    const shouldCreateMeet =
+      mode === 'google' &&
+      (!existingMeetUrl || options?.regenerateMeet === true);
+
+    if (shouldCreateMeet) {
+      setCreatingMeet(true);
+      try {
+        await bookingService.createGoogleMeet(item.bookingId, scheduleSession.sessionId, {
+          ...body,
+          title: scheduleSession.title,
+        });
+        toast.success(
+          options?.regenerateMeet
+            ? 'Đã tạo lại link Google Meet và cập nhật lịch.'
+            : 'Đã lưu lịch và tạo link Google Meet.',
+        );
+        closeScheduleModal();
+        onRefresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Không tạo được link Google Meet.');
+      } finally {
+        setCreatingMeet(false);
+      }
+      return;
+    }
+
+    if (mode === 'google' && existingMeetUrl) {
+      setScheduling(true);
+      try {
+        await bookingService.updateSession(item.bookingId, scheduleSession.sessionId, body);
+        toast.success('Đã cập nhật lịch buổi học.');
+        closeScheduleModal();
+        onRefresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Không cập nhật được lịch buổi học.');
+      } finally {
+        setScheduling(false);
+      }
+      return;
+    }
+
     setScheduling(true);
     try {
       await bookingService.updateSession(item.bookingId, scheduleSession.sessionId, {
-        scheduledAt: new Date(scheduledAt).toISOString(),
-        scheduledAtEnd: scheduledAtEnd ? new Date(scheduledAtEnd).toISOString() : undefined,
+        ...body,
         meetingUrl: meetingUrl.trim() || undefined,
       });
-      toast.success('Đã cập nhật lịch buổi học.');
-      setScheduleOpen(false);
-      setScheduleSession(null);
+      toast.success('Đã lưu lịch buổi học.');
+      closeScheduleModal();
       onRefresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Không cập nhật được lịch học.');
+      toast.error(err instanceof Error ? err.message : 'Không lưu được lịch buổi học.');
     } finally {
       setScheduling(false);
-    }
-  };
-
-  const handleCreateGoogleMeet = async () => {
-    if (!scheduleSession) return;
-    if (!scheduledAt) {
-      toast.error('Vui lòng chọn ngày giờ bắt đầu.');
-      return;
-    }
-    if (scheduledAtEnd && new Date(scheduledAtEnd) <= new Date(scheduledAt)) {
-      toast.error('Thời gian kết thúc phải sau thời gian bắt đầu.');
-      return;
-    }
-    setCreatingMeet(true);
-    try {
-      await bookingService.createGoogleMeet(item.bookingId, scheduleSession.sessionId, {
-        scheduledAt: new Date(scheduledAt).toISOString(),
-        scheduledAtEnd: scheduledAtEnd ? new Date(scheduledAtEnd).toISOString() : undefined,
-        title: scheduleSession.title,
-      });
-      toast.success('Đã tạo link Google Meet và cập nhật lịch buổi học.');
-      setScheduleOpen(false);
-      setScheduleSession(null);
-      onRefresh();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Không tạo được link Google Meet.');
-    } finally {
-      setCreatingMeet(false);
     }
   };
 
@@ -345,12 +372,11 @@ export function ProgramDetailView({
           meetingUrl={meetingUrl}
           scheduling={scheduling}
           creatingMeet={creatingMeet}
-          onClose={() => setScheduleOpen(false)}
+          onClose={closeScheduleModal}
           onScheduledAt={setScheduledAt}
           onScheduledAtEnd={setScheduledAtEnd}
           onMeetingUrl={setMeetingUrl}
-          onSaveManual={() => void handleScheduleSave()}
-          onCreateGoogleMeet={() => void handleCreateGoogleMeet()}
+          onSave={(mode, options) => handleScheduleSubmit(mode, options)}
         />
       ) : null}
 

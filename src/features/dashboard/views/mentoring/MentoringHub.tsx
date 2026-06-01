@@ -10,8 +10,10 @@ import {
   USER_PROGRAM,
   programDetailPath,
 } from '@/features/dashboard/lib/programLabels';
+import { useGoogleOAuthReturnNotice } from '@/features/dashboard/hooks/useGoogleOAuthReturnNotice';
 
 export function MentoringHub() {
+  useGoogleOAuthReturnNotice();
   const { userRole } = useAuth();
   const role = normalizeRole(userRole);
 

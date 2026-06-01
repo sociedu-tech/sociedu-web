@@ -8,6 +8,18 @@ import type { ConfirmSessionCompletionRequest } from '@/features/dashboard/types
 
 const BASE = '/api/v1/bookings';
 
+/** Lấy meetingUrl từ ApiResponse hoặc session DTO. */
+export function pickSessionMeetingUrl(payload: unknown): string | null {
+  if (!payload || typeof payload !== 'object') return null;
+  const root = payload as Record<string, unknown>;
+  const session =
+    root.data && typeof root.data === 'object'
+      ? (root.data as Record<string, unknown>)
+      : root;
+  const url = session.meetingUrl;
+  return typeof url === 'string' && url.trim() ? url.trim() : null;
+}
+
 export const bookingService = {
   listAsBuyer: async (page = 0, size = 20): Promise<PagePayload<unknown>> => {
     const res = await api.get(`${BASE}/me/buyer${buildPageQuery({ page, size })}`);
