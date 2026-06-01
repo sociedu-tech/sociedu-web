@@ -16,8 +16,13 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
 
     /* ---- Booking ---- */
     case 'booking':
-    case 'booking_session':
-      return '/dashboard/programs';
+    case 'booking_session': {
+      const bookingId = (meta.bookingId as string) ?? (item.referenceType === 'booking' ? item.referenceId : null);
+      if (bookingId) {
+        return `/dashboard/mentoring/${bookingId}`;
+      }
+      return '/dashboard/mentoring';
+    }
 
     /* ---- Mentor application ---- */
     case 'mentor_application':
@@ -65,7 +70,11 @@ export function resolveNotificationUrl(item: NotificationItem, userRole?: string
     return role === ROLES.MENTOR ? '/dashboard/orders' : '/dashboard/my-orders';
   }
   if (item.type === 'BOOKING') {
-    return '/dashboard/programs';
+    const bookingId = (meta.bookingId as string) ?? item.referenceId;
+    if (bookingId) {
+      return `/dashboard/mentoring/${bookingId}`;
+    }
+    return '/dashboard/mentoring';
   }
   if (item.type === 'MODERATION') {
     const reportId = item.referenceId;
