@@ -7,6 +7,7 @@ import type { AdminModerationReport, ModerationReportStatus, ModerationTargetTyp
 import { cn } from '@/lib/utils';
 import { useAdminModerationReportsView, type AdminReportSegment } from '@/features/admin/hooks';
 import { adminSelect } from '@/features/admin/ui/adminClasses';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { listSlugForReport, moderationDetailPath } from '@/lib/moderationDetailRoutes';
 
@@ -43,6 +44,10 @@ type Props = {
 export function AdminModerationReportsView({ segment }: Props) {
   const { filtered, setStatus, loading, page, size, total, totalPages, setPage, setSize } =
     useAdminModerationReportsView(segment);
+
+  if (loading && filtered.length === 0) {
+    return <PageLoadingState label="Đang tải báo cáo…" variant="cards" cardCount={3} />;
+  }
 
   return (
     <div className="space-y-5">
@@ -134,7 +139,9 @@ export function AdminModerationReportsView({ segment }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-center text-sm text-slate-500">Đang tải…</p>
+        <p className="text-center text-sm text-slate-500" aria-live="polite">
+          Đang tải thêm…
+        </p>
       ) : (
         <DataPagination
           page={page}

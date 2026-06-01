@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Plus, CheckCircle, Clock, X, MessageSquare, AlertCircle } from 'lucide-react';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { useUserReportsPage } from '@/features/report/hooks';
@@ -34,7 +35,11 @@ export const UserReportsPage = () => {
   } = useUserReportsPage();
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-page"><LoadingSpinner size={48} /></div>;
+    return (
+      <div className="min-h-screen bg-page">
+        <PageLoadingState label="Đang tải báo cáo…" variant="table" minHeight="min-h-screen" />
+      </div>
+    );
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { MentorOrderCard } from '@/features/dashboard/ui/mentor/orders/MentorOrderCard';
 import { MentorOrderFilters } from '@/features/dashboard/ui/mentor/orders/MentorOrderFilters';
@@ -34,7 +34,7 @@ export function MentorOrders() {
   }, [orders, filter, query]);
 
   if (loading && orders.length === 0) {
-    return <LoadingSpinner label="Đang tải đơn hàng…" />;
+    return <PageLoadingState label="Đang tải đơn hàng…" variant="cards" />;
   }
 
   if (error) {

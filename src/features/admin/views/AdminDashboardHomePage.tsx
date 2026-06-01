@@ -13,7 +13,7 @@ import {
   StatsBarChart,
   StatsDonutChart,
 } from '@/features/dashboard/ui/stats';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ROUTES } from '@/constants/routes';
 
 /**
@@ -23,7 +23,7 @@ export function AdminDashboardHomePage() {
   const { range, setRange, analytics, totalUsers, loaded } = useAdminDashboardHomePage();
 
   if (!loaded) {
-    return <LoadingSpinner label="Đang tải…" />;
+    return <PageLoadingState label="Đang tải…" variant="stats" minHeight="min-h-[50vh]" />;
   }
 
   return (

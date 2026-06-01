@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useUserOrderDetailPage } from '@/features/dashboard/hooks/useUserOrderDetailPage';
 import { UserOrderDetailView } from '@/features/dashboard/views/orders/UserOrderDetailView';
@@ -38,8 +38,8 @@ export function UserOrderDetailPage() {
     return <ErrorMessage message="Không xác định được đơn hàng." />;
   }
 
-  if (loading && !order) {
-    return <LoadingSpinner label="Đang tải chi tiết đơn hàng…" />;
+  if (loading) {
+    return <PageLoadingState label="Đang tải chi tiết đơn hàng…" />;
   }
 
   if (error && !order) {

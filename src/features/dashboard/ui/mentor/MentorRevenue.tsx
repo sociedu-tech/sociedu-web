@@ -12,7 +12,7 @@ import {
   Download,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useMentorRevenue } from '@/features/dashboard/hooks/useMentorRevenue';
 import { useMentorOrders } from '@/features/dashboard/hooks/useMentorOrders';
@@ -67,7 +67,7 @@ export function MentorRevenue({
   ].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
 
   if (loading || ordersLoading) {
-    return <LoadingSpinner label="Đang tải doanh thu…" />;
+    return <PageLoadingState label="Đang tải doanh thu…" variant="stats" />;
   }
 
   if (error) {

@@ -6,6 +6,7 @@ import type { AdminBookingRow, BookingStatus } from '@/types';
 import { cn } from '@/lib/utils';
 import { useAdminBookingsView } from '@/features/admin/hooks';
 import { adminSelect } from '@/features/admin/ui/adminClasses';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { DataPagination } from '@/components/ui/DataPagination';
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string }[] = [
@@ -56,6 +57,10 @@ export function AdminBookingsView() {
     setPage,
     setSize,
   } = useAdminBookingsView();
+
+  if (loading && filtered.length === 0) {
+    return <PageLoadingState label="Đang tải booking…" variant="table" />;
+  }
 
   return (
     <div className="space-y-5">
@@ -135,7 +140,9 @@ export function AdminBookingsView() {
       </div>
 
       {loading ? (
-        <p className="text-center text-sm text-slate-500">Đang tải…</p>
+        <p className="text-center text-sm text-slate-500" aria-live="polite">
+          Đang tải thêm…
+        </p>
       ) : (
         <DataPagination
           page={page}

@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
@@ -39,7 +39,7 @@ export function UserOrdersList() {
   );
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải đơn hàng…" />;
+    return <PageLoadingState label="Đang tải đơn hàng…" variant="cards" />;
   }
 
   if (error) {

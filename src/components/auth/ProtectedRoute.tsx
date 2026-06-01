@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -26,7 +26,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   if (loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <LoadingSpinner size={48} />
+        <PageLoadingState minHeight="min-h-screen" />
       </div>
     );
   }

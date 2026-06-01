@@ -65,9 +65,12 @@ export function usePaginatedList<T>({
     setPage(0);
   };
 
+  const initialLoading = loading && items.length === 0;
+
   return {
     items,
     loading,
+    initialLoading,
     error,
     page,
     size,

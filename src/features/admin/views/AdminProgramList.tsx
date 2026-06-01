@@ -6,6 +6,7 @@ import { AdminProgramCard } from '@/features/admin/ui/AdminProgramCard';
 import { ADMIN_PROGRAM } from '@/features/dashboard/lib/programLabels';
 import { ADMIN_BOOKING_STATUS_OPTIONS } from '@/features/admin/lib/adminBookingLabels';
 import { adminSelect } from '@/features/admin/ui/adminClasses';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { DataPagination } from '@/components/ui/DataPagination';
 
 export function AdminProgramList() {
@@ -21,6 +22,10 @@ export function AdminProgramList() {
     setPage,
     setSize,
   } = useAdminBookingsView();
+
+  if (loading && filtered.length === 0) {
+    return <PageLoadingState label="Đang tải lộ trình mentoring…" variant="cards" cardCount={3} />;
+  }
 
   return (
     <div className="space-y-5">
@@ -42,9 +47,7 @@ export function AdminProgramList() {
         </p>
       </div>
 
-      {loading && filtered.length === 0 ? (
-        <p className="text-center text-sm text-slate-500">Đang tải lộ trình mentoring…</p>
-      ) : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-10 text-center text-slate-500 shadow-sm">
           <BookOpen className="size-10 text-slate-300" strokeWidth={1.5} />
           <p className="font-medium text-slate-700">{ADMIN_PROGRAM.emptyTitle}</p>

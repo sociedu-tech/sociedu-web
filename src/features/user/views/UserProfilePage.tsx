@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { AnimatePresence } from 'motion/react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { ReportModal } from '@/components/ReportModal';
 import { useUserProfilePage } from '@/features/user/hooks';
@@ -39,8 +39,8 @@ export function UserProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-marketing-canvas">
-        <LoadingSpinner size={48} label="Đang tải hồ sơ..." />
+      <div className="min-h-[60vh] bg-marketing-canvas">
+        <PageLoadingState label="Đang tải hồ sơ..." minHeight="min-h-[60vh]" />
       </div>
     );
   }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FolderOpen } from 'lucide-react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { useDashboardProgressReports } from '@/features/dashboard/hooks/useDashboardProgressReports';
@@ -16,7 +16,7 @@ export function ProjectListUser() {
     useDashboardProgressReports('mentee');
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải dự án…" />;
+    return <PageLoadingState label="Đang tải dự án…" variant="cards" />;
   }
 
   if (error) {

@@ -12,13 +12,13 @@ import {
   Paperclip,
   PanelRightClose,
   PanelRightOpen,
-  Plus,
   Search,
   Send,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DataPagination } from '@/components/ui/DataPagination';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
 import { initials } from '@/features/dashboard/chat/utils';
@@ -98,7 +98,6 @@ export type DashboardChatPageViewProps = {
   sharedImages: ChatAttachment[];
   sharedFiles: ChatAttachment[];
   openThread: (id: string) => void;
-  createConversation: () => void;
   send: () => void;
   convPage?: number;
   convSize?: number;
@@ -126,7 +125,6 @@ export function DashboardChatPageView({
   sharedImages,
   sharedFiles,
   openThread,
-  createConversation,
   send,
   convPage = 0,
   convSize = 20,
@@ -149,17 +147,7 @@ export function DashboardChatPageView({
           )}
         >
           <div className="border-b border-slate-200 p-3">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-slate-900">Hội thoại</h2>
-              <button
-                type="button"
-                onClick={createConversation}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 transition-colors hover:bg-slate-50"
-              >
-                <Plus className="size-3.5" strokeWidth={2} />
-                Tạo mới
-              </button>
-            </div>
+            <h2 className="mb-3 text-sm font-semibold text-slate-900">Hội thoại</h2>
             <div className="relative">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
@@ -176,7 +164,12 @@ export function DashboardChatPageView({
             </div>
           </div>
           <ul className="min-h-0 flex-1 overflow-y-auto" role="listbox" aria-label="Danh sách hội thoại">
-            {filtered.map((c) => {
+            {convLoading && filtered.length === 0 ? (
+              <li className="p-4">
+                <PageLoadingState label="Đang tải hội thoại…" minHeight="min-h-[200px]" />
+              </li>
+            ) : (
+            filtered.map((c) => {
               const selected = c.id === activeId;
               return (
                 <li key={c.id}>
@@ -207,7 +200,8 @@ export function DashboardChatPageView({
                   </button>
                 </li>
               );
-            })}
+            })
+            )}
           </ul>
           {onConvPageChange && onConvSizeChange ? (
             <DataPagination
@@ -378,6 +372,8 @@ export function DashboardChatPageView({
                 <p className="mt-2 text-center text-[11px] text-slate-400">Enter gửi · Shift+Enter xuống dòng</p>
               </footer>
             </>
+          ) : convLoading ? (
+            <PageLoadingState label="Đang tải hội thoại…" minHeight="min-h-[320px]" />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-slate-500">
               <p className="text-sm font-medium">Chưa có hội thoại</p>

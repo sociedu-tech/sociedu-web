@@ -1,7 +1,7 @@
  'use client';
 
 import { Video } from 'lucide-react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { DataPagination } from '@/components/ui/DataPagination';
@@ -46,7 +46,7 @@ export function SessionsTable({
   const [submittingReview, setSubmittingReview] = useState(false);
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải buổi học…" />;
+    return <PageLoadingState label="Đang tải buổi học…" variant="table" />;
   }
 
   if (error) {

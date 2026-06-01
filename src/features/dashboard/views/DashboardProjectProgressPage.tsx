@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useDashboardProjectProgressPage } from '@/features/dashboard/hooks';
@@ -21,7 +21,7 @@ export function DashboardProjectProgressPage() {
     useDashboardProjectProgressPage();
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải tiến độ…" />;
+    return <PageLoadingState label="Đang tải tiến độ…" variant="table" />;
   }
 
   if (error) {

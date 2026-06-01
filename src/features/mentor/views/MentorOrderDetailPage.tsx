@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useMentorOrderDetailPage } from '@/features/dashboard/hooks/useMentorOrderDetailPage';
 import { MentorOrderDetailView } from '@/features/dashboard/views/orders/MentorOrderDetailView';
@@ -17,8 +17,8 @@ export function MentorOrderDetailPage() {
     return <ErrorMessage message="Không xác định được đơn hàng." />;
   }
 
-  if (loading && !order) {
-    return <LoadingSpinner label="Đang tải chi tiết đơn hàng…" />;
+  if (loading) {
+    return <PageLoadingState label="Đang tải chi tiết đơn hàng…" />;
   }
 
   if (error && !order) {

@@ -14,7 +14,7 @@ import {
   Trash2,
   User as UserIcon,
 } from 'lucide-react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { useDashboardProfileEditPage } from '@/features/dashboard/hooks';
 
 export function DashboardProfileEditPage() {
@@ -58,12 +58,8 @@ export function DashboardProfileEditPage() {
     addProjectRow,
   } = useDashboardProfileEditPage();
 
-  if (loading && !profile) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <LoadingSpinner label="Đang tải hồ sơ…" />
-      </div>
-    );
+  if (loading || !profile) {
+    return <PageLoadingState label="Đang tải hồ sơ…" />;
   }
 
   if (ctxError && !profile) {

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Check, Clock, CreditCard, Loader2, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useMentorBookingPage } from '@/features/user/hooks/useMentorBookingPage';
 import { ProfileVerificationBanner } from '@/features/user/ui/profile/ProfileVerificationBanner';
@@ -27,8 +27,8 @@ export function MentorBookingPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
-        <LoadingSpinner size={40} label="Đang tải gói dịch vụ..." />
+      <div className="min-h-[60vh] bg-slate-50">
+        <PageLoadingState label="Đang tải gói dịch vụ..." minHeight="min-h-[60vh]" />
       </div>
     );
   }

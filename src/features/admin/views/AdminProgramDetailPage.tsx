@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import type { BookingStatus } from '@/types';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { useAdminProgramDetail } from '@/features/admin/hooks/useAdminProgramDetail';
 import { AdminProgramDetailView } from '@/features/admin/ui/AdminProgramDetailView';
@@ -18,8 +18,8 @@ export function AdminProgramDetailPage() {
     return <ErrorMessage message="Không xác định được chương trình." />;
   }
 
-  if (loading && !item) {
-    return <LoadingSpinner label="Đang tải chi tiết chương trình…" />;
+  if (loading) {
+    return <PageLoadingState label="Đang tải chi tiết chương trình…" />;
   }
 
   if (error && !item) {

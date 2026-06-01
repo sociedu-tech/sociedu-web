@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FolderOpen } from 'lucide-react';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardTableCard, dashboardTableHeadClass } from '@/features/dashboard/ui/DashboardTable';
 import { useDashboardProgressReports } from '@/features/dashboard/hooks/useDashboardProgressReports';
@@ -13,7 +13,7 @@ export function ProjectListMentor() {
     useDashboardProgressReports('mentor');
 
   if (loading) {
-    return <LoadingSpinner label="Đang tải…" />;
+    return <PageLoadingState label="Đang tải…" variant="cards" />;
   }
 
   if (error) {

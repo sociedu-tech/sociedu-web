@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { MentorPackages } from '@/features/dashboard/ui/mentor/MentorPackages';
 import { useMentorData } from '@/features/mentor/hooks';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { DashboardSurface, DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useToast } from '@/context/ToastContext';
@@ -25,7 +25,7 @@ export const MentorPackagesPage = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner label="Đang tải…" />;
+  if (loading) return <PageLoadingState label="Đang tải…" variant="cards" />;
   if (error) return <ErrorMessage message={error} onRetry={refresh} />;
 
   return (
