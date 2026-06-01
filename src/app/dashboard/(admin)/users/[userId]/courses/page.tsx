@@ -105,10 +105,10 @@ export default function UserCoursesPage() {
       </div>
 
       <DashboardViewHeader
-        title={isMentor ? `Khóa học của Mentor: ${user.name}` : `Khóa học đã đăng ký: ${user.name}`}
+        title={isMentor ? `Khóa học của mentor: ${user.name}` : `Khóa học đã đăng ký: ${user.name}`}
         description={
           isMentor
-            ? `Danh sách các gói dịch vụ của Mentor và danh sách học viên đăng ký.`
+            ? `Danh sách các gói dịch vụ của mentor và danh sách học viên đăng ký.`
             : `Danh sách các khóa học học viên đã đăng ký tham gia.`
         }
         layout="compact"
@@ -142,7 +142,7 @@ export default function UserCoursesPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm min-w-[700px]">
                       <thead>
-                        <tr className="border-b border-slate-100 bg-slate-50/50 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                        <tr className="border-b border-slate-100 bg-slate-50/50 text-[10px] font-semibold tracking-wider text-slate-500">
                           <th className="px-5 py-3">Học viên</th>
                           <th className="px-5 py-3">Mã Booking</th>
                           <th className="px-5 py-3">Ngày đăng ký</th>
@@ -205,7 +205,7 @@ export default function UserCoursesPage() {
             <div className="overflow-x-auto rounded-xl border border-slate-100">
               <table className="min-w-full text-left text-sm min-w-[700px]">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold tracking-wider text-slate-500">
                     <th className="px-5 py-3">Khóa học đăng ký</th>
                     <th className="px-5 py-3">Mentor hướng dẫn</th>
                     <th className="px-5 py-3">Mã Booking</th>

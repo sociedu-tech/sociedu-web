@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -107,7 +107,7 @@ function MarketplaceFilters({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-primary" aria-hidden />
-          <h2 className="text-sm font-bold uppercase tracking-wider text-marketing-fg-strong">Bộ lọc</h2>
+          <h2 className="text-sm font-bold tracking-wider text-marketing-fg-strong">Bộ lọc</h2>
         </div>
         {activeFilterCount > 0 && (
           <button type="button" onClick={clearFilters} className="text-xs font-semibold text-primary hover:underline">
@@ -117,7 +117,7 @@ function MarketplaceFilters({
       </div>
 
       <div>
-        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Đã xác thực</h3>
+        <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Đã xác thực</h3>
         <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-marketing-border bg-page px-3 py-2.5 transition hover:border-marketing-border-dashed">
           <input
             type="checkbox"
@@ -134,7 +134,7 @@ function MarketplaceFilters({
 
       {allUniversities.length > 0 && (
         <div>
-          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Trường</h3>
+          <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Trường</h3>
           <div className="flex flex-wrap gap-2">
             {allUniversities.map((uni) => {
               const active = selectedUniversities.includes(uni);
@@ -162,7 +162,7 @@ function MarketplaceFilters({
 
       {allMajors.length > 0 && (
         <div>
-          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Ngành học</h3>
+          <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Ngành học</h3>
           <div className="flex flex-wrap gap-2">
             {allMajors.map((maj) => {
               const active = selectedMajors.includes(maj);
@@ -190,7 +190,7 @@ function MarketplaceFilters({
 
       {allYears.length > 0 && (
         <div>
-          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Khóa / năm</h3>
+          <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Khóa / năm</h3>
           <div className="flex flex-wrap gap-2">
             {allYears.map((y) => {
               const active = selectedYears.includes(y);
@@ -217,7 +217,7 @@ function MarketplaceFilters({
 
       {allCategories.length > 0 && (
         <div>
-          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">
+          <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">
             Chuyên môn & đề tài
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -246,7 +246,7 @@ function MarketplaceFilters({
 
       {allSkills.length > 0 && (
         <div>
-          <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Kỹ năng (CV)</h3>
+          <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Kỹ năng (CV)</h3>
           <p className="mb-2 text-[11px] leading-snug text-marketing-fg-subtle">
             Mentor có ít nhất một kỹ năng trong các lựa chọn bạn chọn.
           </p>
@@ -276,7 +276,7 @@ function MarketplaceFilters({
       )}
 
       <div>
-        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Đánh giá tối thiểu</h3>
+        <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Đánh giá tối thiểu</h3>
         <div className="flex flex-wrap gap-2">
           {RATING_CHIPS.map(({ value, label }) => {
             const active = minRating === value;
@@ -301,7 +301,7 @@ function MarketplaceFilters({
       </div>
 
       <div>
-        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Buổi đã hoàn thành</h3>
+        <h3 className="mb-3 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Buổi đã hoàn thành</h3>
         <p className="mb-2 text-[11px] leading-snug text-marketing-fg-subtle">Tối thiểu số buổi mentor đã kèm trên nền tảng.</p>
         <div className="flex flex-wrap gap-2">
           {MIN_SESSIONS_CHIPS.map(({ value, label }) => {
@@ -327,7 +327,7 @@ function MarketplaceFilters({
       </div>
 
       <div>
-        <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-marketing-fg-muted">Giá tối đa</h3>
+        <h3 className="mb-2 text-[11px] font-bold tracking-[0.14em] text-marketing-fg-muted">Giá tối đa</h3>
         <input
           type="range"
           min={priceBounds.min}
@@ -411,7 +411,7 @@ function MarketplaceSearchBar({
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Gợi ý:</span>
+        <span className="text-[11px] font-semibold tracking-wide text-slate-400">Gợi ý:</span>
         {SUGGESTED_SEARCHES.map((q) => (
           <button
             key={q}
@@ -533,7 +533,7 @@ export function MentorMarketplaceView({
               )}
             </button>
             <label className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-marketing-border bg-page px-3.5 py-2 text-sm sm:min-w-[220px] sm:flex-initial">
-              <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-marketing-fg-muted">Sắp xếp</span>
+              <span className="shrink-0 text-[11px] font-bold tracking-wide text-marketing-fg-muted">Sắp xếp</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
@@ -699,7 +699,7 @@ export function MentorMarketplaceView({
 
                         <div className="mt-auto flex items-end justify-between gap-3 border-t border-marketing-border pt-4">
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-marketing-fg-muted">Từ</p>
+                            <p className="text-[10px] font-bold tracking-widest text-marketing-fg-muted">Từ</p>
                             <p className="text-lg font-black tracking-tight text-marketing-fg-strong">
                               {formatMentorPrice(info.price)}
                               <span className="ml-0.5 text-xs font-medium text-marketing-body">/giờ</span>

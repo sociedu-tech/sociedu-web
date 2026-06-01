@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -124,7 +124,7 @@ export function PaymentResultPage() {
       : 'Đang xử lý giao dịch';
 
   const subtitle = paid
-    ? 'Cảm ơn bạn! Đơn hàng đã được ghi nhận. Mentor sẽ sớm liên hệ và bạn có thể theo dõi lịch học trong Mentoring.'
+    ? 'Cảm ơn bạn! Đơn hàng đã được ghi nhận. Mentor sẽ sớm liên hệ và bạn có thể theo dõi lịch học trong mentoring.'
     : failed
       ? expired
         ? 'Thời hạn thanh toán đã qua. Bạn có thể đặt lại gói mentor hoặc xem chi tiết đơn hàng.'
@@ -154,7 +154,7 @@ export function PaymentResultPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,0.14),transparent_55%)]" />
         </div>
 
-        <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider ring-1 ring-white/20">
+        <span className="relative z-10 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold tracking-wider ring-1 ring-white/20">
           <Sparkles className="size-3.5" aria-hidden />
           Kết quả thanh toán
         </span>
@@ -238,7 +238,7 @@ export function PaymentResultPage() {
               {paid ? (
                 <>
                   <Button href={MENTORING_PATH} variant="primary" className="w-full justify-center gap-2">
-                    Xem Mentoring
+                    Xem mentoring
                     <ArrowRight className="size-4" aria-hidden />
                   </Button>
                   {orderId ? (

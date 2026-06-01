@@ -8,7 +8,7 @@ export default function AdminMentorsPage() {
   return (
     <>
       <DashboardViewHeader
-        title="Quản lý Mentor"
+        title="Quản lý mentor"
         description="Danh sách tài khoản Mentor, quản lý thông tin hoạt động, phê duyệt và phân vai trò trên hệ thống."
         layout="compact"
       />

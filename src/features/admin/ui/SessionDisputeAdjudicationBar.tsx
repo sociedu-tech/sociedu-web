@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import type { SessionDisputePhase } from '@/types';
@@ -34,7 +34,7 @@ export function SessionDisputeAdjudicationBar({
   return (
     <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/90 p-4 sm:p-5">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Phân xử (demo)</p>
+        <p className="text-xs font-semibold tracking-wide text-slate-500">Phân xử (demo)</p>
         <p className="mt-1 text-sm text-slate-600">
           Các nút cập nhật giai đoạn &amp; kết luận trên trình duyệt. Kết nối API sẽ gọi endpoint thật và ghi audit log.
         </p>

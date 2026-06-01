@@ -8,7 +8,7 @@ export default function AdminUsersPage() {
   return (
     <>
       <DashboardViewHeader
-        title="Quản lý Học viên"
+        title="Quản lý học viên"
         description="Danh sách tài khoản học viên, quản lý quyền truy cập và phân vai trò trên hệ thống."
         layout="compact"
       />

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -78,7 +78,7 @@ export function SessionReportViewPage() {
       <DashboardSurface className="space-y-6 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="min-w-0 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Chi tiết báo cáo buổi học</p>
+            <p className="text-xs font-semibold tracking-wider text-slate-500">Chi tiết báo cáo buổi học</p>
             <h1 className="text-xl font-semibold text-slate-900">{request.title}</h1>
             <p className="text-sm text-slate-600">Buổi học: {sessionTitle}</p>
           </div>
@@ -94,15 +94,15 @@ export function SessionReportViewPage() {
 
         <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <dt className="text-xs font-semibold uppercase text-slate-500">Hạn nộp</dt>
+            <dt className="text-xs font-semibold text-slate-500">Hạn nộp</dt>
             <dd className="mt-1 text-sm text-slate-800">{formatSessionReportDate(request.dueDate)}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-slate-500">Yêu cầu lúc</dt>
+            <dt className="text-xs font-semibold text-slate-500">Yêu cầu lúc</dt>
             <dd className="mt-1 text-sm text-slate-800">{formatSessionReportDate(request.createdAt)}</dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase text-slate-500">Cập nhật</dt>
+            <dt className="text-xs font-semibold text-slate-500">Cập nhật</dt>
             <dd className="mt-1 text-sm text-slate-800">{formatSessionReportDate(request.updatedAt)}</dd>
           </div>
         </dl>

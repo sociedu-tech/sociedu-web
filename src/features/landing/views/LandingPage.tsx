@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -34,7 +34,7 @@ export const LandingPage = () => {
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:items-center lg:gap-14 xl:gap-16">
             <div className="min-w-0 lg:max-w-xl xl:max-w-2xl">
-              <h1 className="mt-7 text-balance font-black uppercase tracking-tight text-marketing-fg">
+              <h1 className="mt-7 text-balance font-black tracking-tight text-marketing-fg">
                 <span className="block text-[1.35rem] leading-snug text-marketing-fg-muted sm:text-2xl md:text-[1.75rem]">
                   {landingHero.titleLine1}
                 </span>
@@ -96,7 +96,7 @@ export const LandingPage = () => {
                     className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent sm:from-black/30"
                     aria-hidden
                   />
-                  {/* <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-marketing-fg-strong shadow-sm ring-1 ring-black/5 sm:left-4 sm:top-4 sm:text-[11px]">
+                  {/* <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-marketing-fg-strong shadow-sm ring-1 ring-black/5 sm:left-4 sm:top-4 sm:text-[11px]">
                     Kèm 1-1 thực tế
                   </div> */}
                 </figure>
@@ -144,7 +144,7 @@ export const LandingPage = () => {
       >
         <Container>
           <div className="mb-10 max-w-2xl">
-            <h2 id="about-heading" className="text-3xl font-black uppercase tracking-tight text-primary md:text-4xl">
+            <h2 id="about-heading" className="text-3xl font-black tracking-tight text-primary md:text-4xl">
               {landingAboutSection.heading}
             </h2>
             <p className="mt-3 text-sm font-medium leading-relaxed text-gray-700 md:text-base">
@@ -163,8 +163,8 @@ export const LandingPage = () => {
                 )}
               >
                 <div>
-                  <p className="text-3xl font-black uppercase">{block.number}</p>
-                  <h3 className="mt-2 text-lg font-extrabold uppercase leading-snug md:text-xl">{block.title}</h3>
+                  <p className="text-3xl font-black">{block.number}</p>
+                  <h3 className="mt-2 text-lg font-extrabold leading-snug md:text-xl">{block.title}</h3>
                 </div>
                 <p
                   className={cn(
@@ -187,7 +187,7 @@ export const LandingPage = () => {
         <Container>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,320px)_1fr] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <h2 className="text-4xl font-black uppercase leading-none md:text-6xl">
+              <h2 className="text-4xl font-black leading-none md:text-6xl">
                 Vì sao sinh viên
                 <span className="block text-primary">chọn Mentoree?</span>
               </h2>
@@ -231,7 +231,7 @@ export const LandingPage = () => {
         <Container>
           <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:items-start">
             <div className="rounded-2xl bg-primary p-6">
-              <h3 className="text-2xl font-extrabold uppercase leading-tight md:text-3xl">
+              <h3 className="text-2xl font-extrabold leading-tight md:text-3xl">
                 {landingFeaturesIntro.title}
               </h3>
               <p className="mt-3 text-sm text-white/85">{landingFeaturesIntro.body}</p>

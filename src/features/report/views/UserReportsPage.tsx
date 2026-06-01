@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -125,7 +125,7 @@ export const UserReportsPage = () => {
       <DashboardViewHeader
         eyebrow="Học viên"
         title="Báo cáo học tập & vi phạm"
-        description="Theo dõi tiến độ, gửi báo cáo cho Mentor hoặc báo cáo vi phạm lên Admin."
+        description="Theo dõi tiến độ, gửi báo cáo cho mentor hoặc báo cáo vi phạm lên admin."
         action={
           activeTab === 'moderation' ? (
             <button type="button" onClick={() => setIsModalOpen(true)} className={dashboardBtnPrimary}>
@@ -155,7 +155,7 @@ export const UserReportsPage = () => {
                   <DashboardEmptyState
                     icon={FileText}
                     title="Không có yêu cầu báo cáo nào"
-                    description="Yêu cầu từ Mentor sẽ xuất hiện ở đây."
+                    description="Yêu cầu từ mentor sẽ xuất hiện ở đây."
                   />
                 ) : (
                   <div className="divide-y divide-slate-100">
@@ -188,9 +188,9 @@ export const UserReportsPage = () => {
                                 <p className="text-sm text-slate-600">{req.description}</p>
                               ) : null}
                               <p className="text-xs font-medium text-slate-400">
-                                Gửi cho Mentor:{' '}
+                                Gửi cho mentor:{' '}
                                 <span className="font-semibold text-slate-700">
-                                  Mentor #{req.mentorId.substring(0, 8)}
+                                  mentor #{req.mentorId.substring(0, 8)}
                                 </span>
                                 {req.dueDate && ` • Hạn nộp: ${formatDisplayDate(req.dueDate)}`}
                                 {` • Yêu cầu lúc: ${formatDisplayDate(req.createdAt)}`}
@@ -198,7 +198,7 @@ export const UserReportsPage = () => {
 
                               {req.menteeContent ? (
                                 <div className="mt-3 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700">
-                                  <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                  <span className="mb-1 block text-xs font-semibold tracking-wider text-slate-500">
                                     Nội dung đã nộp
                                   </span>
                                   <span className="whitespace-pre-wrap">{req.menteeContent}</span>
@@ -217,7 +217,7 @@ export const UserReportsPage = () => {
                               {req.mentorFeedback && (
                                 <div className="md:w-64 bg-indigo-50 border border-indigo-150 rounded-xl p-4 relative overflow-hidden">
                                   <div className="text-xs font-bold text-indigo-700 tracking-wider mb-1 flex items-center gap-1.5">
-                                    <MessageSquare size={14} /> Nhận xét của Mentor
+                                    <MessageSquare size={14} /> Nhận xét của mentor
                                   </div>
                                   <p className="text-xs text-gray-700 whitespace-pre-wrap">{req.mentorFeedback}</p>
                                 </div>
@@ -295,7 +295,7 @@ export const UserReportsPage = () => {
                               )}
                             </div>
                             <p className="mb-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
-                              Gửi cho Mentor:{' '}
+                              Gửi cho mentor:{' '}
                               <span className="font-semibold text-slate-800">{report.mentorName}</span> • Nộp lúc:{' '}
                               {formatDisplayDate(report.createdAt)}
                             </p>
@@ -370,7 +370,7 @@ export const UserReportsPage = () => {
                <form onSubmit={handleSubmit} className="space-y-4 p-6">
                  
                  <div className="space-y-1">
-                    <label className={dashboardLabel}>Lộ trình học / Mentor (*)</label>
+                    <label className={dashboardLabel}>Lộ trình học / mentor (*)</label>
                     <select
                       value={selectedBookingId}
                       onChange={(e) => setSelectedBookingId(e.target.value)}
@@ -379,7 +379,7 @@ export const UserReportsPage = () => {
                       <option value="">-- Chọn lộ trình để báo cáo --</option>
                       {bookings?.map((b: any) => (
                         <option key={b.bookingId} value={b.bookingId}>
-                          {b.packageLabel} - Mentor: {b.counterpartyLabel}
+                          {b.packageLabel} - mentor: {b.counterpartyLabel}
                         </option>
                       ))}
                     </select>
@@ -392,7 +392,7 @@ export const UserReportsPage = () => {
                      value={title}
                      onChange={(e) => setTitle(e.target.value)}
                      className={dashboardInput}
-                     placeholder="Ví dụ: Lỗi không thể liên hệ với Mentor"
+                     placeholder="Ví dụ: Lỗi không thể liên hệ với mentor"
                    />
                  </div>
 

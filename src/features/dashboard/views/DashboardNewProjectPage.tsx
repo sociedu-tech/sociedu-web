@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -302,7 +302,7 @@ export function DashboardNewProjectPage() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-start justify-between gap-2">
                                 <p className="truncate font-semibold text-slate-900">{mentor.name}</p>
-                                <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-indigo-800">
+                                <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-bold tracking-wide text-indigo-800">
                                   {matchPct != null ? `~${matchPct}% khớp` : 'Gợi ý'}
                                 </span>
                               </div>

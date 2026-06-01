@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -67,7 +67,7 @@ export function DashboardProjectProgressPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/90 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr className="border-b border-slate-200 bg-slate-50/90 text-xs font-semibold tracking-wide text-slate-500">
                 <th className="px-4 py-3">Dự án</th>
                 <th className="px-4 py-3">{cpHeader}</th>
                 <th className="px-4 py-3 w-[200px]">Tiến độ</th>

@@ -33,7 +33,7 @@ export default function AdminMentorDetailLayout({
           <ArrowLeft size={18} strokeWidth={2.5} />
         </Link>
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Chi tiết Mentor</h2>
+          <h2 className="text-xl font-bold text-slate-900">Chi tiết mentor</h2>
           <p className="text-sm text-slate-500">ID: {mentorId}</p>
         </div>
       </div>

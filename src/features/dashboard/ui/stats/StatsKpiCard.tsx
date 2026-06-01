@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -43,7 +43,7 @@ export function StatsKpiCard({
         <div className="min-w-0">
           <p
             className={cn(
-              'text-[11px] font-semibold uppercase tracking-wider',
+              'text-[11px] font-semibold tracking-wider',
               isFeatured ? 'text-slate-400' : 'text-slate-500',
             )}
           >

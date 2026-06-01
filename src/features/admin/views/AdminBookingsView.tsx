@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { CalendarClock } from 'lucide-react';
@@ -85,9 +85,9 @@ export function AdminBookingsView() {
       <div className="overflow-x-auto rounded-xl border border-slate-100">
         <table className="min-w-[960px] w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+            <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold tracking-wider text-slate-500">
               <th className="px-4 py-3">Mã</th>
-              <th className="px-4 py-3">Học viên → Mentor</th>
+              <th className="px-4 py-3">Học viên → mentor</th>
               <th className="px-4 py-3">Lịch</th>
               <th className="px-4 py-3">Gói</th>
               <th className="px-4 py-3">Số tiền</th>

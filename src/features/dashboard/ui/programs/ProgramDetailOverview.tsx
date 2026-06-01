@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import {
@@ -51,7 +51,7 @@ export function ProgramDetailOverview({
         <div className="grid gap-8 lg:grid-cols-[1fr_minmax(240px,320px)] lg:items-start">
           <div className="min-w-0 space-y-5">
             <div className="space-y-3">
-              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+              <p className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-primary">
                 <Sparkles className="size-3.5" aria-hidden />
                 Gói mentoring
               </p>
@@ -81,7 +81,7 @@ export function ProgramDetailOverview({
           </div>
 
           <div className="rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-5 shadow-inner">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{labels.progress}</p>
+            <p className="text-xs font-semibold tracking-wide text-slate-500">{labels.progress}</p>
             <div className="mt-3 flex items-end justify-between gap-4">
               <span className="text-4xl font-bold tabular-nums tracking-tight text-primary">{progress}%</span>
               <span className="pb-1 text-sm text-slate-600">
@@ -117,7 +117,7 @@ function MetaItem({
 }) {
   return (
     <div className="min-w-0">
-      <dt className="flex items-center gap-1 text-2xs font-semibold uppercase tracking-wide text-slate-400">
+      <dt className="flex items-center gap-1 text-2xs font-semibold tracking-wide text-slate-400">
         <Icon className="size-3" aria-hidden />
         {label}
       </dt>

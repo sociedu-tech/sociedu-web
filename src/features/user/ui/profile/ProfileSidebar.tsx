@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -36,7 +36,7 @@ function SidebarCard({
     <div
       className={`rounded-2xl border border-marketing-card-border bg-white p-5 shadow-sm ${className}`}
     >
-      <h3 className="text-xs font-bold uppercase tracking-wider text-marketing-fg-muted">{title}</h3>
+      <h3 className="text-xs font-bold tracking-wider text-marketing-fg-muted">{title}</h3>
       <div className="mt-4">{children}</div>
     </div>
   );

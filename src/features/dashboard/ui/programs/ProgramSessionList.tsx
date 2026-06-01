@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
-import { CalendarClock, ExternalLink, FileText, Loader2, Pencil, Video } from 'lucide-react';
+import { CalendarClock, ExternalLink, FileText, Loader2, Video } from 'lucide-react';
 import { useState } from 'react';
 import type { DashboardSessionRow } from '@/features/dashboard/types/booking';
 import type { SessionReportRequest } from '@/services/sessionReportService';
@@ -188,7 +188,7 @@ function ProgramSessionCard({
         <div className="flex flex-col gap-2 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0">
           {isMentor ? (
             <label className="flex flex-col gap-1.5">
-              <span className="text-2xs font-semibold uppercase tracking-wide text-slate-500">Trạng thái</span>
+              <span className="text-2xs font-semibold tracking-wide text-slate-500">Trạng thái</span>
               <div className="relative">
                 <select
                   value={row.rawStatus.toLowerCase()}
@@ -226,10 +226,15 @@ function ProgramSessionCard({
             <button
               type="button"
               onClick={() => onEditSchedule(row)}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              className={cn(
+                'inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition',
+                row.scheduledAtIso
+                  ? 'border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                  : 'border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10',
+              )}
             >
-              <Pencil className="size-3.5" aria-hidden />
-              Sửa lịch & link
+              <CalendarClock className="size-3.5" aria-hidden />
+              {row.scheduledAtIso ? 'Sửa lịch' : 'Lên lịch'}
             </button>
           ) : null}
         </div>

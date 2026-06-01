@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -82,7 +82,7 @@ export function ProfileHeader({
               </div>
               {verified ? (
                 <span
-                  className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow"
+                  className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow"
                   title="Đã xác thực"
                 >
                   ✓

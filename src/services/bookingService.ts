@@ -75,6 +75,20 @@ export const bookingService = {
     return res.data;
   },
 
+  createGoogleMeet: async (
+    bookingId: number | string,
+    sessionId: number | string,
+    body: {
+      scheduledAt: string;
+      scheduledAtEnd?: string;
+      title?: string;
+      description?: string;
+    },
+  ) => {
+    const res = await api.post(`${BASE}/${bookingId}/sessions/${sessionId}/google-meet`, body);
+    return res.data;
+  },
+
   cancelBooking: async (bookingId: number | string, reason: string) => {
     const res = await api.post(`${BASE}/${bookingId}/cancel`, { reason });
     return res.data;

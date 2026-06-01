@@ -32,8 +32,8 @@ export const Navbar = () => {
   }, []);
 
   const navLinks: NavItem[] = [
-    { name: 'Tìm Mentor', path: '/mentors', isHash: false },
-    { name: 'Trở thành Mentor', path: '/register', isHash: false },
+    { name: 'Tìm mentor', path: '/mentors', isHash: false },
+    { name: 'Trở thành mentor', path: '/register', isHash: false },
     { name: 'Cách hoạt động', path: '#how-it-works', isHash: true },
     { name: 'Hỏi đáp', path: '#faq', isHash: true },
   ];

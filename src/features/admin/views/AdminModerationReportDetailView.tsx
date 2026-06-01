@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
@@ -171,7 +171,7 @@ function ModerationReportDetailInner({
               />
             ) : null}
             <div className="rounded-2xl border border-slate-800 bg-[var(--color-dashboard-ink)] p-4 sm:p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Tiến độ xử lý tranh chấp</p>
+              <p className="text-[10px] font-semibold tracking-wider text-slate-400">Tiến độ xử lý tranh chấp</p>
               <div className="mt-4">
                 <DisputeProcessStepper
                   variant="dark"

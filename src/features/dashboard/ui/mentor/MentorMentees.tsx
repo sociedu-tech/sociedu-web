@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
@@ -55,7 +55,7 @@ export const MentorMentees = () => {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <tr className="border-b border-slate-100 bg-slate-50/80 text-xs font-semibold tracking-wider text-slate-500">
                 <th className="px-6 py-4">Học viên</th>
                 <th className="px-6 py-4">Buổi học</th>
                 <th className="px-6 py-4">Trạng thái</th>

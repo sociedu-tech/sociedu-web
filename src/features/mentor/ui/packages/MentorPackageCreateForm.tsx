@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -114,7 +114,7 @@ export function MentorPackageCreateForm() {
       <DashboardSurface className="p-4 sm:p-6">
         <form onSubmit={(e) => void handleSubmit(e)} className="mx-auto max-w-3xl space-y-8">
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Thông tin gói</h2>
+            <h2 className="text-sm font-semibold tracking-wide text-slate-500">Thông tin gói</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-semibold text-slate-600">Tên gói *</label>
@@ -163,7 +163,7 @@ export function MentorPackageCreateForm() {
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Lộ trình buổi học</h2>
+                <h2 className="text-sm font-semibold tracking-wide text-slate-500">Lộ trình buổi học</h2>
                 <p className="mt-1 text-xs text-slate-500">Mỗi mục là một buổi trong gói mentoring.</p>
               </div>
               <button
@@ -183,7 +183,7 @@ export function MentorPackageCreateForm() {
                   className="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4"
                 >
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wide text-primary">
+                    <span className="text-xs font-bold tracking-wide text-primary">
                       Buổi {index + 1}
                     </span>
                     {curriculums.length > 1 ? (

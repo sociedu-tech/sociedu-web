@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -101,7 +101,7 @@ export function AdminUsersManagementView({ defaultRole = 'user' }: { defaultRole
           <div className="overflow-x-auto rounded-xl border border-slate-100">
             <table className="hidden min-w-[880px] w-full text-left text-sm md:table">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold tracking-wider text-slate-500">
                   <th className="px-4 py-3">Người dùng</th>
                   <th className="px-4 py-3">Vai trò</th>
                   <th className="px-4 py-3">Tài khoản</th>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -74,7 +74,7 @@ export function ProfileVerificationBanner({ user, isMentor, isOwnProfile, classN
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            <span className="text-xs font-bold tracking-wider text-slate-600">
               Xác thực mentor
             </span>
             <span

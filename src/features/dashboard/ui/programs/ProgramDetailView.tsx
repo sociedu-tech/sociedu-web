@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { Plus, Star } from 'lucide-react';
@@ -26,6 +26,7 @@ import { pickPackageLabel } from '@/lib/resolveOrderPackageNames';
 import { bookingService } from '@/services/bookingService';
 import type { SessionReportRequest } from '@/services/sessionReportService';
 import { ProgramSessionList } from '@/features/dashboard/ui/programs/ProgramSessionList';
+import { SessionScheduleModal } from '@/features/dashboard/ui/programs/SessionScheduleModal';
 import { ProgramDetailOverview, ProgramDetailSidebar } from '@/features/dashboard/ui/programs/ProgramDetailOverview';
 import { buildSessionStats } from '@/features/dashboard/lib/programSessionStats';
 
@@ -73,6 +74,7 @@ export function ProgramDetailView({
   const [scheduledAtEnd, setScheduledAtEnd] = useState('');
   const [meetingUrl, setMeetingUrl] = useState('');
   const [scheduling, setScheduling] = useState(false);
+  const [creatingMeet, setCreatingMeet] = useState(false);
 
   const [createSessionOpen, setCreateSessionOpen] = useState(false);
   const [newSessionTitle, setNewSessionTitle] = useState('');
@@ -87,8 +89,7 @@ export function ProgramDetailView({
     setScheduleOpen(true);
   }, []);
 
-  const handleScheduleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleScheduleSave = async () => {
     if (!scheduleSession) return;
     if (!scheduledAt) {
       toast.error('Vui lòng chọn ngày giờ học.');
@@ -113,6 +114,34 @@ export function ProgramDetailView({
       toast.error(err instanceof Error ? err.message : 'Không cập nhật được lịch học.');
     } finally {
       setScheduling(false);
+    }
+  };
+
+  const handleCreateGoogleMeet = async () => {
+    if (!scheduleSession) return;
+    if (!scheduledAt) {
+      toast.error('Vui lòng chọn ngày giờ bắt đầu.');
+      return;
+    }
+    if (scheduledAtEnd && new Date(scheduledAtEnd) <= new Date(scheduledAt)) {
+      toast.error('Thời gian kết thúc phải sau thời gian bắt đầu.');
+      return;
+    }
+    setCreatingMeet(true);
+    try {
+      await bookingService.createGoogleMeet(item.bookingId, scheduleSession.sessionId, {
+        scheduledAt: new Date(scheduledAt).toISOString(),
+        scheduledAtEnd: scheduledAtEnd ? new Date(scheduledAtEnd).toISOString() : undefined,
+        title: scheduleSession.title,
+      });
+      toast.success('Đã tạo link Google Meet và cập nhật lịch buổi học.');
+      setScheduleOpen(false);
+      setScheduleSession(null);
+      onRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không tạo được link Google Meet.');
+    } finally {
+      setCreatingMeet(false);
     }
   };
 
@@ -230,7 +259,7 @@ export function ProgramDetailView({
           {unattachedReports.length > 0 ? (
             <div className="overflow-hidden rounded-2xl border border-amber-200/70 bg-amber-50/40 shadow-sm">
               <div className="border-b border-amber-200/60 px-5 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">
+                <p className="text-xs font-semibold tracking-wide text-amber-900">
                   Báo cáo không gắn buổi cụ thể
                 </p>
               </div>
@@ -308,17 +337,20 @@ export function ProgramDetailView({
       ) : null}
 
       {scheduleOpen && scheduleSession ? (
-        <ScheduleModal
+        <SessionScheduleModal
+          key={scheduleSession.sessionId}
           session={scheduleSession}
           scheduledAt={scheduledAt}
           scheduledAtEnd={scheduledAtEnd}
           meetingUrl={meetingUrl}
           scheduling={scheduling}
+          creatingMeet={creatingMeet}
           onClose={() => setScheduleOpen(false)}
           onScheduledAt={setScheduledAt}
           onScheduledAtEnd={setScheduledAtEnd}
           onMeetingUrl={setMeetingUrl}
-          onSubmit={(e) => void handleScheduleSave(e)}
+          onSaveManual={() => void handleScheduleSave()}
+          onCreateGoogleMeet={() => void handleCreateGoogleMeet()}
         />
       ) : null}
 
@@ -397,67 +429,6 @@ function ReviewModal({
   );
 }
 
-function ScheduleModal({
-  session,
-  scheduledAt,
-  scheduledAtEnd,
-  meetingUrl,
-  scheduling,
-  onClose,
-  onScheduledAt,
-  onScheduledAtEnd,
-  onMeetingUrl,
-  onSubmit,
-}: {
-  session: DashboardSessionRow;
-  scheduledAt: string;
-  scheduledAtEnd: string;
-  meetingUrl: string;
-  scheduling: boolean;
-  onClose: () => void;
-  onScheduledAt: (v: string) => void;
-  onScheduledAtEnd: (v: string) => void;
-  onMeetingUrl: (v: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-}) {
-  return (
-    <ModalShell onClose={onClose} title="Sửa lịch & link họp" subtitle={session.title}>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <Field label="Bắt đầu *">
-          <input
-            type="datetime-local"
-            required
-            value={scheduledAt}
-            onChange={(e) => onScheduledAt(e.target.value)}
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Kết thúc">
-          <input
-            type="datetime-local"
-            value={scheduledAtEnd}
-            onChange={(e) => onScheduledAtEnd(e.target.value)}
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Link phòng họp">
-          <input
-            type="url"
-            value={meetingUrl}
-            onChange={(e) => onMeetingUrl(e.target.value)}
-            placeholder="https://meet.google.com/..."
-            className={inputClass}
-          />
-        </Field>
-        <p className="text-xs text-slate-500">
-          Trạng thái buổi học cập nhật trực tiếp trên thẻ buổi — không cần chỉnh ở đây.
-        </p>
-        <ModalActions onClose={onClose} submitLabel={scheduling ? 'Đang lưu…' : 'Lưu lịch'} disabled={scheduling} />
-      </form>
-    </ModalShell>
-  );
-}
-
 function CreateSessionModal({
   title,
   description,
@@ -528,7 +499,7 @@ function ModalShell({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">
-      <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>
+      <span className="text-xs font-bold tracking-wider text-slate-500">{label}</span>
       {children}
     </label>
   );

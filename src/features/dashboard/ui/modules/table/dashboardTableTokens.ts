@@ -1,6 +1,6 @@
-/** Class áp dụng cho `<tr>` tiêu đề bảng dashboard. */
+﻿/** Class áp dụng cho `<tr>` tiêu đề bảng dashboard. */
 export const dashboardTableHeadClass =
-  'border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500';
+  'border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold tracking-wider text-slate-500';
 
 /** Ô tiêu đề — một dòng, không xuống dòng trừ khi viewport quá hẹp (scroll ngang). */
 export const dashboardTableHeadCell = 'px-4 py-3 whitespace-nowrap align-middle';

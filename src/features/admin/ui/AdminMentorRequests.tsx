@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Image from 'next/image';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import type { User } from '@/types';
@@ -21,7 +21,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
     <div className="p-0">
       <table className="hidden w-full text-left text-sm md:table">
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          <tr className="border-b border-slate-100 bg-slate-50/90 text-[10px] font-semibold tracking-wider text-slate-500">
             <th className="px-5 py-3.5">Người dùng</th>
             <th className="px-5 py-3.5">Chuyên môn</th>
             <th className="px-5 py-3.5">Ngày yêu cầu</th>
@@ -98,7 +98,7 @@ export const AdminMentorRequests = ({ requests, onApprove }: AdminMentorRequests
               </div>
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Chuyên môn</p>
+              <p className="text-[10px] font-semibold tracking-wider text-slate-400">Chuyên môn</p>
               <p className="mt-1 font-medium text-slate-800">{req.mentorInfo?.headline ?? '—'}</p>
               <p className="mt-0.5 text-xs text-slate-500">{(req.mentorInfo?.expertise ?? []).join(', ')}</p>
             </div>

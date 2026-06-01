@@ -99,7 +99,7 @@ export function getShellNavItems(role: string, userId?: string | number): ShellN
     { href: MENTORING_PATH, label: MENTORING_NAV, icon: BookOpen, group: 'Học tập' },
     { href: '/dashboard/sessions', label: 'Lịch học', icon: Calendar, group: 'Học tập' },
     { href: '/dashboard/my-orders', label: 'Đơn hàng', icon: ShoppingBag, group: 'Học tập' },
-    { href: '/dashboard/find-mentors', label: 'Tìm Mentor', icon: Search, group: 'Học tập' },
+    { href: '/dashboard/find-mentors', label: 'Tìm mentor', icon: Search, group: 'Học tập' },
     { href: '/dashboard/my-reports', label: 'Báo cáo của tôi', icon: Flag, group: 'Học tập' },
     ...accountItems,
   ];
@@ -139,14 +139,14 @@ export function isNavActive(pathname: string, item: ShellNavItem): boolean {
 }
 
 const TITLE_ENTRIES: [string, string][] = [
-  [ROUTES.DASHBOARD.ADMIN.MENTORS.path, 'Quản lý Mentor'],
+  [ROUTES.DASHBOARD.ADMIN.MENTORS.path, 'Quản lý mentor'],
   [ROUTES.DASHBOARD.ADMIN.USERS.path, 'Người dùng'],
   [ROUTES.DASHBOARD.ADMIN.BOOKINGS.path, 'Quản lý đặt lịch'],
   [MENTORING_PATH, MENTORING_NAV],
   [ROUTES.DASHBOARD.ADMIN.REPORTS.path, 'Báo cáo & khiếu nại'],
-  ['/dashboard/mentors/', 'Chi tiết Mentor'],
-  ['/dashboard/mentors/[mentorId]/packages', 'Gói dịch vụ Mentor'],
-  ['/dashboard/mentors/[mentorId]/mentees', 'Học viên của Mentor'],
+  ['/dashboard/mentors/', 'Chi tiết mentor'],
+  ['/dashboard/mentors/[mentorId]/packages', 'Gói dịch vụ mentor'],
+  ['/dashboard/mentors/[mentorId]/mentees', 'Học viên của mentor'],
   ['/dashboard/packages', 'Gói dịch vụ'],
   ['/dashboard/mentees', 'Học viên'],
   ['/dashboard/orders', 'Đơn hàng'],
@@ -159,8 +159,8 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard') return 'Trang chủ';
   if (normalized === '/dashboard/schedule') return 'Lịch dạy';
   if (normalized === '/dashboard/sessions') return 'Lịch học';
-  if (normalized === '/dashboard/users') return 'Quản lý Học viên';
-  if (normalized === '/dashboard/users/mentors') return 'Quản lý Mentor';
+  if (normalized === '/dashboard/users') return 'Quản lý học viên';
+  if (normalized === '/dashboard/users/mentors') return 'Quản lý mentor';
   if (normalized === '/dashboard/users/admins') return 'Ban quản trị';
   if (/^\/dashboard\/users\/[^/]+\/courses$/.test(normalized)) return 'Quản lý khóa học';
   if (normalized === '/dashboard/profile/edit') return 'Cập nhật hồ sơ';
@@ -176,7 +176,7 @@ export function getDashboardTitle(pathname: string): string {
   if (normalized === '/dashboard/packages/new') return 'Tạo gói dịch vụ';
   if (/^\/dashboard\/packages\/[^/]+$/.test(normalized)) return 'Chi tiết gói dịch vụ';
   if (normalized === '/dashboard/find-mentors') return 'Tìm mentor';
-  if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — Tất cả';
+  if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — tất cả';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Báo cáo';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/reviews`) return 'Báo cáo — Đánh giá';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/sessions`) return `Báo cáo — ${MENTORING_NAV}`;
@@ -205,7 +205,7 @@ export function getDashboardBreadcrumb(pathname: string): { label: string; href?
   }
   if (/^\/dashboard\/users\/[^/]+\/courses$/.test(normalized)) {
     return [
-      { label: 'Quản lý Học viên', href: '/dashboard/users' },
+      { label: 'Quản lý học viên', href: '/dashboard/users' },
       { label: 'Quản lý khóa học' },
     ];
   }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -54,7 +54,7 @@ export function ChatMessageContextBox({ context, variant }: ChatMessageContextBo
     <div className="min-w-0 flex-1 overflow-hidden">
       <p
         className={cn(
-          'text-[10px] font-semibold uppercase tracking-wide',
+          'text-[10px] font-semibold tracking-wide',
           variant === 'me' ? 'text-white/70' : 'text-slate-500',
         )}
       >

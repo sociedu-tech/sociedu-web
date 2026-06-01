@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -418,16 +418,16 @@ export const MentorReportsPage = () => {
             
             <div className="rounded-xl bg-slate-50 p-4 border border-slate-150 space-y-3">
               <div>
-                <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Yêu cầu</span>
+                <span className="text-2xs font-bold text-slate-400 tracking-wider block">Yêu cầu</span>
                 <span className="text-sm font-semibold text-slate-800">{reviewReq.title}</span>
               </div>
               <div>
-                <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Nội dung học viên nộp</span>
+                <span className="text-2xs font-bold text-slate-400 tracking-wider block">Nội dung học viên nộp</span>
                 <p className="text-xs text-slate-700 whitespace-pre-wrap font-medium">{reviewReq.menteeContent || '— Chưa nộp —'}</p>
               </div>
               {reviewReq.menteeAttachmentUrl && (
                 <div>
-                  <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Tài liệu đính kèm</span>
+                  <span className="text-2xs font-bold text-slate-400 tracking-wider block">Tài liệu đính kèm</span>
                   <a
                     href={reviewReq.menteeAttachmentUrl}
                     target="_blank"
@@ -444,7 +444,7 @@ export const MentorReportsPage = () => {
             {reviewReq.status === 'SUBMITTED' ? (
               <>
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Đánh giá / Phán quyết</label>
+                  <label className="block text-xs font-bold text-slate-500 tracking-wider">Đánh giá / Phán quyết</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -476,7 +476,7 @@ export const MentorReportsPage = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Gợi ý / Nhận xét / Lý do từ chối</label>
+                  <label className="block text-xs font-bold text-slate-500 tracking-wider">Gợi ý / Nhận xét / Lý do từ chối</label>
                   <textarea
                     value={reviewFeedback}
                     onChange={(e) => setReviewFeedback(e.target.value)}
@@ -506,7 +506,7 @@ export const MentorReportsPage = () => {
               <div className="space-y-3 pt-2">
                 {reviewReq.mentorFeedback && (
                   <div>
-                    <span className="text-2xs font-bold text-slate-400 uppercase tracking-wider block">Phản hồi của bạn</span>
+                    <span className="text-2xs font-bold text-slate-400 tracking-wider block">Phản hồi của bạn</span>
                     <p className="text-xs text-slate-700 whitespace-pre-wrap font-medium p-3 bg-slate-50 border border-slate-200 rounded-xl">{reviewReq.mentorFeedback}</p>
                   </div>
                 )}

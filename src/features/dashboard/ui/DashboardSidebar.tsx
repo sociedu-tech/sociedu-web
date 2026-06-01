@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -102,7 +102,7 @@ export function DashboardSidebar({
               <button
                 type="button"
                 onClick={() => toggleGroup(section.title)}
-                className="mb-1.5 flex flex-row items-center justify-between px-3 text-[10px] uppercase tracking-wider font-semibold text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
+                className="mb-1.5 flex flex-row items-center justify-between px-3 text-[10px] tracking-wider font-semibold text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
               >
                 <span>{section.title}</span>
                 <ChevronDown

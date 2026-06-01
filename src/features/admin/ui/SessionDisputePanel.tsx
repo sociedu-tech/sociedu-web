@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Gavel, Paperclip, Scale } from 'lucide-react';
@@ -36,13 +36,13 @@ export function SessionDisputePanel({ detail: d, className, showStageList = true
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-[10px] font-semibold tracking-wide text-slate-500">
             Lý do / tường trình — {partyLabel(d.openedByParty)} (mở khiếu nại)
           </p>
           <p className="mt-1.5 text-sm leading-relaxed text-slate-800">{d.openerStatement}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Phản hồi phía còn lại</p>
+          <p className="text-[10px] font-semibold tracking-wide text-slate-500">Phản hồi phía còn lại</p>
           <p className="mt-1.5 text-sm leading-relaxed text-slate-800">{d.counterStatement}</p>
         </div>
       </div>
@@ -106,7 +106,7 @@ export function SessionDisputePanel({ detail: d, className, showStageList = true
                 className="flex flex-col gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 sm:flex-row sm:items-start sm:justify-between"
               >
                 <div className="min-w-0">
-                  <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-700 ring-1 ring-slate-200">
+                  <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-slate-700 ring-1 ring-slate-200">
                     {partyLabel(e.party)}
                   </span>
                   <p className="mt-1 font-medium text-slate-900">{e.title}</p>
@@ -124,7 +124,7 @@ export function SessionDisputePanel({ detail: d, className, showStageList = true
 
       {d.adminResolutionNote ? (
         <div className="rounded-xl border border-primary/25 bg-primary/5 px-3 py-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-primary">Kết luận admin</p>
+          <p className="text-[10px] font-semibold tracking-wide text-primary">Kết luận admin</p>
           <p className="mt-1 text-sm leading-relaxed text-slate-800">{d.adminResolutionNote}</p>
         </div>
       ) : null}
