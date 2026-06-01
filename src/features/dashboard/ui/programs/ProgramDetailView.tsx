@@ -59,6 +59,7 @@ export function ProgramDetailView({
   const [scheduledAt, setScheduledAt] = useState('');
   const [scheduledAtEnd, setScheduledAtEnd] = useState('');
   const [meetingUrl, setMeetingUrl] = useState('');
+  const [sessionStatus, setSessionStatus] = useState('');
   const [scheduling, setScheduling] = useState(false);
 
   // States for Custom Session Creation (Thêm buổi học mới)
@@ -116,8 +117,10 @@ export function ProgramDetailView({
         scheduledAt: isoScheduledAt,
         scheduledAtEnd: isoScheduledAtEnd,
         meetingUrl: meetingUrl.trim() || undefined,
+        status: sessionStatus || undefined,
+        cancelReason: sessionStatus === 'canceled' ? 'Thay đổi trạng thái bởi Mentor' : undefined,
       });
-      toast.success('Xếp lịch buổi học thành công.');
+      toast.success('Cập nhật buổi học thành công.');
       setScheduleOpen(false);
       setScheduleSession(null);
       setScheduledAt('');
@@ -465,11 +468,12 @@ export function ProgramDetailView({
                                   setScheduledAtEnd('');
                                 }
                                 setMeetingUrl(row.meetingUrl || '');
+                                setSessionStatus(row.rawStatus.toLowerCase());
                                 setScheduleOpen(true);
                               }}
                               className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                             >
-                              Xếp lịch
+                              Cập nhật
                             </button>
                           ) : null}
 
@@ -590,7 +594,7 @@ export function ProgramDetailView({
             onSubmit={(e) => void handleScheduleSave(e)}
             className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
           >
-            <h3 className="text-lg font-semibold text-slate-900">Lên lịch buổi học</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Cập nhật buổi học</h3>
             <p className="text-sm text-slate-500 font-medium">Buổi: {scheduleSession.title}</p>
             
             <div className="space-y-1">
@@ -625,6 +629,23 @@ export function ProgramDetailView({
               />
             </div>
 
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái buổi học</label>
+              <select
+                value={sessionStatus}
+                onChange={(e) => setSessionStatus(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition bg-white"
+              >
+                <option value="pending">Chờ xếp lịch (Pending)</option>
+                <option value="scheduled">Đã lên lịch (Scheduled)</option>
+                <option value="in_progress">Đang diễn ra (In Progress)</option>
+                <option value="awaiting_confirmation">Chờ xác nhận (Awaiting Confirmation)</option>
+                <option value="completed">Hoàn thành (Completed)</option>
+                <option value="canceled">Đã hủy (Canceled)</option>
+                <option value="no_show">Vắng mặt (No Show)</option>
+              </select>
+            </div>
+
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 type="button"
@@ -638,7 +659,7 @@ export function ProgramDetailView({
                 disabled={scheduling}
                 className="rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition flex items-center gap-1.5"
               >
-                {scheduling ? 'Đang lưu…' : 'Lưu lịch'}
+                {scheduling ? 'Đang lưu…' : 'Lưu thay đổi'}
               </button>
             </div>
           </form>
