@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNotificationRealtime } from '@/hooks/useNotificationRealtime';
 import { notificationService, type NotificationItem } from '@/services/notificationService';
+import { fireNotificationToast } from '@/components/dashboard/NotificationToast';
 
 export function useNotificationInbox() {
   const { user, isAuthenticated } = useAuth();
@@ -36,6 +37,7 @@ export function useNotificationInbox() {
   useNotificationRealtime({
     userId,
     onNotification: (item) => {
+      // Update the dropdown list
       setItems((prev) => {
         const without = prev.filter((p) => p.id !== item.id);
         return [item, ...without];
@@ -43,6 +45,9 @@ export function useNotificationInbox() {
       if (!item.isRead) {
         setUnreadCount((c) => c + 1);
       }
+
+      // Fire a toast popup notification
+      fireNotificationToast(item);
     },
   });
 

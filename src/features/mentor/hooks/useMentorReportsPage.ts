@@ -1,10 +1,33 @@
 import { useCallback, useState } from 'react';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
+import { trustService } from '@/services/trustService';
 
 export function useMentorReportsPage() {
   const paginated = usePaginatedList<any>({
     fetchPage: useCallback(async (page, size) => {
-      return { items: [], total: 0, totalPages: 0, page, size };
+      try {
+        const data = await trustService.myReports(page, size);
+        return {
+          items: data.items.map((r: any) => ({
+            id: r.id,
+            title: `Báo cáo ${r.type === 'booking' ? 'Lộ trình' : r.type === 'session' ? 'Buổi học' : 'Người dùng'}`,
+            status: r.status === 'open' ? 'PENDING' : r.status === 'in_review' ? 'PENDING' : r.status === 'resolved' ? 'REVIEWED' : 'REJECTED',
+            menteeName: r.reportedUserId ? `Người dùng #${r.reportedUserId.substring(0, 8)}` : 'Admin',
+            menteeId: r.reportedUserId || '',
+            createdAt: r.createdAt,
+            content: `Lý do: ${r.reason}\nChi tiết: ${r.description}`,
+            attachmentUrl: null,
+            mentorFeedback: r.resolutionNote || null,
+          })),
+          total: data.total,
+          totalPages: data.totalPages,
+          page,
+          size,
+        };
+      } catch (err) {
+        console.error(err);
+        return { items: [], total: 0, totalPages: 0, page, size };
+      }
     }, []),
   });
 
@@ -14,7 +37,7 @@ export function useMentorReportsPage() {
   const [reviewing, setReviewing] = useState(false);
 
   const handleReview = async () => {
-    // Progress reports feature removed from API — no-op
+    // Detail display only since reports are resolved by Admin
     return;
   };
 

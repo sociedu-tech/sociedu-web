@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ROLES, normalizeRole } from '@/constants/roles';
 import { DashboardViewHeader } from '@/features/dashboard/ui/DashboardPrimitives';
 import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
-import { AdminProgramList } from '@/features/admin/views/AdminProgramList';
+import { AdminServicePackagesList } from '@/features/admin/views/AdminServicePackagesList';
 import { MentorSchedule } from '@/features/dashboard/ui/mentor/MentorSchedule';
 import { ProgramList } from '@/features/dashboard/ui/programs/ProgramList';
 import {
@@ -23,13 +23,13 @@ export function MentoringHub() {
     return (
       <>
         <DashboardViewHeader
-          title={ADMIN_PROGRAM.listTitle}
-          description={ADMIN_PROGRAM.listDescription}
+          title="Quản lý gói dịch vụ"
+          description="Giám sát và theo dõi toàn bộ các gói dịch vụ mentoring trên hệ thống."
           layout="compact"
         />
         <DashboardSurface>
           <div className="p-4 sm:p-6">
-            <AdminProgramList />
+            <AdminServicePackagesList />
           </div>
         </DashboardSurface>
       </>

@@ -39,8 +39,15 @@ export function useAdminUsersManagementView() {
     }
   };
 
-  const setStatus = (id: string, accountStatus: UserAccountStatus) => {
+  const setStatus = async (id: string, accountStatus: UserAccountStatus) => {
     setLocalStatus((prev) => ({ ...prev, [id]: accountStatus }));
+    try {
+      await adminService.updateUserStatus(id, accountStatus);
+      await paginated.refresh();
+    } catch (err: unknown) {
+      console.error('Lỗi khi cập nhật trạng thái người dùng:', err);
+      await paginated.refresh();
+    }
   };
 
   return {

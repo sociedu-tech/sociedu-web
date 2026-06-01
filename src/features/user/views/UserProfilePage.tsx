@@ -144,6 +144,7 @@ export function UserProfilePage() {
         onClose={() => setIsReportModalOpen(false)}
         targetType="mentor"
         targetName={user.name}
+        targetId={id}
       />
     </div>
   );

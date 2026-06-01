@@ -1,10 +1,8 @@
 'use client';
 
-import { Client, type StompSubscription } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { useCallback, useEffect, useRef } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { buildSockJsChatUrl, notificationTopicForUser } from '@/lib/wsConfig';
+import { useEffect, useRef } from 'react';
+import { useStomp } from '@/context/StompProvider';
+import { notificationTopicForUser } from '@/lib/wsConfig';
 import type { NotificationItem } from '@/services/notificationService';
 
 type NotificationEnvelope = {
@@ -19,51 +17,26 @@ type Options = {
 };
 
 export function useNotificationRealtime({ userId, onNotification }: Options) {
-  const { token, isAuthenticated } = useAuth();
-  const clientRef = useRef<Client | null>(null);
-  const subscriptionRef = useRef<StompSubscription | null>(null);
+  const { connected, subscribe } = useStomp();
   const onNotificationRef = useRef(onNotification);
-
   onNotificationRef.current = onNotification;
 
-  const disconnect = useCallback(() => {
-    subscriptionRef.current?.unsubscribe();
-    subscriptionRef.current = null;
-    clientRef.current?.deactivate();
-    clientRef.current = null;
-  }, []);
-
   useEffect(() => {
-    if (!isAuthenticated || !token || !userId) {
-      disconnect();
-      return undefined;
-    }
+    if (!connected || !userId) return undefined;
 
-    const client = new Client({
-      reconnectDelay: 4000,
-      webSocketFactory: () => new SockJS(buildSockJsChatUrl(token)),
+    const destination = notificationTopicForUser(userId);
+    const unsubscribe = subscribe(destination, (body) => {
+      try {
+        const envelope = JSON.parse(body) as NotificationEnvelope;
+        if (envelope.eventType !== 'NEW_NOTIFICATION' || !envelope.payload) {
+          return;
+        }
+        onNotificationRef.current?.(envelope.payload);
+      } catch {
+        // ignore malformed frames
+      }
     });
 
-    client.onConnect = () => {
-      const destination = notificationTopicForUser(userId);
-      subscriptionRef.current = client.subscribe(destination, (frame) => {
-        try {
-          const envelope = JSON.parse(frame.body) as NotificationEnvelope;
-          if (envelope.eventType !== 'NEW_NOTIFICATION' || !envelope.payload) {
-            return;
-          }
-          onNotificationRef.current?.(envelope.payload);
-        } catch {
-          // ignore malformed frames
-        }
-      });
-    };
-
-    client.activate();
-    clientRef.current = client;
-
-    return () => {
-      disconnect();
-    };
-  }, [disconnect, isAuthenticated, token, userId]);
+    return unsubscribe;
+  }, [connected, subscribe, userId]);
 }

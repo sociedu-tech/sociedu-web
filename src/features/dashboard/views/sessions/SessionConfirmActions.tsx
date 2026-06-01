@@ -24,7 +24,7 @@ export function SessionConfirmActions({ row, onUpdated }: Props) {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => router.push(`/dashboard?reportSessionId=${encodeURIComponent(row.sessionId)}`)}
+            onClick={() => router.push(`/dashboard/mentoring/${row.bookingId}/report?sessionId=${row.sessionId}`)}
           >
             Báo cáo tranh chấp
           </Button>

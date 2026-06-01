@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AlertTriangle, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 import type { BookingProgramItem } from '@/features/dashboard/types/booking';
 import type { ProgramLabels } from '@/features/dashboard/lib/programLabels';
@@ -29,8 +30,11 @@ export function ProgramReportPageView({ item, labels, orderPackageName }: Props)
   const packageName = pickPackageLabel(item.orderId, item.packageLabel, {}, orderPackageName);
   const detailHref = programDetailPath(item.bookingId);
 
-  const [scope, setScope] = useState<ReportScope>('all');
-  const [sessionId, setSessionId] = useState(item.sessionRows[0]?.sessionId ?? '');
+  const searchParams = useSearchParams();
+  const initSessionId = searchParams?.get('sessionId') || '';
+
+  const [scope, setScope] = useState<ReportScope>(initSessionId ? 'session' : 'all');
+  const [sessionId, setSessionId] = useState(initSessionId || item.sessionRows[0]?.sessionId || '');
   const [reasonValue, setReasonValue] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);

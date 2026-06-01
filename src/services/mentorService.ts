@@ -339,4 +339,22 @@ export const mentorService = {
     const res = await api.put(`${BASE_URL}/me/packages`, { packages });
     return res.data;
   },
+  getAllPackages: async (params?: { q?: string; page?: number; size?: number }): Promise<PagePayload<MentorPackage & { mentorId: string }>> => {
+    const sp = new URLSearchParams();
+    if (params?.q) sp.set('q', params.q);
+    sp.set('page', String(params?.page ?? 0));
+    sp.set('size', String(params?.size ?? 20));
+    const res = await api.get(`/api/v1/service-packages?${sp.toString()}`);
+    const page = normalizePagePayload<Record<string, unknown>>(res.data, params?.size ?? 20);
+    return {
+      ...page,
+      items: page.items.map((raw) => {
+        const pkg = mapServicePackageToMentorPackage(raw);
+        return {
+          ...pkg,
+          mentorId: String(raw.mentorId ?? ''),
+        };
+      }),
+    };
+  },
 };

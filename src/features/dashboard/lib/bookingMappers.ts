@@ -194,7 +194,11 @@ export function mapBookingsToProgramItems(
       const completedSessions = sessions.filter((s) => isSessionCompleted(s.status)).length;
       const totalSessions = sessions.length;
       const progressPercent =
-        totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+        typeof booking.progressPercent === 'number'
+          ? booking.progressPercent
+          : totalSessions > 0
+          ? Math.round((completedSessions / totalSessions) * 100)
+          : 0;
 
       const upcoming = sessions
         .filter((s) => !isSessionCompleted(s.status) && String(s.status ?? '').toLowerCase() !== 'canceled')
@@ -261,8 +265,13 @@ function sessionToRow(
     title: session.title?.trim() || `Buổi học #${shortId(sessionId)}`,
     when: formatViDateTime(session.scheduledAt ?? session.completedAt),
     startAt: session.scheduledAt ? formatViDateTime(session.scheduledAt) : '—',
-    endAt: session.completedAt ? formatViDateTime(session.completedAt) : '—',
+    endAt: session.completedAt
+      ? formatViDateTime(session.completedAt)
+      : session.scheduledAtEnd
+      ? formatViDateTime(session.scheduledAtEnd)
+      : '—',
     scheduledAtIso,
+    scheduledAtEndIso: session.scheduledAtEnd ?? null,
     counterparty,
     status: sessionStatusLabel(session.status),
     rawStatus,
@@ -270,5 +279,6 @@ function sessionToRow(
     mentorCompletionAck: session.mentorCompletionAck ?? null,
     canConfirm,
     myAck,
+    meetingUrl: session.meetingUrl ?? null,
   };
 }

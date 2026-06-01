@@ -5,7 +5,7 @@ import { avatarUrlForUser, collectAttachments, dedupeConversationsByPeer, sortCo
 import { chatService, type ChatContextType, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { useChatSocket } from '@/hooks/useChatSocket';
+import { useChatSubscriptions, type ChatSocketMessage } from '@/hooks/useChatSocket';
 
 export function useDashboardChatPage() {
   const { user } = useAuth();
@@ -19,8 +19,9 @@ export function useDashboardChatPage() {
     contextTypeFromUrl && contextIdFromUrl
       ? { contextType: contextTypeFromUrl as ChatContextType, contextId: contextIdFromUrl }
       : undefined;
-  const { connected, subscribeConversation } = useChatSocket();
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  /* ---------- stable conversation IDs for subscription ---------- */
+  const conversationIds = useMemo(() => conversations.map((c) => c.id), [conversations]);
   const [activeId, setActiveId] = useState('');
   const [draft, setDraft] = useState('');
   const [query, setQuery] = useState('');
@@ -313,31 +314,35 @@ export function useDashboardChatPage() {
     };
   }, [activeId, toUiMessage, toast]);
 
-  useEffect(() => {
-    if (!connected || conversations.length === 0) {
-      return;
-    }
-    const unsubscribers = conversations.map((c) =>
-      subscribeConversation(c.id, (message) => {
-        if (!message.id) return;
-        const uiMessage = toUiMessage({
-          id: message.id,
-          senderId: message.senderId,
-          content: message.content,
-          type: message.type || 'text',
-          edited: message.edited,
-          createdAt: message.createdAt,
-          attachmentFileIds: message.attachmentFileIds ?? [],
-          contextType: message.contextType != null ? String(message.contextType) : null,
-          contextId: message.contextId != null ? String(message.contextId) : null,
-        });
-        upsertMessage(c.id, { ...uiMessage, sendStatus: uiMessage.role === 'me' ? 'sent' : undefined });
-      }),
-    );
-    return () => {
-      unsubscribers.forEach((fn) => fn());
-    };
-  }, [connected, conversations, subscribeConversation, toUiMessage, upsertMessage]);
+  /* ---------- STOMP subscriptions (diff-based, no re-subscribe loop) ---------- */
+  const toUiMessageRef = useRef(toUiMessage);
+  toUiMessageRef.current = toUiMessage;
+  const upsertMessageRef = useRef(upsertMessage);
+  upsertMessageRef.current = upsertMessage;
+
+  const handleStompMessage = useCallback(
+    (convId: string, message: ChatSocketMessage) => {
+      if (!message.id) return;
+      const uiMessage = toUiMessageRef.current({
+        id: message.id,
+        senderId: message.senderId,
+        content: message.content,
+        type: message.type || 'text',
+        edited: message.edited,
+        createdAt: message.createdAt,
+        attachmentFileIds: message.attachmentFileIds ?? [],
+        contextType: message.contextType != null ? String(message.contextType) : null,
+        contextId: message.contextId != null ? String(message.contextId) : null,
+      });
+      upsertMessageRef.current(convId, {
+        ...uiMessage,
+        sendStatus: uiMessage.role === 'me' ? 'sent' : undefined,
+      });
+    },
+    [],
+  );
+
+  useChatSubscriptions(conversationIds, handleStompMessage);
 
   const openThread = (id: string) => {
     setActiveId(id);
@@ -345,6 +350,10 @@ export function useDashboardChatPage() {
       setMobileThread(true);
     }
     setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, unread: undefined } : c)));
+  };
+
+  const createConversation = () => {
+    toast.info('Tạo hội thoại mới sẽ được mở từ flow booking/support trên backend.');
   };
 
   const send = async () => {
@@ -403,6 +412,7 @@ export function useDashboardChatPage() {
     sharedImages,
     sharedFiles,
     openThread,
+    createConversation,
     send,
     convPage,
     setConvPage,

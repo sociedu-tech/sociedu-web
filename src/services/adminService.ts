@@ -82,6 +82,11 @@ export const adminService = {
     return toAdminUserRow(res.data as AdminUserApiRow);
   },
 
+  updateUserStatus: async (userId: string, status: 'active' | 'suspended' | 'pending') => {
+    const res = await api.patch(`${USER_MANAGEMENT_URL}/${userId}/status`, { status: status.toLowerCase() });
+    return toAdminUserRow(res.data as AdminUserApiRow);
+  },
+
   getStats: async (): Promise<{
     totalUsers: number;
     totalMentors: number;
