@@ -43,8 +43,8 @@ export const ROUTES = {
     // ---- ADMIN ROUTES ----
     ADMIN: {
       OVERVIEW: { path: '/dashboard', label: 'Thống kê', roles: [ROLES.ADMIN], sidebar: true },
-      USERS: { path: '/dashboard/users', label: 'Người dùng', roles: [ROLES.ADMIN], sidebar: true },
-      MENTORS: { path: '/dashboard/mentors', label: 'Quản lý Mentor', roles: [ROLES.ADMIN], sidebar: true },
+      USERS: { path: '/dashboard/users', label: 'Quản lý người dùng', roles: [ROLES.ADMIN], sidebar: true },
+      MENTORS: { path: '/dashboard/mentors', label: 'Quản lý Mentor', roles: [ROLES.ADMIN], sidebar: false },
       PRODUCT_REQUESTS: { path: '/dashboard/product-requests', label: 'Duyệt Sản phẩm', roles: [ROLES.ADMIN], sidebar: true },
       MENTORING: { path: '/dashboard/mentoring', label: 'Mentoring', roles: [ROLES.ADMIN], sidebar: true },
       BOOKINGS: { path: '/dashboard/bookings', label: 'Quản lý đặt lịch', roles: [ROLES.ADMIN], sidebar: true },

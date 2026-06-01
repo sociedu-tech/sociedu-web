@@ -10,13 +10,13 @@ export function getModerationPageMeta(segment: AdminReportSegment): { title: str
       };
     case 'people':
       return {
-        title: 'Báo cáo — Người dùng & mentor',
-        description: 'Phản ánh liên quan tài khoản học viên, mentor hoặc hành vi trên nền tảng.',
+        title: 'Báo cáo — Báo cáo',
+        description: 'Danh sách các báo cáo vi phạm liên quan đến người dùng, mentor hoặc các buổi học trên hệ thống.',
       };
     case 'review':
       return {
         title: 'Báo cáo — Đánh giá',
-        description: 'Nội dung đánh giá không phù hợp, spam hoặc sai sự thật.',
+        description: 'Nội dung đánh giá phản hồi, đánh giá sao không phù hợp hoặc bị báo cáo trên hệ thống.',
       };
     case 'session':
       return {

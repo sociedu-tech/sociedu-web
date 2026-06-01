@@ -20,6 +20,7 @@ export function SessionsListUser() {
       totalPages={totalPages}
       setPage={setPage}
       setSize={setSize}
+      role="buyer"
     />
   );
 }

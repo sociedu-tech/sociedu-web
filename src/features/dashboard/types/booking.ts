@@ -18,6 +18,7 @@ export type DashboardSessionRow = {
   canConfirm: boolean;
   myAck: boolean | null;
   meetingUrl?: string | null;
+  scheduledAtEnd?: string | null;
 };
 
 export type DashboardProjectRow = {

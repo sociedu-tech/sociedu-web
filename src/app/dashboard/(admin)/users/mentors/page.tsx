@@ -4,17 +4,17 @@ import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/Dashboa
 import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
 import { AdminUsersManagementView } from '@/features/admin/views/AdminUsersManagementView';
 
-export default function AdminUsersPage() {
+export default function AdminMentorsPage() {
   return (
     <>
       <DashboardViewHeader
-        title="Quản lý Học viên"
-        description="Danh sách tài khoản học viên, quản lý quyền truy cập và phân vai trò trên hệ thống."
+        title="Quản lý Mentor"
+        description="Danh sách tài khoản Mentor, quản lý thông tin hoạt động, phê duyệt và phân vai trò trên hệ thống."
         layout="compact"
       />
       <DashboardSurface>
         <div className="p-4 sm:p-6">
-          <AdminUsersManagementView defaultRole="user" />
+          <AdminUsersManagementView defaultRole="mentor" />
         </div>
       </DashboardSurface>
     </>

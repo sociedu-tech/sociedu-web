@@ -55,7 +55,7 @@ export function DashboardSidebar({
 
   const getSidebarWidth = () => {
     if (isMobile) return 'w-[17.5rem]';
-    return menuState === 'collapsed' ? 'w-[5rem]' : 'w-[17.5rem]';
+    return menuState === 'collapsed' ? 'w-14' : 'w-[17.5rem]';
   };
 
   const handleNav = () => {
@@ -64,7 +64,7 @@ export function DashboardSidebar({
 
   const inner = (
     <>
-      <div className="relative flex h-[4.25rem] shrink-0 items-center border-b border-slate-800/90 bg-slate-900 px-3">
+      <div className="relative flex h-14 shrink-0 items-center bg-slate-900 px-3">
         <Link
           href="/"
           onClick={handleNav}
@@ -83,7 +83,7 @@ export function DashboardSidebar({
         {!isMobile && (
           <button
             onClick={onMenuToggle}
-            className="absolute -right-3.5 top-[20px] z-50 hidden size-7 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-400 shadow-md shadow-black/20 transition-colors hover:bg-slate-700 hover:text-slate-100 lg:flex"
+            className="absolute -right-3.5 top-[14px] z-50 hidden size-7 items-center justify-center rounded-full border border-slate-700 bg-slate-800 text-slate-400 shadow-md shadow-black/20 transition-colors hover:bg-slate-700 hover:text-slate-100 lg:flex"
             title={showText ? 'Thu gọn sidebar' : 'Mở rộng sidebar'}
           >
             {showText ? (

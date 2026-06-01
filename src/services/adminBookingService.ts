@@ -3,6 +3,8 @@ import type { AdminBookingRow, BookingStatus } from '@/types';
 import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import { buildPageQuery, normalizePagePayload, type PagePayload } from '@/lib/apiUtils';
 
+import type { BookingApiSession } from '@/features/dashboard/types/booking';
+
 type AdminBookingApiRow = {
   id: string;
   code: string;
@@ -16,6 +18,8 @@ type AdminBookingApiRow = {
   packageTitle: string;
   amountVnd: number;
   createdAt: string;
+  sessions?: BookingApiSession[] | null;
+  progressPercent?: number | null;
 };
 
 const toRow = (row: AdminBookingApiRow): AdminBookingRow => ({
@@ -31,6 +35,8 @@ const toRow = (row: AdminBookingApiRow): AdminBookingRow => ({
   packageTitle: row.packageTitle,
   amountVnd: Number(row.amountVnd ?? 0),
   createdAt: formatDisplayDate(row.createdAt),
+  sessions: row.sessions,
+  progressPercent: row.progressPercent,
 });
 
 export const adminBookingService = {

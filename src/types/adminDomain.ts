@@ -20,6 +20,8 @@ export type BookingStatus =
   | 'cancelled_by_mentor'
   | 'no_show';
 
+import type { BookingApiSession } from '@/features/dashboard/types/booking';
+
 export interface AdminBookingRow {
   id: string;
   code: string;
@@ -34,6 +36,8 @@ export interface AdminBookingRow {
   packageTitle: string;
   amountVnd: number;
   createdAt: string;
+  sessions?: BookingApiSession[] | null;
+  progressPercent?: number | null;
 }
 
 /** Đối tượng bị báo cáo */

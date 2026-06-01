@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
+import { useAuth } from '@/context/AuthContext';
 import { initials } from '@/features/dashboard/chat/utils';
 
 function ChatSendStatusIcon({ message }: { message: ChatMessage }) {
@@ -153,7 +154,6 @@ export type DashboardChatPageViewProps = {
   convLoading?: boolean;
   messagesLoading?: boolean;
   pendingMessageContext?: { contextType: string; contextId: string };
-  isAdmin?: boolean;
 };
 
 export function DashboardChatPageView({
@@ -180,8 +180,10 @@ export function DashboardChatPageView({
   convLoading = false,
   messagesLoading = false,
   pendingMessageContext,
-  isAdmin = false,
 }: DashboardChatPageViewProps) {
+  const { user, userRole } = useAuth();
+  const isAdmin = userRole ? userRole.toLowerCase() === 'admin' : false;
+
   return (
     <div
       className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-slate-50 [--color-primary:#172033] [--color-primary-hover:#0c1220] [--color-badge-primary-bg:rgba(23,32,51,0.14)]"
@@ -295,15 +297,6 @@ export function DashboardChatPageView({
                   <p className="truncate font-semibold text-slate-900">{active.name}</p>
                   <p className="truncate text-xs text-slate-500">{active.roleLabel}</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setRightPanelOpen((o) => !o)}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 lg:hidden"
-                  aria-expanded={rightPanelOpen}
-                  aria-label="Ảnh và tệp đã gửi"
-                >
-                  {rightPanelOpen ? <PanelRightClose className="size-5" /> : <PanelRightOpen className="size-5" />}
-                </button>
               </div>
 
               <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden bg-slate-50/90 p-2.5 sm:space-y-3 sm:p-4">
@@ -316,10 +309,13 @@ export function DashboardChatPageView({
                 ) : (
                   active.messages.map((m) => (
                     <div key={m.id} className="w-full min-w-0">
-                      <div className={cn('flex w-full min-w-0', m.role === 'me' ? 'justify-end' : 'justify-start')}>
+                      <div className={cn('flex w-full min-w-0 gap-2.5 items-end', m.role === 'me' ? 'justify-end' : 'justify-start')}>
+                        {m.role !== 'me' && (
+                          <ChatPeerAvatar name={active.name} avatarUrl={active.avatarUrl} className="size-8 mb-1" />
+                        )}
                         <div
                           className={cn(
-                            'w-fit min-w-0 max-w-[min(100%,18.75rem)] rounded-2xl px-3 py-2.5 text-sm leading-relaxed sm:max-w-md sm:px-3.5',
+                            'w-fit min-w-0 max-w-[calc(100%-2.75rem)] rounded-2xl px-3 py-2.5 text-sm leading-relaxed sm:px-3.5',
                             m.role === 'me'
                               ? 'rounded-br-md bg-primary text-white'
                               : 'rounded-bl-md border border-slate-200 bg-white text-slate-800',
@@ -372,6 +368,9 @@ export function DashboardChatPageView({
                             <ChatSendStatusIcon message={m} />
                           </div>
                         </div>
+                        {m.role === 'me' && (
+                          <ChatPeerAvatar name={user?.fullName || 'Tôi'} avatarUrl={user?.avatarUrl} className="size-8 mb-1" />
+                        )}
                       </div>
                     </div>
                   ))
@@ -443,80 +442,6 @@ export function DashboardChatPageView({
             </div>
           )}
         </section>
-
-        <aside
-          className={cn(
-            'flex min-h-0 w-full flex-col overflow-hidden border-slate-200 bg-white lg:h-full lg:w-72 lg:max-w-[320px] xl:w-80',
-            'max-lg:fixed max-lg:inset-y-0 max-lg:right-0 max-lg:z-[45] max-lg:w-[min(100vw-3rem,20rem)] max-lg:border-l max-lg:shadow-2xl',
-            !rightPanelOpen && 'max-lg:hidden',
-          )}
-        >
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-3 py-3 lg:py-2.5">
-            <p className="text-sm font-semibold text-slate-900">Ảnh & tệp</p>
-            <button
-              type="button"
-              className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden"
-              aria-label="Đóng"
-              onClick={() => setRightPanelOpen(false)}
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-3">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Ảnh</p>
-            {sharedImages.length === 0 ? (
-              <p className="mb-6 text-sm text-slate-400">Chưa có ảnh trong hội thoại này.</p>
-            ) : (
-              <ul className="mb-6 grid grid-cols-2 gap-2">
-                {sharedImages.map((img) => (
-                  <li key={img.id} className="overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
-                    {img.url ? (
-                      <Image
-                        src={img.url}
-                        alt={img.name}
-                        width={160}
-                        height={120}
-                        className="aspect-[4/3] h-auto w-full object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="flex aspect-[4/3] items-center justify-center">
-                        <ImageIcon className="size-8 text-slate-300" />
-                      </div>
-                    )}
-                    <p className="truncate px-1.5 py-1 text-[10px] text-slate-500">{img.name}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Tệp</p>
-            {sharedFiles.length === 0 ? (
-              <p className="text-sm text-slate-400">Chưa có tệp đính kèm.</p>
-            ) : (
-              <ul className="space-y-2">
-                {sharedFiles.map((f) => (
-                  <li
-                    key={f.id}
-                    className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-sm text-slate-700"
-                  >
-                    <FileText className="size-4 shrink-0 text-primary" />
-                    <span className="min-w-0 flex-1 truncate">{f.name}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </aside>
-
-        {rightPanelOpen ? (
-          <button
-            type="button"
-            className="fixed inset-0 z-[40] bg-slate-900/40 lg:hidden"
-            aria-label="Đóng bảng phụ"
-            onClick={() => setRightPanelOpen(false)}
-          />
-        ) : null}
       </div>
     </div>
   );
