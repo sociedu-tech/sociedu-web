@@ -107,6 +107,9 @@ const subscribeTokenRefresh = (cb: (token: string) => void) => {
 const onRefreshed = (token: string) => {
   refreshSubscribers.forEach((cb) => cb(token));
   refreshSubscribers = [];
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('auth:token-refreshed', { detail: { token } }));
+  }
 };
 
 /** Các endpoint KHÔNG được tự động refresh trên 401 (để tránh vòng lặp / che lỗi auth thật). */

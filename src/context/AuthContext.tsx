@@ -113,6 +113,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     void reloadSession();
   }, [reloadSession]);
 
+  useEffect(() => {
+    const onTokenRefreshed = (event: Event) => {
+      const detail = (event as CustomEvent<{ token?: string }>).detail;
+      const next = detail?.token ?? getAuthToken();
+      if (next) setToken(next);
+    };
+    window.addEventListener('auth:token-refreshed', onTokenRefreshed);
+    return () => window.removeEventListener('auth:token-refreshed', onTokenRefreshed);
+  }, []);
+
   const applyAuthPayload = useCallback(
     async (payload: AuthPayload | undefined) => {
       if (!payload) return;

@@ -65,6 +65,7 @@ export function useDashboardChatPage() {
     chatPresence.setActive(activeId || null);
     if (activeId) {
       chatUnreadStore.clearConversation(activeId);
+      void chatService.markConversationRead(activeId).catch(() => {});
     }
     return () => chatPresence.setActive(null);
   }, [activeId]);
@@ -165,13 +166,20 @@ export function useDashboardChatPage() {
           if (shouldBumpUnread) {
             chatUnreadStore.bump(conversationId);
           }
+          const storeUnread =
+            activeId === conversationId
+              ? undefined
+              : (() => {
+                  const count = chatUnreadStore.getForConversation(conversationId);
+                  return count > 0 ? count : undefined;
+                })();
           return {
             ...c,
             messages: nextMessages,
             lastMessage: uiMessage.text || 'Đã gửi tệp đính kèm',
             time: uiMessage.time,
             sortAt: nowIso,
-            unread: activeId === conversationId ? undefined : shouldBumpUnread ? (c.unread ?? 0) + 1 : c.unread,
+            unread: storeUnread,
           };
         });
         return sortConversationsByRecent(next);
@@ -200,6 +208,8 @@ export function useDashboardChatPage() {
     (c: ChatConversationDto): Conversation => {
       const sortAt = c.lastMessageAt || c.createdAt;
       const lastMessage = c.lastMessageContent?.trim() || 'Chưa có tin nhắn';
+      const apiUnread = c.unreadCount ?? 0;
+      const unread = apiUnread > 0 ? apiUnread : undefined;
       return {
         id: c.id,
         type: c.type,
@@ -210,12 +220,18 @@ export function useDashboardChatPage() {
         sortAt,
         peerUserId: c.peerUserId ?? undefined,
         avatarUrl: avatarUrlForUser(c.peerUserId, c.peerAvatarFileId),
-        unread: undefined,
+        unread,
         messages: [],
       };
     },
     [conversationRole, conversationTitle, formatTime],
   );
+
+  const syncUnreadFromApi = useCallback((items: ChatConversationDto[]) => {
+    chatUnreadStore.syncFromApi(
+      Object.fromEntries(items.map((c) => [c.id, c.unreadCount ?? 0])),
+    );
+  }, []);
 
   useEffect(() => {
     let activeRequest = true;
@@ -230,6 +246,7 @@ export function useDashboardChatPage() {
         setConvTotalPages(page.totalPages);
         const mapped: Conversation[] = dedupeConversationsByPeer(items.map(toUiConversation));
         hasLoadedConversationsRef.current = true;
+        syncUnreadFromApi(items);
         setConversations(mapped);
         if (mapped.length > 0) {
           setActiveId((prev) => {
@@ -253,7 +270,22 @@ export function useDashboardChatPage() {
     return () => {
       activeRequest = false;
     };
-  }, [convPage, conversationFromUrl, toUiConversation]);
+  }, [convPage, conversationFromUrl, toUiConversation, syncUnreadFromApi]);
+
+  useEffect(() => {
+    return chatUnreadStore.subscribe(() => {
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id === activeId) {
+            return c.unread == null ? c : { ...c, unread: undefined };
+          }
+          const fromStore = chatUnreadStore.getForConversation(c.id);
+          const next = fromStore > 0 ? fromStore : undefined;
+          return c.unread === next ? c : { ...c, unread: next };
+        }),
+      );
+    });
+  }, [activeId]);
 
   const fetchedUrlRef = useRef<string | null>(null);
 
@@ -380,6 +412,7 @@ export function useDashboardChatPage() {
   const openThread = (id: string) => {
     setActiveId(id);
     chatUnreadStore.clearConversation(id);
+    void chatService.markConversationRead(id).catch(() => {});
     if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
       setMobileThread(true);
     }

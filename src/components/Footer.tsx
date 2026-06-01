@@ -4,7 +4,7 @@ import { Facebook, Linkedin, Github } from 'lucide-react';
 
 export const Footer = () => {
   return (
-    <footer className="bg-white border-t border-border py-10">
+    <footer className="mt-auto w-full shrink-0 border-t border-border bg-white py-10">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
         <div>
           <h4 className="text-sm font-semibold text-dark mb-3">Sản phẩm</h4>

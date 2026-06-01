@@ -1,5 +1,5 @@
-import { MentorPackagesPage } from '@/features/mentor/views/MentorPackagesPage';
+import { MentorPackagesListPage } from '@/features/mentor/views/MentorPackagesListPage';
 
 export default function DashboardPackagesPage() {
-  return <MentorPackagesPage />;
+  return <MentorPackagesListPage />;
 }

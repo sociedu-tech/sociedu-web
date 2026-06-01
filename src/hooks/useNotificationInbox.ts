@@ -33,6 +33,12 @@ export function useNotificationInbox() {
     void refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    const onRefresh = () => void refresh();
+    window.addEventListener('notifications:refresh', onRefresh);
+    return () => window.removeEventListener('notifications:refresh', onRefresh);
+  }, [refresh]);
+
   useNotificationRealtime({
     onNotification: (item) => {
       if (!isActionNotification(item)) return;

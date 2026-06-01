@@ -38,10 +38,14 @@ export function GlobalChatSubscriptions() {
       if (!connected) return;
 
       const ids: string[] = [];
+      const unreadById: Record<string, number> = {};
       for (let page = 0; page < MAX_CONVERSATION_PAGES; page += 1) {
         try {
           const result = await chatService.listConversations(page, CONV_PAGE_SIZE);
-          ids.push(...result.items.map((c) => c.id));
+          for (const c of result.items) {
+            ids.push(c.id);
+            unreadById[c.id] = c.unreadCount ?? 0;
+          }
           if (page + 1 >= result.totalPages || result.items.length === 0) break;
         } catch {
           break;
@@ -49,6 +53,8 @@ export function GlobalChatSubscriptions() {
       }
 
       if (cancelled) return;
+
+      chatUnreadStore.syncFromApi(unreadById);
 
       const nextIds = new Set(ids);
       const prev = subsRef.current;

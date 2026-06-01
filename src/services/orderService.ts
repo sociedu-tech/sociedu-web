@@ -16,7 +16,9 @@ export const orderService = {
     return res.data;
   },
   getMyOrders: async (page = 0, size = 20): Promise<PagePayload<ServiceOrderDto>> => {
-    const res = await api.get(`${BASE_URL}/me${buildPageQuery({ page, size })}`);
+    const res = await api.get(
+      `${BASE_URL}/me${buildPageQuery({ page, size, sort: 'createdAt,desc' })}`,
+    );
     return normalizePagePayload<ServiceOrderDto>(res.data, size);
   },
   getOrderById: async (id: number | string) => {
@@ -30,7 +32,9 @@ export const orderService = {
   },
   /** Incoming orders for mentors */
   getIncomingOrders: async (page = 0, size = 20): Promise<PagePayload<ServiceOrderDto>> => {
-    const res = await api.get(`${BASE_URL}/me/incoming${buildPageQuery({ page, size })}`);
+    const res = await api.get(
+      `${BASE_URL}/me/incoming${buildPageQuery({ page, size, sort: 'createdAt,desc' })}`,
+    );
     return normalizePagePayload<ServiceOrderDto>(res.data, size);
   },
 };

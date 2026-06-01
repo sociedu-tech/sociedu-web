@@ -159,6 +159,8 @@ export function getDashboardTitle(pathname: string): string {
   if (/^\/dashboard\/my-orders\/[^/]+$/.test(normalized)) return 'Chi tiết đơn hàng';
   if (normalized === '/dashboard/my-orders') return 'Đơn hàng của tôi';
   if (/^\/dashboard\/orders\/[^/]+$/.test(normalized)) return 'Chi tiết đơn hàng';
+  if (normalized === '/dashboard/packages/new') return 'Tạo gói dịch vụ';
+  if (/^\/dashboard\/packages\/[^/]+$/.test(normalized)) return 'Chi tiết gói dịch vụ';
   if (normalized === '/dashboard/find-mentors') return 'Tìm mentor';
   if (normalized === ROUTES.DASHBOARD.ADMIN.REPORTS.path) return 'Báo cáo — Tất cả';
   if (normalized === `${ROUTES.DASHBOARD.ADMIN.REPORTS.path}/people`) return 'Báo cáo — Người dùng & mentor';
@@ -211,6 +213,18 @@ export function getDashboardBreadcrumb(pathname: string): { label: string; href?
     return [
       { label: 'Đơn hàng', href: '/dashboard/orders' },
       { label: 'Chi tiết đơn hàng' },
+    ];
+  }
+  if (normalized === '/dashboard/packages/new') {
+    return [
+      { label: 'Gói dịch vụ', href: '/dashboard/packages' },
+      { label: 'Tạo gói mới' },
+    ];
+  }
+  if (/^\/dashboard\/packages\/[^/]+$/.test(normalized)) {
+    return [
+      { label: 'Gói dịch vụ', href: '/dashboard/packages' },
+      { label: 'Chi tiết' },
     ];
   }
   return [{ label: title }];

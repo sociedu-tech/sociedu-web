@@ -60,7 +60,7 @@ export const Navbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-100 w-full transition-all duration-300',
+        'sticky top-0 z-100 w-full shrink-0 transition-all duration-300',
         isScrolled ? 'bg-white py-2.5 border-b border-border' : 'bg-transparent py-4'
       )}
       aria-label="Điều hướng chính"

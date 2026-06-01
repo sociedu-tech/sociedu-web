@@ -18,7 +18,7 @@
   }
 
   body {
-    @apply min-h-dvh w-full bg-page text-dark font-sans antialiased text-[15px] font-medium leading-[1.55] tracking-[-0.12px];
+    @apply flex min-h-dvh w-full flex-col bg-page text-dark font-sans antialiased text-[15px] font-medium leading-[1.55] tracking-[-0.12px];
     overflow-x: clip;
   }
 }

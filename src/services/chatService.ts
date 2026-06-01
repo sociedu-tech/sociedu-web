@@ -20,6 +20,7 @@ export type ChatConversationDto = {
   peerAvatarFileId?: string | null;
   lastMessageContent?: string | null;
   lastMessageAt?: string | null;
+  unreadCount?: number | null;
 };
 
 export type ChatMessageDto = {
@@ -83,6 +84,9 @@ export const chatService = {
   sendMessage: async (conversationId: string, body: SendChatMessageBody) => {
     const res = await api.post(`${BASE}/conversations/${conversationId}/messages`, body);
     return (res.data ?? null) as ChatMessageDto | null;
+  },
+  markConversationRead: async (conversationId: string): Promise<void> => {
+    await api.patch(`${BASE}/conversations/${conversationId}/read`);
   },
 };
 

@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getAuthToken } from '@/lib/api';
 import { buildSockJsChatUrl, STOMP_HEARTBEAT_MS } from '@/lib/wsConfig';
 
 type MessageHandler = (body: string) => void;
@@ -34,11 +35,18 @@ const StompContext = createContext<StompContextValue | null>(null);
 
 const MAX_RECONNECT_DELAY_MS = 30_000;
 
+function resolveAccessToken(fallback: string | null): string | null {
+  return getAuthToken() ?? fallback;
+}
+
 export function StompProvider({ children }: { children: ReactNode }) {
   const { token, isAuthenticated } = useAuth();
-  const clientRef = useRef<Client | null>(null);
   const [connected, setConnected] = useState(false);
   const [status, setStatus] = useState<RealtimeConnectionStatus>('idle');
+  const [tokenVersion, setTokenVersion] = useState(0);
+
+  const clientRef = useRef<Client | null>(null);
+  const tokenRef = useRef<string | null>(token);
 
   const registryRef = useRef<
     Map<
@@ -52,7 +60,24 @@ export function StompProvider({ children }: { children: ReactNode }) {
   >(new Map());
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
+    tokenRef.current = token;
+  }, [token]);
+
+  useEffect(() => {
+    const onTokenRefreshed = () => setTokenVersion((v) => v + 1);
+    window.addEventListener('auth:token-refreshed', onTokenRefreshed);
+    return () => window.removeEventListener('auth:token-refreshed', onTokenRefreshed);
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setConnected(false);
+      setStatus('idle');
+      return undefined;
+    }
+
+    const accessToken = resolveAccessToken(tokenRef.current);
+    if (!accessToken) {
       setConnected(false);
       setStatus('idle');
       return undefined;
@@ -66,7 +91,16 @@ export function StompProvider({ children }: { children: ReactNode }) {
       heartbeatIncoming: STOMP_HEARTBEAT_MS,
       heartbeatOutgoing: STOMP_HEARTBEAT_MS,
       maxReconnectDelay: MAX_RECONNECT_DELAY_MS,
-      webSocketFactory: () => new SockJS(buildSockJsChatUrl(token)),
+      connectHeaders: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      webSocketFactory: () => {
+        const latest = resolveAccessToken(tokenRef.current);
+        if (!latest) {
+          throw new Error('Missing access token for WebSocket');
+        }
+        return new SockJS(buildSockJsChatUrl(latest));
+      },
     });
 
     client.onConnect = () => {
@@ -116,7 +150,7 @@ export function StompProvider({ children }: { children: ReactNode }) {
       setConnected(false);
       setStatus('idle');
     };
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, tokenVersion]);
 
   const subscribe = useCallback((topic: string, handler: MessageHandler): Unsubscribe => {
     let entry = registryRef.current.get(topic);
