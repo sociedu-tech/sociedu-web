@@ -1,13 +1,5 @@
 export type ChatRole = 'me' | 'them';
 
-export type ChatAttachment = {
-  id: string;
-  kind: 'image' | 'file';
-  name: string;
-  /** Ảnh: URL hiển thị; file: có thể dùng icon */
-  url?: string;
-};
-
 import type { ChatContextType } from '@/services/chatService';
 
 export type ChatMessageContext = {
@@ -20,13 +12,14 @@ export type ChatSendStatus = 'sending' | 'sent' | 'failed';
 export type ChatMessage = {
   id: string;
   role: ChatRole;
+  senderId?: string;
+  senderName?: string;
   text: string;
   time: string;
   /** Chỉ áp dụng cho tin của mình — optimistic UI khi gửi. */
   sendStatus?: ChatSendStatus;
   /** Ngữ cảnh gắn kèm tin (order / booking / session). */
   context?: ChatMessageContext;
-  attachments?: ChatAttachment[];
 };
 
 export type Conversation = {

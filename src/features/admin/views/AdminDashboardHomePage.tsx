@@ -11,13 +11,11 @@ import {
   Flag,
   UserPlus,
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
 import { useAdminDashboardHomePage } from '@/features/admin/hooks';
 import { AdminBookingActivityFeed, AdminBookingActivityFeedLink } from '@/features/admin/ui';
 import {
   DashboardPage,
   DashboardSection,
-  DashboardViewHeader,
 } from '@/features/dashboard/ui/modules';
 import {
   StatsKpiCard,
@@ -29,7 +27,6 @@ import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { ROUTES } from '@/constants/routes';
 
 export function AdminDashboardHomePage() {
-  const { user } = useAuth();
   const { analytics, totalUsers, loaded } = useAdminDashboardHomePage();
 
   if (!loaded) {
@@ -37,18 +34,10 @@ export function AdminDashboardHomePage() {
   }
 
   const { kpis } = analytics;
-  const firstName = user?.fullName?.split(' ')[0];
 
   return (
     <DashboardPage spacing="relaxed">
-      <DashboardViewHeader
-        layout="featured"
-        eyebrow="Quản trị hệ thống"
-        title={firstName ? `Xin chào, ${firstName}` : 'Bảng điều khiển quản trị'}
-        description="Theo dõi vận hành, duyệt yêu cầu và phân tích hoạt động mentoring."
-      />
-
-      <DashboardSection title="Chỉ số vận hành" description="Tổng quan nhanh các số liệu quan trọng">
+      <DashboardSection title="Chỉ số vận hành">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Link href={ROUTES.DASHBOARD.ADMIN.BOOKINGS.path}>
             <StatsKpiCard
@@ -112,12 +101,12 @@ export function AdminDashboardHomePage() {
         </div>
       </DashboardSection>
 
-      <DashboardSection title="Phân tích" description="Biểu đồ người dùng và hoạt động mentoring">
+      <DashboardSection title="Phân tích">
         <div className="grid gap-6 lg:grid-cols-2">
-          <StatsChartCard title="Người dùng theo vai trò" subtitle="Dữ liệu thật từ hệ thống">
+          <StatsChartCard title="Người dùng theo vai trò">
             <StatsDonutChart data={analytics.bookingMix} />
           </StatsChartCard>
-          <StatsChartCard title="Hoạt động mentoring" subtitle="Booking & session">
+          <StatsChartCard title="Hoạt động mentoring">
             <StatsBarChart
               data={[
                 { label: 'Booking', value: kpis.totalBookings },
@@ -129,11 +118,7 @@ export function AdminDashboardHomePage() {
         </div>
       </DashboardSection>
 
-      <DashboardSection
-        title="Hoạt động gần đây"
-        description="Cập nhật trạng thái booking từ mentor và học viên"
-        action={<AdminBookingActivityFeedLink />}
-      >
+      <DashboardSection title="Hoạt động gần đây" action={<AdminBookingActivityFeedLink />}>
         <AdminBookingActivityFeed />
       </DashboardSection>
     </DashboardPage>

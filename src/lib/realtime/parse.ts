@@ -3,6 +3,7 @@ export interface ChatSocketMessage {
   conversationId: string;
   senderId: string;
   content: string;
+  senderDisplayName?: string;
   type?: string;
   attachmentFileIds?: string[] | null;
   edited?: boolean;
@@ -27,11 +28,16 @@ export function parseConversationEvent(body: string, fallbackConversationId: str
     }
 
     const attachmentFileIds = payload.attachmentFileIds ?? raw.attachmentFileIds;
+    const senderDisplayName = payload.senderDisplayName ?? raw.senderDisplayName;
 
     return {
       id: String(id),
       conversationId: String(payload.conversationId ?? raw.conversationId ?? fallbackConversationId),
       senderId: String(senderId),
+      senderDisplayName:
+        senderDisplayName != null && String(senderDisplayName).trim()
+          ? String(senderDisplayName).trim()
+          : undefined,
       content: String(payload.content ?? raw.content ?? ''),
       type: payload.type != null ? String(payload.type) : raw.type != null ? String(raw.type) : undefined,
       edited:

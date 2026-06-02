@@ -8,20 +8,14 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  FileText,
-  ImageIcon,
   Loader2,
-  Paperclip,
-  PanelRightClose,
-  PanelRightOpen,
   Plus,
   Search,
   Send,
-  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
-import type { ChatAttachment, ChatMessage, Conversation } from '@/features/dashboard/chat/types';
+import type { ChatMessage, Conversation } from '@/features/dashboard/chat/types';
 import { ChatMessageContextBox } from '@/features/dashboard/ui/ChatMessageContextBox';
 import { useAuth } from '@/context/AuthContext';
 import { initials } from '@/features/dashboard/chat/utils';
@@ -140,11 +134,7 @@ export type DashboardChatPageViewProps = {
   setQuery: (v: string) => void;
   mobileThread: boolean;
   setMobileThread: (v: boolean) => void;
-  rightPanelOpen: boolean;
-  setRightPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   bottomRef: React.RefObject<HTMLDivElement | null>;
-  sharedImages: ChatAttachment[];
-  sharedFiles: ChatAttachment[];
   openThread: (id: string) => void;
   createConversation: () => void;
   send: () => void;
@@ -166,11 +156,7 @@ export function DashboardChatPageView({
   setQuery,
   mobileThread,
   setMobileThread,
-  rightPanelOpen,
-  setRightPanelOpen,
   bottomRef,
-  sharedImages,
-  sharedFiles,
   openThread,
   createConversation,
   send,
@@ -307,7 +293,40 @@ export function DashboardChatPageView({
                     <p>Chưa có tin nhắn. Nhập bên dưới để gửi.</p>
                   </div>
                 ) : (
-                  active.messages.map((m) => (
+                  active.messages.map((m, idx) => {
+                    const prev = idx > 0 ? active.messages[idx - 1] : null;
+                    const senderLabel =
+                      m.senderName ||
+                      (m.senderId
+                        ? `Người dùng #${m.senderId.replace(/-/g, '').slice(0, 8)}`
+                        : 'Người dùng');
+                    const showSenderLabel = isAdmin && m.senderId !== prev?.senderId;
+
+                    if (isAdmin) {
+                      return (
+                        <div key={m.id} className="w-full min-w-0">
+                          {showSenderLabel ? (
+                            <p className="mb-1.5 ml-10 text-xs font-semibold text-slate-600">{senderLabel}</p>
+                          ) : null}
+                          <div className="flex w-full min-w-0 items-end justify-start gap-2.5">
+                            <ChatPeerAvatar name={senderLabel} className="mb-1 size-8" />
+                            <div className="w-fit min-w-0 max-w-[calc(100%-2.75rem)] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-3 py-2.5 text-sm leading-relaxed text-slate-800 sm:px-3.5">
+                              {m.context ? (
+                                <ChatMessageContextBox context={m.context} variant="them" />
+                              ) : null}
+                              {m.text ? (
+                                <p className="break-words whitespace-pre-wrap [overflow-wrap:anywhere]">{m.text}</p>
+                              ) : null}
+                              <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-slate-400">
+                                <span>{m.time}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
                     <div key={m.id} className="w-full min-w-0">
                       <div className={cn('flex w-full min-w-0 gap-2.5 items-end', m.role === 'me' ? 'justify-end' : 'justify-start')}>
                         {m.role !== 'me' && (
@@ -327,37 +346,6 @@ export function DashboardChatPageView({
                           {m.text ? (
                             <p className="break-words whitespace-pre-wrap [overflow-wrap:anywhere]">{m.text}</p>
                           ) : null}
-                          {m.attachments && m.attachments.length > 0 ? (
-                            <ul className="mt-2 space-y-2">
-                              {m.attachments.map((a) =>
-                                a.kind === 'image' && a.url ? (
-                                  <li key={a.id} className="overflow-hidden rounded-lg">
-                                    <Image
-                                      src={a.url}
-                                      alt={a.name}
-                                      width={280}
-                                      height={180}
-                                      className="h-auto max-h-48 w-full object-cover"
-                                      unoptimized
-                                    />
-                                  </li>
-                                ) : (
-                                  <li
-                                    key={a.id}
-                                    className={cn(
-                                      'flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs',
-                                      m.role === 'me'
-                                        ? 'border-white/30 bg-white/10 text-white'
-                                        : 'border-slate-200 bg-slate-50 text-slate-700',
-                                    )}
-                                  >
-                                    <FileText className="size-3.5 shrink-0" />
-                                    <span className="truncate">{a.name}</span>
-                                  </li>
-                                ),
-                              )}
-                            </ul>
-                          ) : null}
                           <div
                             className={cn(
                               'mt-1 flex items-center justify-end gap-1 text-[10px]',
@@ -373,7 +361,8 @@ export function DashboardChatPageView({
                         )}
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 )}
                 <div ref={bottomRef} />
               </div>
@@ -400,13 +389,6 @@ export function DashboardChatPageView({
                     </p>
                   ) : null}
                   <div className="flex items-end gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1.5 focus-within:border-primary focus-within:bg-white sm:gap-2 sm:p-2">
-                    <button
-                      type="button"
-                      className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/80 hover:text-slate-800"
-                      aria-label="Đính kèm"
-                    >
-                      <Paperclip className="size-[18px]" strokeWidth={2} />
-                    </button>
                     <textarea
                       value={draft}
                       onChange={(e) => setDraft(e.target.value)}

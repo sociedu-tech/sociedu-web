@@ -1,8 +1,7 @@
 'use client';
 
 import { AdminMentorRequests } from '@/features/admin/ui/AdminMentorRequests';
-import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
-import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
+import { DashboardPage, DashboardSurface } from '@/features/dashboard/ui/DashboardPrimitives';
 import { useAdminMentorRequestsPage } from '@/features/admin/hooks/useAdminMentorRequestsPage';
 import { DataPagination } from '@/components/ui/DataPagination';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
@@ -21,12 +20,7 @@ export default function AdminMentorRequestsPage() {
   } = useAdminMentorRequestsPage();
 
   return (
-    <>
-      <DashboardViewHeader
-        title="Yêu cầu trở thành mentor"
-        description="Xem hồ sơ đăng ký, kiểm tra chuyên môn và duyệt hoặc từ chối. Người được duyệt sẽ xuất hiện trên phần tìm mentor."
-        layout="compact"
-      />
+    <DashboardPage>
       <DashboardSurface>
         {loading ? (
           <PageLoadingState label="Đang tải…" variant="cards" cardCount={3} />
@@ -45,6 +39,6 @@ export default function AdminMentorRequestsPage() {
           </>
         )}
       </DashboardSurface>
-    </>
+    </DashboardPage>
   );
 }

@@ -32,7 +32,7 @@ export function DashboardTopBar({
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-4',
+        'z-50 flex h-14 shrink-0 items-center justify-between gap-4',
         'border-b border-dashboard-border/80 bg-dashboard-surface/95 px-4 backdrop-blur-sm lg:px-6',
       )}
       style={{ boxShadow: 'var(--shadow-dashboard-card)' }}

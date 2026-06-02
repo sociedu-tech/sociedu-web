@@ -6,8 +6,6 @@ import { PAGE_LOADING_MIN_HEIGHT } from '@/lib/pageLoading';
 import { useDashboardChatPage } from '@/features/dashboard/hooks';
 import { DashboardChatPageView } from '@/features/dashboard/ui/DashboardChatPageView';
 
-export type { ChatAttachment } from '@/features/dashboard/chat/types';
-
 function DashboardChatPageContent() {
   const p = useDashboardChatPage();
   return <DashboardChatPageView {...p} />;

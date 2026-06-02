@@ -10,7 +10,6 @@ import { useAdminServicePackages } from '@/features/admin/hooks/useAdminServiceP
 import {
   DashboardPage,
   DashboardSurface,
-  DashboardViewHeader,
 } from '@/features/dashboard/ui/DashboardPrimitives';
 import { cn } from '@/lib/utils';
 
@@ -38,7 +37,21 @@ export function AdminServicePackagesList({ pageLayout = false }: Props) {
   } = useAdminServicePackages();
 
   if (pageLayout ? initialLoading : loading && packages.length === 0) {
-    return <PageLoadingState label="Đang tải gói dịch vụ…" variant="cards" cardCount={4} />;
+    if (pageLayout) {
+      return (
+        <DashboardPage>
+          <DashboardSurface>
+            <PageLoadingState
+              label="Đang tải gói dịch vụ…"
+              variant="cards"
+              cardCount={4}
+              minHeight="min-h-[320px]"
+            />
+          </DashboardSurface>
+        </DashboardPage>
+      );
+    }
+    return <PageLoadingState label="Đang tải gói dịch vụ…" variant="cards" cardCount={4} minHeight="min-h-[320px]" />;
   }
 
   const listBody = (
@@ -58,9 +71,6 @@ export function AdminServicePackagesList({ pageLayout = false }: Props) {
             className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm outline-none transition focus:border-primary"
           />
         </div>
-        <p className="text-xs text-slate-500">
-          Hiển thị các gói mentoring đã tạo của tất cả mentor trên hệ thống.
-        </p>
       </div>
 
       {error ? (
@@ -102,11 +112,6 @@ export function AdminServicePackagesList({ pageLayout = false }: Props) {
 
   return (
     <DashboardPage>
-      <DashboardViewHeader
-        title="Quản lý gói dịch vụ"
-        description="Giám sát và theo dõi toàn bộ các gói dịch vụ mentoring trên hệ thống."
-        layout="compact"
-      />
       <DashboardSurface>
         <div className="p-4 sm:p-6">{listBody}</div>
       </DashboardSurface>

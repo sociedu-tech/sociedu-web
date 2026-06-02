@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { ChatMessage, Conversation } from '@/features/dashboard/chat/types';
-import { avatarUrlForUser, collectAttachments, dedupeConversationsByPeer, sortConversationsByRecent } from '@/features/dashboard/chat/utils';
+import { avatarUrlForUser, dedupeConversationsByPeer, sortConversationsByRecent } from '@/features/dashboard/chat/utils';
 import { chatService, type ChatContextType, type ChatConversationDto, type ChatMessageDto } from '@/services/chatService';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -30,7 +30,6 @@ export function useDashboardChatPage() {
   const [draft, setDraft] = useState('');
   const [query, setQuery] = useState('');
   const [mobileThread, setMobileThread] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [convLoading, setConvLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -45,11 +44,6 @@ export function useDashboardChatPage() {
     (c) =>
       c.name.toLowerCase().includes(query.trim().toLowerCase()) ||
       c.lastMessage.toLowerCase().includes(query.trim().toLowerCase()),
-  );
-
-  const { images: sharedImages, files: sharedFiles } = useMemo(
-    () => (active ? collectAttachments(active.messages) : { images: [], files: [] }),
-    [active],
   );
 
   useEffect(() => {
@@ -106,6 +100,8 @@ export function useDashboardChatPage() {
     (m: ChatMessageDto, sendStatus?: ChatMessage['sendStatus']): ChatMessage => ({
       id: String(m.id || `${m.senderId}-${m.createdAt ?? ''}`),
       role: String(m.senderId) === user?.id ? 'me' : 'them',
+      senderId: String(m.senderId),
+      senderName: m.senderDisplayName?.trim() || undefined,
       text: m.content || '',
       time: formatTime(m.createdAt),
       sendStatus: String(m.senderId) === user?.id ? sendStatus ?? 'sent' : undefined,
@@ -113,11 +109,6 @@ export function useDashboardChatPage() {
         m.contextType && m.contextId && m.contextType !== 'general'
           ? { contextType: m.contextType as ChatContextType, contextId: String(m.contextId) }
           : undefined,
-      attachments: (m.attachmentFileIds ?? []).map((fileId) => ({
-        id: String(fileId),
-        kind: 'file',
-        name: `Tệp đính kèm ${String(fileId).slice(0, 8)}`,
-      })),
     }),
     [formatTime, user?.id],
   );
@@ -176,7 +167,7 @@ export function useDashboardChatPage() {
           return {
             ...c,
             messages: nextMessages,
-            lastMessage: uiMessage.text || 'Đã gửi tệp đính kèm',
+            lastMessage: uiMessage.text || c.lastMessage,
             time: uiMessage.time,
             sortAt: nowIso,
             unread: storeUnread,
@@ -391,6 +382,7 @@ export function useDashboardChatPage() {
       const uiMessage = toUiMessageRef.current({
         id: message.id,
         senderId: message.senderId,
+        senderDisplayName: message.senderDisplayName,
         content: message.content,
         type: message.type || 'text',
         edited: message.edited,
@@ -474,11 +466,7 @@ export function useDashboardChatPage() {
     setQuery,
     mobileThread,
     setMobileThread,
-    rightPanelOpen,
-    setRightPanelOpen,
     bottomRef,
-    sharedImages,
-    sharedFiles,
     openThread,
     createConversation,
     send,

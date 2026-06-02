@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useIsAdminDashboard } from '@/features/dashboard/hooks/useIsAdminDashboard';
 
 export function DashboardViewHeader({
   eyebrow,
@@ -10,6 +11,7 @@ export function DashboardViewHeader({
   action,
   className,
   layout = 'compact',
+  forceShow = false,
 }: {
   eyebrow?: string;
   title?: string;
@@ -17,7 +19,20 @@ export function DashboardViewHeader({
   action?: React.ReactNode;
   className?: string;
   layout?: 'compact' | 'featured';
+  /** Bỏ qua ẩn mặc định trên admin (chỉ dùng khi thật sự cần). */
+  forceShow?: boolean;
 }) {
+  const isAdmin = useIsAdminDashboard();
+
+  if (isAdmin && !forceShow) {
+    if (!action) return null;
+    return (
+      <header className={cn('flex shrink-0 justify-end pb-2', className)}>
+        <div className="flex flex-wrap items-center gap-2">{action}</div>
+      </header>
+    );
+  }
+
   if (!title && !description && !action && !eyebrow) return null;
 
   const featured = layout === 'featured';

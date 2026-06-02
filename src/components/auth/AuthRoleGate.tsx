@@ -9,7 +9,7 @@ export function AuthRoleGate({ children }: { children: React.ReactNode }) {
   const { loading } = useAuth();
 
   if (loading) {
-    return <PageLoadingState label="Đang tải tài khoản…" />;
+    return <PageLoadingState label="Đang tải tài khoản…" minHeight="min-h-[240px]" />;
   }
 
   return <>{children}</>;

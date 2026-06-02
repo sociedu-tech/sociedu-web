@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useIsAdminDashboard } from '@/features/dashboard/hooks/useIsAdminDashboard';
 
 export function DashboardSection({
   title,
@@ -16,7 +17,9 @@ export function DashboardSection({
   className?: string;
   action?: React.ReactNode;
 }) {
-  const showHeader = Boolean(title || description || action);
+  const isAdmin = useIsAdminDashboard();
+  const sectionDescription = isAdmin ? undefined : description;
+  const showHeader = Boolean(title || sectionDescription || action);
 
   return (
     <section className={cn('space-y-4', className)} aria-label={title}>
@@ -26,8 +29,8 @@ export function DashboardSection({
             {title ? (
               <h2 className="text-base font-semibold tracking-tight text-dashboard-ink">{title}</h2>
             ) : null}
-            {description ? (
-              <p className="mt-0.5 text-sm leading-relaxed text-dashboard-muted">{description}</p>
+            {sectionDescription ? (
+              <p className="mt-0.5 text-sm leading-relaxed text-dashboard-muted">{sectionDescription}</p>
             ) : null}
           </div>
           {action ? <div className="shrink-0">{action}</div> : null}

@@ -19,25 +19,27 @@ export function MentoringHub() {
   return (
     <AuthRoleGate>
       <GoogleOAuthReturnNotice />
-      {role === ROLES.ADMIN ? (
-        <AdminServicePackagesList pageLayout />
-      ) : role === ROLES.MENTOR ? (
-        <ProgramList
-          pageLayout
-          eyebrow="Mentor"
-          perspective="mentor"
-          labels={MENTOR_PROGRAM}
-          detailPath={programDetailPath}
-        />
-      ) : (
-        <ProgramList
-          pageLayout
-          eyebrow="Học viên"
-          perspective="buyer"
-          labels={USER_PROGRAM}
-          detailPath={programDetailPath}
-        />
-      )}
+      <div className="flex w-full min-h-0 flex-col">
+        {role === ROLES.ADMIN ? (
+          <AdminServicePackagesList pageLayout />
+        ) : role === ROLES.MENTOR ? (
+          <ProgramList
+            pageLayout
+            eyebrow="Mentor"
+            perspective="mentor"
+            labels={MENTOR_PROGRAM}
+            detailPath={programDetailPath}
+          />
+        ) : (
+          <ProgramList
+            pageLayout
+            eyebrow="Học viên"
+            perspective="buyer"
+            labels={USER_PROGRAM}
+            detailPath={programDetailPath}
+          />
+        )}
+      </div>
     </AuthRoleGate>
   );
 }

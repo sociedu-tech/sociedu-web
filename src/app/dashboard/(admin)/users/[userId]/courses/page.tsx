@@ -9,7 +9,6 @@ import { adminBookingService } from '@/services/adminBookingService';
 import type { User, AdminBookingRow } from '@/types';
 import { PageLoadingState } from '@/components/ui/PageLoadingState';
 import { DashboardSurface } from '@/features/dashboard/ui/modules/layout/DashboardSurface';
-import { DashboardViewHeader } from '@/features/dashboard/ui/modules/layout/DashboardViewHeader';
 import { cn } from '@/lib/utils';
 import { adminBookingStatusBadgeClass, adminBookingStatusLabel } from '@/features/admin/lib/adminBookingLabels';
 
@@ -103,16 +102,6 @@ export default function UserCoursesPage() {
           Quay lại
         </button>
       </div>
-
-      <DashboardViewHeader
-        title={isMentor ? `Khóa học của mentor: ${user.name}` : `Khóa học đã đăng ký: ${user.name}`}
-        description={
-          isMentor
-            ? `Danh sách các gói dịch vụ của mentor và danh sách học viên đăng ký.`
-            : `Danh sách các khóa học học viên đã đăng ký tham gia.`
-        }
-        layout="compact"
-      />
 
       <DashboardSurface>
         <div className="p-4 sm:p-6 space-y-6">

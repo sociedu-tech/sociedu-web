@@ -10,12 +10,11 @@ import { DashboardSidebar, type DashboardMenuState } from '@/features/dashboard/
 import { DashboardTopBar } from '@/features/dashboard/ui/DashboardTopBar';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user, logout, userRole } = useAuth();
   const pathname = usePathname() || '/dashboard';
-  const navItems = getShellNavItems(
-    user?.roles?.[0] != null ? normalizeRole(user.roles[0]) : ROLES.GUEST,
-    user?.id,
-  );
+  const role = user?.roles?.[0] != null ? normalizeRole(user.roles[0]) : normalizeRole(userRole);
+  const isAdmin = role === ROLES.ADMIN;
+  const navItems = getShellNavItems(role, user?.id);
 
   const [menuState, setMenuState] = useState<DashboardMenuState>('full');
   const [isMobile, setIsMobile] = useState(false);
@@ -55,7 +54,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const isPayoutPage =
     pathname === '/dashboard/payouts' || pathname.startsWith('/dashboard/payouts/');
 
-  const lockMainScroll = isChatPage || isOrderDetailPage || isPayoutPage;
+  const lockMainScroll = isChatPage || isOrderDetailPage || isPayoutPage || isAdmin;
 
   return (
     <div className="flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-dashboard-canvas font-sans text-[15px] font-normal leading-relaxed text-dashboard-ink antialiased">
@@ -93,7 +92,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             className={cn(
               'w-full',
               lockMainScroll
-                ? 'flex h-full min-h-0 w-full flex-1 flex-col px-0 py-0'
+                ? cn(
+                    'mx-auto flex h-full min-h-0 w-full max-w-[1440px] flex-col overflow-y-auto overflow-x-hidden',
+                    isAdmin && !isChatPage && !isOrderDetailPage && !isPayoutPage
+                      ? 'px-4 py-4 sm:px-6 lg:px-8'
+                      : 'px-0 py-0',
+                  )
                 : 'mx-auto min-h-full w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
             )}
           >

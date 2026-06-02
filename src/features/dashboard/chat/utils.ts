@@ -1,4 +1,4 @@
-import type { ChatAttachment, ChatMessage, Conversation } from './types';
+import type { Conversation } from './types';
 
 export function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -45,16 +45,4 @@ function pickPreferredConversation(a: Conversation, b: Conversation): Conversati
   const ta = a.sortAt ? new Date(a.sortAt).getTime() : 0;
   const tb = b.sortAt ? new Date(b.sortAt).getTime() : 0;
   return tb > ta ? b : a;
-}
-
-export function collectAttachments(messages: ChatMessage[]): { images: ChatAttachment[]; files: ChatAttachment[] } {
-  const images: ChatAttachment[] = [];
-  const files: ChatAttachment[] = [];
-  for (const m of messages) {
-    for (const a of m.attachments ?? []) {
-      if (a.kind === 'image') images.push(a);
-      else files.push(a);
-    }
-  }
-  return { images, files };
 }

@@ -26,6 +26,7 @@ export type ChatConversationDto = {
 export type ChatMessageDto = {
   id: string;
   senderId: string;
+  senderDisplayName?: string | null;
   content: string;
   type: string;
   edited?: boolean;
